@@ -1,0 +1,336 @@
+:root {
+  --prism-color: #111b27;
+  --prims-bg: #e3eaf2;
+  --prism-selection-bg: #8da1b9;
+  --prism-token-comment: #3c526d;
+  --prism-token-punctuation: #111b27;
+  --prism-token-tag: #006d6d;
+  --prism-token-constant: #755f00;
+  --prism-token-variable: #005a8e;
+  --prism-token-string: #116b00;
+  --prism-token-builtin: #af00af;
+  --prism-token-function: #7c00aa;
+  --prism-token-keyword: #a04900;
+  --prism-token-deleted: #c22f2e;
+  --prism-token-this: #005a8e;
+  --prims-token-whitespace: #3c526d;
+}
+
+/**
+ * Coldark Theme for Prism.js
+ * Theme variation: Cold
+ * Tested with HTML, CSS, JS, JSON, PHP, YAML, Bash script
+ * @author Armand Philippot <contact@armandphilippot.com>
+ * @homepage https://github.com/ArmandPhilippot/coldark-prism
+ * @license MIT
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: var(--prims-color);
+  background: none;
+  text-align: left;
+  font-family: theme('fontFamily.mono');
+  font-size: 0.875rem;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  tab-size: 2;
+  hyphens: none;
+}
+
+pre[class*="language-"]::selection,
+pre[class*="language-"] ::selection,
+code[class*="language-"]::selection,
+code[class*="language-"] ::selection {
+  background: var(--prism-selection-bg);
+}
+
+/* Code blocks */
+pre.line-highlight,
+pre[class*="language-"] {
+  padding: 1rem;
+  overflow: auto;
+}
+
+pre.line-highlight {
+  padding-right: 0;
+  padding-left: 0;
+  pointer-events: none;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+  background: var(--prims-bg);
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: 0.1em 0.3em;
+  border-radius: 0.3em;
+  white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--prism-token-comment);
+}
+
+.token.punctuation {
+  color: var(--prism-token-punctuation);
+}
+
+.token.delimiter.important,
+.token.selector .parent,
+.token.tag,
+.token.tag .token.punctuation {
+  color: var(--prism-token-tag);
+}
+
+.token.attr-name,
+.token.boolean,
+.token.boolean.important,
+.token.number,
+.token.constant,
+.token.selector .token.attribute {
+  color: var(--prism-token-constant);
+}
+
+.token.class-name,
+.token.key,
+.token.parameter,
+.token.property,
+.token.property-access,
+.token.variable {
+  color: var(--prism-token-variable);
+}
+
+.token.attr-value,
+.token.inserted,
+.token.color,
+.token.selector .token.value,
+.token.string,
+.token.string .token.url-link {
+  color: var(--prism-token-string);
+}
+
+.token.builtin,
+.token.keyword-array,
+.token.package,
+.token.regex {
+  color: var(--prism-token-builtin);
+}
+
+.token.function,
+.token.selector .token.class,
+.token.selector .token.id {
+  color: var(--prism-token-function);
+}
+
+.token.atrule .token.rule,
+.token.combinator,
+.token.keyword,
+.token.operator,
+.token.pseudo-class,
+.token.pseudo-element,
+.token.selector,
+.token.unit {
+  color: var(--prism-token-keyword);
+}
+
+.token.deleted,
+.token.important {
+  color: var(--prism-token-deleted);
+}
+
+.token.keyword-this,
+.token.this {
+  color: var(--prism-token-this);
+}
+
+.token.important,
+.token.keyword-this,
+.token.this,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.delimiter.important {
+  font-weight: inherit;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.language-markdown .token.title,
+.language-markdown .token.title .token.punctuation {
+  color: #005a8e;
+  font-weight: bold;
+}
+
+.language-markdown .token.blockquote.punctuation {
+  color: #af00af;
+}
+
+.language-markdown .token.code {
+  color: #006d6d;
+}
+
+.language-markdown .token.hr.punctuation {
+  color: #005a8e;
+}
+
+.language-markdown .token.url > .token.content {
+  color: #116b00;
+}
+
+.language-markdown .token.url-link {
+  color: #755f00;
+}
+
+.language-markdown .token.list.punctuation {
+  color: #af00af;
+}
+
+.language-markdown .token.table-header {
+  color: #111b27;
+}
+
+.language-json .token.operator {
+  color: #111b27;
+}
+
+.language-scss .token.variable {
+  color: #006d6d;
+}
+
+/* overrides color-values for the Show Invisibles plugin
+ * https://prismjs.com/plugins/show-invisibles/
+ */
+.token.token.tab:not(:empty):before,
+.token.token.cr:before,
+.token.token.lf:before,
+.token.token.space:before {
+  color: var(--prism-token-whitespace);
+}
+
+/* overrides color-values for the Toolbar plugin
+ * https://prismjs.com/plugins/toolbar/
+ */
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > a,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > button {
+  color: #e3eaf2;
+  background: #005a8e;
+}
+
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > a:hover,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > a:focus,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > button:hover,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > button:focus {
+  color: #e3eaf2;
+  background: #005a8eda;
+  text-decoration: none;
+}
+
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > span,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > span:hover,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > span:focus {
+  color: #e3eaf2;
+  background: #3c526d;
+}
+
+/* overrides color-values for the Line Highlight plugin
+ * http://prismjs.com/plugins/line-highlight/
+ */
+.line-highlight.line-highlight .highlighted {
+  background: #8da1b92f;
+  background: linear-gradient(to right, #8da1b92f 70%, #8da1b925);
+}
+
+.line-highlight.line-highlight .highlighted:before,
+.line-highlight.line-highlight .highlighted[data-end]:after {
+  background-color: #3c526d;
+  color: #e3eaf2;
+  box-shadow: 0 1px #8da1b9;
+}
+
+pre[id].linkable-line-numbers.linkable-line-numbers span.line-numbers-rows > span:hover:before {
+  background-color: #3c526d1f;
+}
+
+/* overrides color-values for the Line Numbers plugin
+ * http://prismjs.com/plugins/line-numbers/
+ */
+.line-numbers.line-numbers .line-numbers-rows {
+  border-right: 1px solid #8da1b97a;
+  background: #d0dae77a;
+}
+
+.line-numbers .line-numbers-rows > span:before {
+  color: #3c526dda;
+}
+
+/* overrides color-values for the Diff Highlight plugin
+ * https://prismjs.com/plugins/diff-highlight/
+ */
+pre.diff-highlight > code .token.token.deleted:not(.prefix),
+pre > code.diff-highlight .token.token.deleted:not(.prefix) {
+  background-color: #c22f2e1f;
+}
+
+pre.diff-highlight > code .token.token.inserted:not(.prefix),
+pre > code.diff-highlight .token.token.inserted:not(.prefix) {
+  background-color: #116b001f;
+}
+
+/* overrides color-values for the Command Line plugin
+ * https://prismjs.com/plugins/command-line/
+ */
+.command-line .command-line-prompt {
+  border-right: 1px solid #8da1b97a;
+}
+
+.command-line .command-line-prompt > span:before {
+  color: #3c526dda;
+}
+
+div[class*='language-'] {
+  position: relative;
+}
+
+
+/*
+pre[class*='language-'] {
+  position: relative;
+}
+*/
+
+pre.line-highlight,
+pre.line-numbers {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  width: 100%;
+  user-select: none;
+  overflow: hidden;
+}
+
+div[class*='language-']:before {
+  content: attr(data-lang);
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 0.75rem;
+  padding: 1rem;
+  pointer-events: none;
+  opacity: 0.5;
+}
