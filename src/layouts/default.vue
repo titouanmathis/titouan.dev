@@ -18,8 +18,8 @@
 
 <template>
   <ButtonToggleTheme class="absolute top-0 right-0 mt-10 mr-10" client:idle />
-  <div class="p-10 space-y-20">
-    <header class="space-y-10">
+  <div class="flex flex-col min-h-screen p-10">
+    <header class="mb-20 space-y-10">
       <div>
         <h1 class="font-bold"><a href="/">Titouan Mathis</a></h1>
         <p>
@@ -41,10 +41,10 @@
         </ul>
       </nav>
     </header>
-    <main class="max-w-3xl space-y-4 markdown">
+    <main class="mb-20 max-w-3xl space-y-4 markdown">
       <slot />
     </main>
-    <footer class="text-sm">
+    <footer class="mt-auto text-sm">
       <p class="space-x-4 md:space-x-10">
         <span class="inline-block">
           © {{ year }}
