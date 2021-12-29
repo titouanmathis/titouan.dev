@@ -2,6 +2,10 @@ module.exports = {
   content: ['src/**/*.{mdx,js,ts,vue}'],
   theme: {
     extend: {
+      colors: {
+        primary: 'var(--color)',
+        secondary: 'var(--bg)',
+      },
       transitionTimingFunction: {
         'in-back': 'cubic-bezier(0.6, -0.28, 0.735, 0.045)',
         'in-circ': 'cubic-bezier(0.6, 0.04, 0.98, 0.335)',

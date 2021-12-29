@@ -28,6 +28,7 @@
       title="Experiments"
       all-items-url="/experiments/"
       :items="experiments"
+      all-items-label="All experiments"
       no-items-label="No experiments."
     />
   </div>

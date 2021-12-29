@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  const { title, allItemsUrl, items, noItemsLabel } = defineProps({
+  const { title, allItemsUrl, items, noItemsLabel, allItemsLabel } = defineProps({
     title: String,
     allItemsUrl: String,
     items: {
@@ -9,6 +9,10 @@
     noItemsLabel: {
       type: String,
       default: 'No items.',
+    },
+    allItemsLabel: {
+      type: String,
+      default: 'All items',
     },
   });
 </script>
@@ -22,7 +26,9 @@
           <a :href="item.href">{{ item.title }}</a>
         </li>
       </ul>
-      <p v-if="allItemsUrl"><a :href="allItemsUrl">All items</a></p>
+      <p v-if="allItemsUrl">
+        <a :href="allItemsUrl">{{ allItemsLabel }}</a>
+      </p>
     </template>
     <p v-else>{{ noItemsLabel }}</p>
   </div>
