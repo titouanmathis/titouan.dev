@@ -46,8 +46,6 @@
             };
           });
 
-        console.log(easeInOutExpo(progress.value) * index)
-
         return {
           dots,
           styles: {

@@ -5,7 +5,9 @@
 declare module 'vue' {
   export interface GlobalComponents {
     ButtonToggleTheme: typeof import('./src/components/ButtonToggleTheme.vue')['default']
+    Circle: typeof import('./src/components/Experiments/Experiments002/Circle.vue')['default']
     Experiments001: typeof import('./src/components/Experiments/Experiments001.vue')['default']
+    Experiments002: typeof import('./src/components/Experiments/Experiments002/Experiments002.vue')['default']
     IconBxBxMoon: typeof import('~icons/bx/bx-moon')['default']
     IconBxBxSun: typeof import('~icons/bx/bx-sun')['default']
     Island: typeof import('./node_modules/.pnpm/iles@0.7.19_sass@1.45.1/node_modules/iles/dist/client/app/components/Island.vue')['default']
