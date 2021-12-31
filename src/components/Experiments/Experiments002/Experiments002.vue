@@ -6,7 +6,7 @@
 
 <template>
   <div class="fixed inset-0 overflow-hidden pointer-events-none">
-    <Circle
+    <Experiments002Circle
       v-for="index in total"
       :key="`circle-${index}`"
       :index="index - 1"

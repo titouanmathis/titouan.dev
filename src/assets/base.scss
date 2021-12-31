@@ -50,7 +50,7 @@ html {
 
 a:not([class]) {
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
-  transition: box-shadow 0.1s var(--ease-out-expo);
+  transition: box-shadow 0.2s var(--ease-out-expo);
 
   &[target='_blank'] {
     &::after {
