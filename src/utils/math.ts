@@ -69,6 +69,30 @@ export function matrix(transform: MatrixOption): string {
   }, ${transform.translateX ?? 0}, ${transform.translateY ?? 0})`;
 }
 
+export function easeInQuad(progress: number): number {
+  return progress ** 2;
+}
+
+export function easeInCubic(progress: number): number {
+  return progress ** 3;
+}
+
+export function easeInQuart(progress: number): number {
+  return progress ** 4;
+}
+
+export function easeInQuint(progress: number): number {
+  return progress ** 5;
+}
+
+export function easeInSine(progress: number): number {
+  return progress === 1 ? 1 : -Math.cos((progress * Math.PI) / 2) + 1;
+}
+
+export function easeInCirc(progress: number): number {
+  return -(Math.sqrt(1 - progress * progress) - 1);
+}
+
 /**
  * Exponential ease.
  *
