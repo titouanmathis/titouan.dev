@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed, ref, unref } from 'vue';
-  import { usePointer, useWindowSize, useRafFn } from '@vueuse/core';
-  import { matrix } from '~/utils/math';
+  import { usePointer, useMousePressed, useWindowSize, useRafFn } from '@vueuse/core';
+  import { matrix, damp, map, easeInOutExpo } from '~/utils/math';
 
   const { index, total } = defineProps({
     index: Number,
@@ -9,7 +9,10 @@
   });
 
   const { width, height } = useWindowSize();
-  const { x: pointerX, y: pointerY } = usePointer({
+  const {
+    x: pointerX,
+    y: pointerY,
+  } = usePointer({
     initialValue: {
       x: unref(width) / 2,
       y: unref(height) / 2,
@@ -17,6 +20,7 @@
       height: unref(height),
     },
   });
+  const { pressed } = useMousePressed();
 
   const radius = computed(() => {
     const radius = width.value > height.value ? height.value / 60 : width.value / 60;
@@ -26,11 +30,18 @@
 
   const x = ref(width.value / 2);
   const y = ref(height.value / 2);
+  const scale = ref(1);
 
   const styles = computed(() => {
     const size = index * 2 * radius.value;
+
     return {
-      transform: matrix({ translateX: x.value, translateY: y.value }) as string,
+      transform: matrix({
+        translateX: x.value,
+        translateY: y.value,
+        scaleX: scale.value,
+        scaleY: scale.value,
+      }) as string,
       width: size + 'px',
       height: size + 'px',
       marginTop: size / -2 - borderWidth.value + 'px',
@@ -42,6 +53,7 @@
   useRafFn(() => {
     x.value += (pointerX.value - x.value) * ((index + 5) / 40 - 0.05);
     y.value += (pointerY.value - y.value) * ((index + 5) / 40 - 0.05);
+    scale.value = damp(pressed.value ? index / total : 1, scale.value, 0.1, 0.01);
   });
 </script>
 
