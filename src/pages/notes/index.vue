@@ -1,13 +1,9 @@
 <script setup lang="ts">
-	import { useNotes } from '~/composables/useNotes';
+  import { useListing } from '~/composables/useListing';
 
-	const notes = useNotes();
+  const { items } = useListing('notes');
 </script>
 
 <template>
-  <Listing
-    title="Notes"
-    :items="notes"
-    no-items-label="No notes."
-  />
+  <Listing title="Notes" :items="items" no-items-label="No notes." />
 </template>

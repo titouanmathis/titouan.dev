@@ -1,4 +1,9 @@
 <script setup lang="ts">
+  import { computed } from 'vue';
+
+  const { meta } = usePage();
+  const isExperiment = computed(() => meta.href.startsWith('/experiments/'))
+
   const year = new Date().getUTCFullYear();
   const socialLinks = [
     {
@@ -27,40 +32,44 @@
           <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
         </p>
       </div>
-      <nav>
-        <ul class="flex space-x-10">
-          <li>
-            <a href="/articles/">Articles</a>
-          </li>
-          <li>
-            <a href="/notes/">Notes</a>
-          </li>
-          <li>
-            <a href="/experiments/">Experiments</a>
-          </li>
-        </ul>
-      </nav>
+      <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
+        <nav class="transition" v-show="!isExperiment">
+          <ul class="flex space-x-10">
+            <li>
+              <a href="/articles/">Articles</a>
+            </li>
+            <li>
+              <a href="/notes/">Notes</a>
+            </li>
+            <li>
+              <a href="/experiments/">Experiments</a>
+            </li>
+          </ul>
+        </nav>
+      </transition>
     </header>
-    <main class="mb-20 max-w-3xl space-y-4 markdown">
+    <main class="mb-32 max-w-3xl markdown">
       <slot />
     </main>
-    <footer class="mt-auto text-sm">
-      <p class="space-x-4 md:space-x-10">
-        <span class="inline-block">
-          © {{ year }}
-          <a href="/">T. Mathis</a>
-        </span>
-        <a
-          v-for="{ label, url } in socialLinks"
-          :key="url"
-          :href="url"
-          rel="noopener"
-          target="_blank"
-        >
-          {{ label }}
-        </a>
-      </p>
-    </footer>
+    <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
+      <footer class="mt-auto text-sm transition" v-show="!isExperiment">
+        <p class="space-x-4 md:space-x-10">
+          <span class="inline-block">
+            © {{ year }}
+            <a href="/">T. Mathis</a>
+          </span>
+          <a
+            v-for="{ label, url } in socialLinks"
+            :key="url"
+            :href="url"
+            rel="noopener"
+            target="_blank"
+          >
+            {{ label }}
+          </a>
+        </p>
+      </footer>
+    </transition>
   </div>
 </template>
 

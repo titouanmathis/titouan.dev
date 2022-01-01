@@ -1,13 +1,9 @@
 <script setup lang="ts">
-  import { useExperiments } from '~/composables/useExperiments';
+  import { useListing } from '~/composables/useListing';
 
-  const experiments = useExperiments();
+  const { items } = useListing('experiments');
 </script>
 
 <template>
-  <Listing
-    title="Experiments"
-    :items="experiments"
-    no-items-label="No experiments."
-  />
+  <Listing title="Experiments" :items="items" no-items-label="No experiments." />
 </template>
