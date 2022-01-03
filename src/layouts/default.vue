@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { computed } from 'vue';
+  import { useAllDocuments } from '~/composables/useListing';
 
+  const documents = useAllDocuments();
   const { meta } = usePage();
   const isExperiment = computed(() => meta.href.startsWith('/experiments/'))
 
@@ -35,14 +37,8 @@
       <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
         <nav class="transition" v-show="!isExperiment">
           <ul class="flex space-x-10">
-            <li>
-              <a href="/articles/">Articles</a>
-            </li>
-            <li>
-              <a href="/notes/">Notes</a>
-            </li>
-            <li>
-              <a href="/experiments/">Experiments</a>
+            <li v-for="doc in documents" :key="doc.url">
+              <a :href="doc.url">{{ doc.title }}</a>
             </li>
           </ul>
         </nav>
