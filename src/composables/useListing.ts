@@ -39,20 +39,24 @@ export const documents = {
   }
 };
 
-export function useAllDocuments():Partial<typeof documents> {
+export function useAllDocuments() {
   return Object.entries(documents).reduce((acc, [key, value]) => {
-    if (value.total) {
-      acc[key as Documents] = value;
+    if (value && value.total) {
+      acc.push(value);
     }
+
     return acc;
-  }, {} as Partial<typeof documents>);
+  }, [] as DocumentValues[]);
 }
 
-export type Documents = keyof typeof documents;
+type ValueOf<T> = T[keyof T];
+export type DocumentValues = ValueOf<Documents>;
+export type Documents = typeof documents;
+export type DocumentNames = keyof Documents;
 
-export const documentTypes:Array<Documents> = Object.keys(documents) as Documents[];
+export const documentNames:Array<DocumentNames> = Object.keys(documents) as DocumentNames[];
 
-export function useListing(type: Documents, count?: number) {
+export function useListing(type: DocumentNames, count?: number) {
   const { items } = documents[type];
   count = count ?? items.value.length;
   return {

@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import { unref } from 'vue';
-  import { useListing, documentTypes } from '~/composables/useListing';
+  import { useListing, documentNames } from '~/composables/useListing';
 
-  const blocks = documentTypes.map((type) => useListing(type, 5)).filter(block => block.total);
+  const blocks = documentNames.map((type) => useListing(type, 5)).filter(block => block.total);
 </script>
 
 <template>
