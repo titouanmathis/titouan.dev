@@ -1,3 +1,11 @@
 import { defineApp } from 'iles'
 
-export default defineApp({})
+import checkTheme from '~/utils/check-theme?raw';
+
+export default defineApp({
+  head: {
+    script: [
+      { children: checkTheme, once: true },
+    ]
+  }
+})
