@@ -1,12 +1,11 @@
 import { defineConfig } from 'iles';
-import remarkGfm from 'remark-gfm';
+import headings from '@islands/headings';
+import icons from '@islands/icons';
+import prism from '@islands/prism';
 
 export default defineConfig({
-  modules: ['@islands/prism', '@islands/icons', '@islands/headings'],
+  modules: [headings(), icons(), prism()],
   prettyUrls: true,
   turbo: true,
   siteUrl: process?.env?.DEPLOY_PRIME_URL,
-  markdown: {
-    remarkPlugins: [remarkGfm],
-  },
 });
