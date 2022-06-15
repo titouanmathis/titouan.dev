@@ -58,15 +58,10 @@ function _resolve_relative_symlink() {
     _symlink=$1
     _source=$2
     if [[ ${_source:0:3} == '../' ]]; then
-        # echo 'relative up'
-        # echo ${_symlink:h}
-        # echo ${_source:3}
         _resolve_relative_symlink ${_symlink:h} ${_source:3}
     elif [[ ${_source:0:2} == './' ]]; then
-        # echo 'relative down'
         echo "$_symlink/${_source:2}"
     elif [[ ${_source:0:1} == '/' ]]; then
-        # echo 'absolute'
         echo $_source;
     else
         echo "$_symlink/$_source"
