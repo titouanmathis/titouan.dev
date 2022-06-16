@@ -12,6 +12,10 @@ export default defineApp({
           property: 'description',
           content: computed(() => frontmatter.description ?? site.description),
         },
+        {
+          name: 'twitter:creator',
+          content: '@titouanmathis',
+        },
       ],
       link: [
         {
