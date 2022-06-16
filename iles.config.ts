@@ -7,5 +7,5 @@ export default defineConfig({
   modules: [headings(), icons(), prism()],
   prettyUrls: true,
   turbo: false,
-  siteUrl: process?.env?.DEPLOY_PRIME_URL,
+  siteUrl: process?.env?.URL,
 });

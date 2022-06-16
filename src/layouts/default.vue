@@ -4,7 +4,7 @@
 
   const documents = useAllDocuments();
   const { meta } = usePage();
-  const isExperiment = computed(() => meta.href.startsWith('/experiments/'))
+  const isExperiment = computed(() => meta.href.startsWith('/experiments/'));
 
   const year = new Date().getUTCFullYear();
   const socialLinks = [
@@ -24,18 +24,22 @@
 </script>
 
 <template>
-  <ButtonToggleTheme class="absolute top-0 right-0 mt-10 mr-10" client:idle />
+  <ButtonToggleTheme class="absolute top-0 right-0 mt-10 mr-10" />
   <div class="flex flex-col min-h-screen p-10">
     <header class="mb-20 space-y-10">
       <div>
-        <h1 class="font-bold"><a href="/">Titouan Mathis</a></h1>
+        <h1 class="font-bold">
+          <a href="/">Titouan Mathis</a>
+        </h1>
         <p>
-          Lead front-end developer at
-          <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
+          Lead developer at
+          <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener noreferrer">
+            Studio Meta
+          </a>
         </p>
       </div>
       <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
-        <nav class="transition" v-show="!isExperiment">
+        <nav v-show="!isExperiment" class="transition">
           <ul class="flex space-x-10">
             <li v-for="doc in documents" :key="doc.url">
               <a :href="doc.url">{{ doc.title }}</a>
@@ -48,7 +52,7 @@
       <slot />
     </main>
     <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
-      <footer class="mt-auto text-sm transition" v-show="!isExperiment">
+      <footer v-show="!isExperiment" class="mt-auto text-sm transition">
         <p class="space-x-4 md:space-x-10">
           <span class="inline-block">
             © {{ year }}
@@ -58,9 +62,8 @@
             v-for="{ label, url } in socialLinks"
             :key="url"
             :href="url"
-            rel="noopener"
-            target="_blank"
-          >
+            rel="noopener noreferrer"
+            target="_blank">
             {{ label }}
           </a>
         </p>

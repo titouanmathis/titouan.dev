@@ -56,12 +56,24 @@ export type DocumentNames = keyof Documents;
 
 export const documentNames:Array<DocumentNames> = Object.keys(documents) as DocumentNames[];
 
+function byPath(a, b) {
+  if (a.href < b.href) {
+    return -1;
+  }
+
+  if (a.href > b.href) {
+    return 1;
+  }
+
+  return 0;
+}
+
 export function useListing(type: DocumentNames, count?: number) {
   const { items } = documents[type];
   count = count ?? items.value.length;
   return {
     ...documents[type],
-    items: computed(() => items.value.reverse().slice(0, count)),
+    items: computed(() => items.value.sort(byPath).reverse().slice(0, count)),
     count,
   };
 }

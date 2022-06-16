@@ -1,4 +1,6 @@
 export default {
-  title: 'Titouan Mathis — Lead front-end developer',
-  description: 'Lead front-end developer at Studio Meta in Paris and Strasbourg, France.',
-}
+  title: 'Titouan Mathis — Lead developer',
+  author: 'Titouan Mathis',
+  description:
+    'Notes and experiments by Titouan Mathis, lead developer at Studio Meta in Strasbourg, France.',
+};

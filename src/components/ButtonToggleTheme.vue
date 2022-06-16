@@ -1,19 +1,21 @@
-<script setup lang="ts">
-  import { useDark, useToggle } from '@vueuse/core';
-
-  const isDark = useDark();
-  const toggleDark = useToggle(isDark);
-</script>
-
 <template>
-  <button aria-label="Toggle theme" @click="toggleDark()">
-    <transition
-      enter-from-class="transform -translate-y-full opacity-0"
-      enter-active-class="transition duration-500 ease-out-expo"
-      leave-to-class="transform translate-y-full opacity-0"
-      leave-active-class="absolute transition duration-500 ease-out-expo">
-      <IconBxBxMoon v-if="isDark" />
-      <IconBxBxSun v-else />
-    </transition>
+  <button id="toggle-theme" class="btn-theme w-5 h-5" type="button" aria-label="Toggle theme">
+    <IconBxBxMoon class="btn-theme__icon btn-theme__icon--dark" />
+    <IconBxBxSun class="btn-theme__icon btn-theme__icon--light" />
   </button>
 </template>
+
+<style>
+  .btn-theme__icon {
+    @apply transition duration-500 ease-out-expo;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  html.dark .btn-theme__icon--light,
+  html:not(.dark) .btn-theme__icon--dark {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+</style>
