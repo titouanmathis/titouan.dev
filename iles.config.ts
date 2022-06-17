@@ -6,6 +6,6 @@ import prism from '@islands/prism';
 export default defineConfig({
   modules: [headings(), icons(), prism()],
   prettyUrls: true,
-  turbo: false,
+  turbo: true,
   siteUrl: process?.env?.URL,
 });
