@@ -1,7 +1,9 @@
 (() => {
-  const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
-  const setting = localStorage.getItem('vueuse-color-scheme') || 'auto';
-  if (setting === 'dark' || (prefersDark && setting !== 'light')) {
+  const theme = localStorage.getItem('color-scheme') || 'auto';
+  if (
+    theme === 'dark' ||
+    (matchMedia('(prefers-color-scheme: dark)').matches && theme !== 'light')
+  ) {
     document.documentElement.classList.add('dark');
     const link = document.querySelector('link[rel="shortcut icon"]');
     if (link) {

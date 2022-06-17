@@ -2,8 +2,7 @@ window.addEventListener('load', () => {
   const name = 'color-scheme';
   const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
   const link = document.querySelector('link[rel="shortcut icon"]');
-  const setting = localStorage.getItem('vueuse-color-scheme') || 'auto';
-  let theme = localStorage.getItem(name);
+  let theme = localStorage.getItem(name) || 'auto';
 
   function setTheme(newTheme) {
     theme = newTheme;
@@ -23,7 +22,7 @@ window.addEventListener('load', () => {
     btn.onclick = toggleTheme;
   }
 
-  if (setting === 'dark' || (prefersDark && setting !== 'light')) {
+  if (theme === 'dark' || (prefersDark && theme !== 'light')) {
     setTheme('dark');
   }
 });
