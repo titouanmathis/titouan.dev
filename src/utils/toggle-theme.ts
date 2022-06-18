@@ -3,10 +3,11 @@
     console.log('setup');
     const name = 'color-scheme';
     const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
-    const link = document.querySelector('link[rel="shortcut icon"]');
     let theme = localStorage.getItem(name) || 'auto';
 
     function setTheme(newTheme) {
+      const link = document.querySelector('link[rel="shortcut icon"]');
+
       theme = newTheme;
       localStorage.setItem(name, newTheme);
       document.documentElement.classList.toggle('dark', newTheme === 'dark');
