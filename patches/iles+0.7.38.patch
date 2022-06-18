@@ -1,0 +1,13 @@
+diff --git a/node_modules/iles/turbo.js b/node_modules/iles/turbo.js
+index 6f23762..43bf7ff 100644
+--- a/node_modules/iles/turbo.js
++++ b/node_modules/iles/turbo.js
+@@ -151,7 +151,7 @@ function activateScript (el) {
+ 
+ function hasPrefetch (link) {
+   link = createElement()
+-  return link.relList && link.relList.supports && link.relList.supports('prefetch')
++  return !(/firefox/i.test(navigator.userAgent)) && link.relList && link.relList.supports && link.relList.supports('prefetch')
+ }
+ 
+ function prefetchWithLinkTag (url, link) {
