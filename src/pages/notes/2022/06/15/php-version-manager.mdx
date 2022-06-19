@@ -16,16 +16,27 @@ I have multiple versions of PHP installed with Homebrew on my computer and it ha
 
 I ended up writing a small ZSH function to easily switch from one version to another à la `nvm`. It is quite simple under the hood as it simply changes the content of the `$PATH` variable so that the `php` command points to the desired version.
 
-The function has three commands:
+The function can be used as follows:
 
-- `pvm use [version]`: use the given version
-- `pvm current`: display the current PHP version
-- `pvm list`: list all PHP versions installed
+```bash
+# Use a specific version
+pvm use 7.4
 
-The `pvm use [version]` command can be used without specifying a version and will have 2 different behaviours based on the current working directory:
+# Use the system default version
+pvm use system
 
-- if a `composer.json` file containing a dependency to PHP is found, it will try to use this version
-- it will fallback to the system version
+# Try to guess a version from a `composer.json` file up in the folder tree
+pvm use
+
+# Display the current version
+pvm current
+
+# List available versions
+pvm list
+pvm ls
+```
+
+The `pvm use` command can be used without specifying a version, it will try to find a `composer.json` file up in the folder tree and guess a PHP version from its dependencies.
 
 ## Disclaimer
 
@@ -39,10 +50,11 @@ You will find the script below, to start using it, add it to your `~/.zshrc` fil
 source /path/to/pvm.zsh
 ```
 
-You also will need to have multiple versions of PHP installed with [Homebrew](https://brew.sh/). I personnaly installed them with the following command:
+You also will need to have multiple versions of PHP installed with [Homebrew](https://brew.sh/) as well as the [`jq`](https://stedolan.github.io/jq/) CLI:
 
 ```bash
-brew install shivammathur/php/php \
+brew install jq \
+    shivammathur/php/php \
     shivammathur/php/php@5.6 \
     shivammathur/php/php@7.0 \
     shivammathur/php/php@7.1 \
@@ -60,7 +72,7 @@ Here is the script:
 # Alias PHP version to Brew versions
 function pvm() {
     zparseopts -D -E -a opts -verbose::=verbose v::=version -version::=version
-    VERSION='0.0.1'
+    VERSION='0.0.2'
 
     function log() {
         if [[ $verbose ]]; then
@@ -69,11 +81,11 @@ function pvm() {
     }
 
     function get_php_bin_path() {
-        find /usr/local/Cellar -path "*/php*/$1*" -type d -name 'bin' -maxdepth 5
+        ls -d /usr/local/Cellar/php*/$1*/bin
     }
 
     function get_php_versions() {
-        find /usr/local/Cellar -path '*/php*/*' -name '*' -maxdepth 2 -mindepth 2 | grep -E -o '/[0-9]+.[0-9]+' | sed -E 's#/##'
+        ls -d /usr/local/Cellar/php*/* | grep -E -o '/[0-9]+.[0-9]+' | sed -E 's#/##'
     }
 
     function set_php_version() {
