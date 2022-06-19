@@ -51,17 +51,43 @@ html {
 
 a:not([class]) {
   box-shadow: 0 2px 0 rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), 0.25);
-  transition: box-shadow 0.2s var(--ease-out-expo);
+  transition: box-shadow 0.4s var(--ease-out-expo);
 
   &[target='_blank'] {
     &::after {
-      content: ' ↘︎';
+      --size: 1.5px;
+      content: '';
       display: inline-block;
-      margin-left: 0.25em;
-      font-size: 0.75em;
+      width: 8px;
+      height: 8px;
+      margin-left: 4px;
       font-weight: bold;
-      transform: rotate(-90deg);
-      transition: transform 0.1s var(--ease-out-expo);
+      background-image:
+        linear-gradient(
+          -45deg,
+          transparent,
+          transparent calc(50% - var(--size) / 2),
+          currentColor calc(50% - var(--size) / 2),
+          currentColor calc(50% + var(--size) / 2),
+          transparent calc(50% + var(--size) / 2),
+          transparent
+        ),
+        linear-gradient(
+          to bottom,
+          currentColor,
+          currentColor var(--size),
+          transparent var(--size),
+          transparent
+        ),
+        linear-gradient(
+          to right,
+          transparent,
+          transparent calc(100% - var(--size)),
+          currentColor calc(100% - var(--size)),
+          currentColor
+        );
+      background-size: contain;
+      transition: transform 0.4s var(--ease-out-expo);
     }
   }
 
@@ -69,7 +95,7 @@ a:not([class]) {
     box-shadow: 0 2px 0 rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), 1);
 
     &[target='_blank']::after {
-      transform: rotate(-90deg) translate(1px, 1px);
+      transform: translate(2px, -2px);
     }
   }
 }
