@@ -55,38 +55,13 @@ a:not([class]) {
 
   &[target='_blank'] {
     &::after {
-      --size: 1.5px;
-      content: '';
+      content: '→';
       display: inline-block;
-      width: 8px;
-      height: 8px;
-      margin-left: 4px;
+      margin-left: 0.125em;
+      font-size: 0.75em;
       font-weight: bold;
-      background-image:
-        linear-gradient(
-          -45deg,
-          transparent,
-          transparent calc(50% - var(--size) / 2),
-          currentColor calc(50% - var(--size) / 2),
-          currentColor calc(50% + var(--size) / 2),
-          transparent calc(50% + var(--size) / 2),
-          transparent
-        ),
-        linear-gradient(
-          to bottom,
-          currentColor,
-          currentColor var(--size),
-          transparent var(--size),
-          transparent
-        ),
-        linear-gradient(
-          to right,
-          transparent,
-          transparent calc(100% - var(--size)),
-          currentColor calc(100% - var(--size)),
-          currentColor
-        );
       background-size: contain;
+      transform: rotate(-45deg);
       transition: transform 0.4s var(--ease-out-expo);
     }
   }
@@ -95,7 +70,7 @@ a:not([class]) {
     box-shadow: 0 2px 0 rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), 1);
 
     &[target='_blank']::after {
-      transform: translate(2px, -2px);
+      transform: rotate(-45deg) translate(2px, -2px);
     }
   }
 }
