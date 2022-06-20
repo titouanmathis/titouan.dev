@@ -1,0 +1,37 @@
+---
+title: Batch rename files with zmv
+description: Use the `zmv` utility from ZSH to easily rename multiple files.
+---
+
+# Batch rename files with `zmv`
+
+<div class="tracking-wide uppercase opacity-50"><small>20/06/2022 in #ZSH #scripts #terminal</small></div>
+
+
+I just (re)discovered the `zmv` utility from ZSH which simplify renaming things from the command line:
+
+```bash
+zmv '(*).log' '$1.txt'
+```
+
+It is not enabled by default, at least for me, so you might need to add the following line in your `~/.zshrc` file to be able to use it:
+
+```sh
+autoload -U zmv
+```
+
+It also has some flags for some advanced usages:
+
+```bash
+# Dry run
+zmv -n '(*).log' '$1.txt'
+
+# Interactive mode
+zmv -i '(*).log' '$1.txt'
+
+# Verbose mode
+zmv -v '(*).log' '$1.txt'
+```
+
+
+
