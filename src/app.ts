@@ -24,7 +24,7 @@ export default defineApp({
         },
       ],
       script: [
-        { children: checkTheme, once: true },
+        { children: checkTheme, once: false },
         { children: toggleTheme, defer: true, once: true },
       ],
     };

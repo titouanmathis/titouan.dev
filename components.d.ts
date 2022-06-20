@@ -13,6 +13,7 @@ declare module 'vue' {
     Experiments002Circle: typeof import('./src/components/Experiments/Experiments002/Experiments002Circle.vue')['default']
     IconBxBxMoon: typeof import('~icons/bx/bx-moon')['default']
     IconBxBxSun: typeof import('~icons/bx/bx-sun')['default']
+    Island: typeof import('./node_modules/iles/dist/client/app/components/Island.vue')['default']
     Listing: typeof import('./src/components/Listing.vue')['default']
   }
 }
