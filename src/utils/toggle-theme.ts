@@ -1,6 +1,5 @@
 (() => {
   function setup() {
-    console.log('setup');
     const name = 'color-scheme';
     const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
     let theme = localStorage.getItem(name) || 'auto';
