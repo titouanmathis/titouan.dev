@@ -7,8 +7,7 @@
     "build": "iles build",
     "preview": "iles preview --open --port 5050",
     "test": "iles test",
-    "typecheck": "vue-tsc --noEmit",
-    "postinstall": "patch-package"
+    "typecheck": "vue-tsc --noEmit"
   },
   "engines": {
     "node": "^14.18 || >= 16.0.0"
@@ -26,7 +25,6 @@
     "autoprefixer": "^10.4.7",
     "eslint": "^8.16.0",
     "iles": "^0.7.38",
-    "patch-package": "^6.4.7",
     "postcss": "^8.4.14",
     "postcss-import": "^14.1.0",
     "prettier": "^2.6.2",
