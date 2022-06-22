@@ -1,10 +1,10 @@
 import { defineApp } from 'iles';
-import { computed } from 'vue';
+import { computed, unref } from 'vue';
 import checkTheme from '~/utils/check-theme?raw';
 import toggleTheme from '~/utils/toggle-theme?raw';
 
 export default defineApp({
-  head({ frontmatter, site }) {
+  head({ frontmatter, site, route, config }) {
     return {
       meta: [
         { property: 'author', content: site.author },
@@ -21,6 +21,10 @@ export default defineApp({
         {
           rel: 'shortcut icon',
           href: '/icon-light.svg',
+        },
+        {
+          rel: 'canonical',
+          href: computed(() => new URL(unref(route).path, config.siteUrl)),
         },
       ],
       script: [

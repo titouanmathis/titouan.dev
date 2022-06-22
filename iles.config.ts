@@ -7,5 +7,5 @@ export default defineConfig({
   modules: [headings(), icons(), prism()],
   prettyUrls: true,
   turbo: true,
-  siteUrl: process?.env?.URL,
+  siteUrl: process?.env?.URL ?? 'http://localhost:3000',
 });
