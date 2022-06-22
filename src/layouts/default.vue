@@ -10,7 +10,7 @@
   const socialLinks = [
     {
       url: 'https://github.com/titouanmathis',
-      label: 'Github',
+      label: 'GitHub',
     },
     {
       url: 'https://twitter.com/titouanmathis',
