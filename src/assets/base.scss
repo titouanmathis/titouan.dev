@@ -70,7 +70,7 @@ a:not([class]) {
     box-shadow: 0 2px 0 rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), 1);
 
     &[target='_blank']::after {
-      transform: rotate(-45deg) translate(2px, -2px);
+      transform: translate3d(2px, -2px, 0) rotate(-45deg);
     }
   }
 }
