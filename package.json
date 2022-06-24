@@ -20,6 +20,7 @@
     "@islands/icons": "^0.1.1",
     "@islands/prism": "^0.1.1",
     "@studiometa/eslint-config": "^3.0.1",
+    "@studiometa/js-toolkit": "^2.2.3",
     "@studiometa/prettier-config": "^2.1.1",
     "@studiometa/stylelint-config": "^2.0.0",
     "@tailwindcss/typography": "^0.5.2",

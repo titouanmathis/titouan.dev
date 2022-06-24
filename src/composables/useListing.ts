@@ -19,15 +19,6 @@ export const documents = {
     title: 'Experiments',
     noItemsLabel: 'No experiments.',
   },
-  links: {
-    items: useDocuments('~/pages/links'),
-    get total() {
-      return unref(this.items).length;
-    },
-    url: '/links/',
-    title: 'Links',
-    noItemsLabel: 'No links.',
-  },
   notes: {
     items: useDocuments('~/pages/notes'),
     get total() {
@@ -36,7 +27,22 @@ export const documents = {
     url: '/notes/',
     title: 'Notes',
     noItemsLabel: 'No notes.',
-  }
+  },
+  links: {
+    get items() {
+      const items = useDocuments('~/pages/links')
+      return computed(() => unref(items).map((item) => ({
+        title: item.title,
+        href: item.link,
+      })));
+    },
+    get total() {
+      return unref(this.items).length;
+    },
+    url: '/links/',
+    title: 'Links',
+    noItemsLabel: 'No links.',
+  },
 };
 
 export function useAllDocuments() {

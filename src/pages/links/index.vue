@@ -5,5 +5,5 @@
 </script>
 
 <template>
-  <Listing title="Links" :items="items" no-items-label="No links." />
+  <Listing title="Links" :items="items" no-items-label="No links." tag="h1" />
 </template>

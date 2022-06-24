@@ -48,7 +48,7 @@
         </nav>
       </transition>
     </header>
-    <main class="mb-32 max-w-3xl markdown">
+    <main class="mb-32 max-w-3xl" :class="{ 'markdown': meta.filename.endsWith('.mdx') || meta.filename.endsWith('.md') }">
       <slot />
     </main>
     <transition enter-from-class="opacity-0" leave-to-class="opacity-0">

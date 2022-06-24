@@ -55,9 +55,9 @@ a:not([class]) {
 
   &[target='_blank'] {
     &::after {
-      content: '→';
+      content: ' →';
       display: inline-block;
-      margin-left: 0.125em;
+      margin-left: 0.25em;
       font-size: 0.75em;
       font-weight: bold;
       background-size: contain;
