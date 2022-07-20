@@ -5,14 +5,13 @@
     let theme = localStorage.getItem(name) || 'auto';
 
     function setTheme(newTheme) {
-      const link = document.querySelector('link[rel="shortcut icon"]');
-
       theme = newTheme;
       localStorage.setItem(name, newTheme);
       document.documentElement.classList.toggle('dark', newTheme === 'dark');
-      if (link) {
-        link.href = `/icon-${newTheme}.svg`;
-      }
+
+      document.querySelectorAll('link[data-theme-switch]').forEach((link) => {
+        link.href = link.dataset[newTheme];
+      });
     }
 
     function toggleTheme() {
