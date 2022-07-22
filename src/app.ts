@@ -22,11 +22,11 @@ export default defineApp({
         },
         {
           name: 'twitter:image',
-          content: computed(() => new URL('/icon.svg', config.siteUrl))
+          content: computed(() => new URL('/android-chrome-512x512.png', config.siteUrl))
         },
         {
           name: 'og:image',
-          content: computed(() => new URL('/icon.svg', config.siteUrl))
+          content: computed(() => new URL('/android-chrome-512x512.png', config.siteUrl))
         },
       ],
       link: [
