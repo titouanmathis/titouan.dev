@@ -16,6 +16,18 @@ export default defineApp({
           name: 'twitter:creator',
           content: '@titouanmathis',
         },
+        {
+          name: 'twitter:card',
+          content: 'summary',
+        },
+        {
+          name: 'twitter:image',
+          content: computed(() => new URL('/icon.svg', config.siteUrl))
+        },
+        {
+          name: 'og:image',
+          content: computed(() => new URL('/icon.svg', config.siteUrl))
+        },
       ],
       link: [
         {
