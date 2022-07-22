@@ -13,7 +13,7 @@ export default defineApp({
           content: computed(() => frontmatter.description ?? site.description),
         },
         {
-          name: 'twitter:creator',
+          name: 'twitter:site',
           content: '@titouanmathis',
         },
         {
