@@ -1,0 +1,44 @@
+---
+title: Redirecting with the `Location` header
+---
+
+# Redirecting with the `Location` header
+
+<div class="tracking-wide uppercase opacity-50">
+  <small>22/07/2022 in #http #TIL #Nuxt</small>
+</div>
+
+I was stuck with a redirection not happening in a Nuxt middleware on a recent project:
+
+```js
+export default defineNuxtRouteMiddleware((from, to) => {
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn()) {
+    return navigateTo('/login', {
+      redirectCode: 401,
+    });
+  }
+});
+```
+
+When trying to access a page without being logged in, instead of being redirected, the browser was displaying a message "Redirecting to /login". It turns out that using the `401` (unauthorized)status code was blocking the redirection specified in the response `Location` header. [The documentation on MDN](https://developer.mozilla.org/en-US/docs/web/http/headers/location) is quite clear on the subject:
+
+> The `Location` response header indicates the URL to redirect a page to. It only provides a meaning when served with a `3xx` (redirection) or `201` (created) status response.
+
+Changing the `redirectCode` value from `401` to `302` (found) fixed the issue:
+
+```diff
+  export default defineNuxtRouteMiddleware((from, to) => {
+    const { isLoggedIn } = useAuth();
+
+    if (!isLoggedIn()) {
+      return navigateTo('/login', {
+-       redirectCode: 401,
++       redirectCode: 302,
+      });
+    }
+  });
+```
+
+Although, I am not sure if this is the correct status code for an authentication middleware.
