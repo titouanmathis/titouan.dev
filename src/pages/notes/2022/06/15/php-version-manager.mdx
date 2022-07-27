@@ -73,6 +73,7 @@ Here is the script:
 function pvm() {
     zparseopts -D -E -a opts -verbose::=verbose v::=version -version::=version
     VERSION='0.0.2'
+    brew_prefix=$(brew --prefix)
 
     function log() {
         if [[ $verbose ]]; then
@@ -81,11 +82,11 @@ function pvm() {
     }
 
     function get_php_bin_path() {
-        ls -d /usr/local/Cellar/php*/$1*/bin
+        ls -d $brew_prefix/Cellar/php*/$1*/bin
     }
 
     function get_php_versions() {
-        ls -d /usr/local/Cellar/php*/* | grep -E -o '/[0-9]+.[0-9]+' | sed -E 's#/##'
+        ls -d $brew_prefix/Cellar/php*/* | grep -E -o '/[0-9]+.[0-9]+' | sed -E 's#/##'
     }
 
     function set_php_version() {
