@@ -63,11 +63,11 @@ export type DocumentNames = keyof Documents;
 export const documentNames:Array<DocumentNames> = Object.keys(documents) as DocumentNames[];
 
 function byPath(a, b) {
-  if (a.href < b.href) {
+  if (a.filename < b.filename) {
     return -1;
   }
 
-  if (a.href > b.href) {
+  if (a.filename > b.filename) {
     return 1;
   }
 
