@@ -17,7 +17,7 @@
       label: 'Twitter',
     },
     {
-      url: 'https://www.linkedin.com/in/titouan-mathis-8663a1a6/',
+      url: 'https://www.linkedin.com/in/titouanmathis/',
       label: 'Linkedin',
     },
   ];
