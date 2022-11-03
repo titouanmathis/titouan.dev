@@ -10,15 +10,6 @@ export const documents = {
     title: 'Articles',
     noItemsLabel: 'No articles.',
   },
-  experiments: {
-    items: useDocuments('~/pages/experiments'),
-    get total() {
-      return unref(this.items).length;
-    },
-    url: '/experiments/',
-    title: 'Experiments',
-    noItemsLabel: 'No experiments.',
-  },
   notes: {
     items: useDocuments('~/pages/notes'),
     get total() {
@@ -27,6 +18,15 @@ export const documents = {
     url: '/notes/',
     title: 'Notes',
     noItemsLabel: 'No notes.',
+  },
+  experiments: {
+    items: useDocuments('~/pages/experiments'),
+    get total() {
+      return unref(this.items).length;
+    },
+    url: '/experiments/',
+    title: 'Experiments',
+    noItemsLabel: 'No experiments.',
   },
   links: {
     get items() {

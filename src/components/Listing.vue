@@ -30,6 +30,14 @@
     const parsed = new URL(url, getOrigin());
     return parsed.origin !== getOrigin();
   }
+
+  function formatDate(date: Date) {
+    return [
+      date.getDate().toString().padStart(2, '0'),
+      (date.getMonth() + 1).toString().padStart(2, '0'),
+      date.getFullYear(),
+    ].join('/');
+  }
 </script>
 
 <template>
@@ -45,6 +53,9 @@
           >
             {{ item.title }}
           </a>
+          <MetaInfo v-if="item.lastUpdated" class="ml-3">
+            {{ formatDate(item.lastUpdated) }}
+          </MetaInfo>
         </li>
       </ul>
       <p v-if="allItemsUrl">
