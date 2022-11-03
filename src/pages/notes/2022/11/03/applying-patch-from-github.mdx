@@ -26,4 +26,4 @@ curl https://github.com/org/project/pull/1.patch | git am --signoff --keep
 curl https://github.com/org/project/commit/e765432.patch | git am --signoff --keep
 ```
 
-The `--signoff` flag will add a line about the original author of the commit wuile the `--keep` one will avoid striping content in brackets from the commit message.
+The `--signoff` flag will add a line about the original author of the commit while `--keep` will avoid striping content in brackets from the commit message (see [this Stackoverflow answer](https://stackoverflow.com/a/66593199/14997312) for more details).
