@@ -1,0 +1,29 @@
+---
+title: Applying a patch from GitHub
+---
+
+# Applying a patch from GitHub
+
+<div class="tracking-wide uppercase opacity-50"><small>03/11/2022 in #terminal #git</small></div>
+
+I was looking for a way to apply patches to a Git repository without having to download a `.patch` file. It turns out it can easily be done with `curl`:
+
+```sh
+# Apply changes from a PR to your repository
+curl https://github.com/org/project/pull/1.patch | git apply -v
+
+# Apply changes from a commit to your repository
+curl https://github.com/org/project/commit/e765432.patch | git apply -v
+```
+
+Even better in some use cases, you can directly apply changes and commit them directly with `git am`:
+
+```sh
+# Cherry-pick commits from a PR to your local repository
+curl https://github.com/org/project/pull/1.patch | git am --signoff --keep
+
+# Cherry-pick a commit to your repository
+curl https://github.com/org/project/commit/e765432.patch | git am --signoff --keep
+```
+
+The `--signoff` flag will add a line about the original author of the commit wuile the `--keep` one will avoid striping content in brackets from the commit message.
