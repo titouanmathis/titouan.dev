@@ -75,11 +75,11 @@
 </template>
 
 <style lang="scss">
-  // @import 'tailwindcss/base';
-  // @import '~/assets/base.scss';
-  // @import '~/assets/markdown.scss';
-  // @import '~/assets/syntax-highlight.scss';
+  @import 'tailwindcss/base';
+  @import '~/assets/base.scss';
+  @import '~/assets/markdown.scss';
+  @import '~/assets/syntax-highlight.scss';
 
-  // @import 'tailwindcss/components';
-  // @import 'tailwindcss/utilities';
+  @import 'tailwindcss/components';
+  @import 'tailwindcss/utilities';
 </style>
