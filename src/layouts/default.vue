@@ -4,6 +4,7 @@
 
   const documents = useAllDocuments();
   const { meta } = usePage();
+  const isHome = computed(() => meta.href === '/');
   const isExperiment = computed(() => meta.href.startsWith('/experiments/'));
 
   const year = new Date().getUTCFullYear();
@@ -28,11 +29,11 @@
   <div class="flex flex-col min-h-screen p-10">
     <header class="mb-20 space-y-10">
       <div>
-        <h1 class="font-bold">
+        <component :is="isHome ? 'h1' : 'p'" class="font-bold">
           <a href="/">Titouan Mathis</a>
-        </h1>
+        </component>
         <p>
-          Lead developer at
+          CTO at
           <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener noreferrer">
             Studio Meta
           </a>
@@ -48,36 +49,37 @@
         </nav>
       </transition>
     </header>
-    <main class="mb-32 max-w-3xl" :class="{ 'markdown': meta.filename.endsWith('.mdx') || meta.filename.endsWith('.md') }">
+    <main
+      class="mb-32 max-w-3xl"
+      :class="{ markdown: meta.filename.endsWith('.mdx') || meta.filename.endsWith('.md') }">
       <slot />
     </main>
     <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
       <footer v-show="!isExperiment" class="mt-auto text-sm transition">
-        <p class="space-x-4 md:space-x-10">
+        <div class="space-x-4 md:space-x-10">
           <span class="inline-block">
             © {{ year }}
             <a href="/">T. Mathis</a>
           </span>
-          <a
-            v-for="{ label, url } in socialLinks"
-            :key="url"
-            :href="url"
-            rel="noopener noreferrer"
-            target="_blank">
-            {{ label }}
-          </a>
-        </p>
+          <ul>
+            <li v-for="{ label, url } in socialLinks" :key="url">
+              <a :href="url" rel="noopener noreferrer" target="_blank">
+                {{ label }}
+              </a>
+            </li>
+          </ul>
+        </div>
       </footer>
     </transition>
   </div>
 </template>
 
 <style lang="scss">
-  @import 'tailwindcss/base';
-  @import '~/assets/base.scss';
-  @import '~/assets/markdown.scss';
-  @import '~/assets/syntax-highlight.scss';
+  // @import 'tailwindcss/base';
+  // @import '~/assets/base.scss';
+  // @import '~/assets/markdown.scss';
+  // @import '~/assets/syntax-highlight.scss';
 
-  @import 'tailwindcss/components';
-  @import 'tailwindcss/utilities';
+  // @import 'tailwindcss/components';
+  // @import 'tailwindcss/utilities';
 </style>
