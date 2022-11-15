@@ -1,6 +1,9 @@
+const defaultTitle = 'Titouan Mathis · Developer & CTO at Studio Meta';
+
 export default {
-  title: 'Titouan Mathis — Developer and CTO at Studio Meta',
+  makeTitle: (title) => `${title} · ${defaultTitle}`,
+  title: defaultTitle,
   author: 'Titouan Mathis',
   description:
-    'Notes and experiments by Titouan Mathis, developer and CTO at Studio Meta between Paris and Strasbourg, France.',
+    'Notes and experiments by Titouan Mathis, developer & CTO at Studio Meta between Paris and Strasbourg, France.',
 };

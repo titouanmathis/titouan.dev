@@ -2,6 +2,7 @@
   <button id="toggle-theme" class="btn-theme w-5 h-5" type="button" aria-label="Toggle theme">
     <IconBxBxMoon class="btn-theme__icon btn-theme__icon--dark" />
     <IconBxBxSun class="btn-theme__icon btn-theme__icon--light" />
+    <span class="sr-only">Switch between dark or light theme</span>
   </button>
 </template>
 

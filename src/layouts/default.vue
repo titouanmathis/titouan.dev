@@ -33,7 +33,7 @@
           <a href="/">Titouan Mathis</a>
         </component>
         <p>
-          CTO at
+          Developer & CTO at
           <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener noreferrer">
             Studio Meta
           </a>
@@ -61,8 +61,8 @@
             © {{ year }}
             <a href="/">T. Mathis</a>
           </span>
-          <ul>
-            <li v-for="{ label, url } in socialLinks" :key="url">
+          <ul class="inline-flex gap-4 md:gap-10">
+            <li v-for="{ label, url } in socialLinks" :key="url" class="inline">
               <a :href="url" rel="noopener noreferrer" target="_blank">
                 {{ label }}
               </a>

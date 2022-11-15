@@ -18,6 +18,7 @@ export const documents = {
     url: '/notes/',
     title: 'Notes',
     noItemsLabel: 'No notes.',
+    allItemsLabel: 'All notes',
   },
   experiments: {
     items: useDocuments('~/pages/experiments'),

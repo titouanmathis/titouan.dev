@@ -2,6 +2,11 @@
   import { useListing } from '~/composables/useListing';
 
   const { items } = useListing('notes');
+  const { site } = usePage();
+
+  useHead({
+    title: site.makeTitle('Notes'),
+  });
 </script>
 
 <template>
