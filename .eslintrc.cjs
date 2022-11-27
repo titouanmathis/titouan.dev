@@ -3,5 +3,6 @@ module.exports = {
   ignorePatterns: ['src/**/*.md', 'src/**/*.mdx'],
   globals: {
     usePage: false,
+    defineProps: false,
   },
 };
