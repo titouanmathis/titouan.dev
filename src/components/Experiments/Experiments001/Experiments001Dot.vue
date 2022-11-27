@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
   import { usePointer, useWindowSize, useEventListener, useRafFn } from '@vueuse/core';
   import { tween, easeOutExpo, map, matrix, damp } from '@studiometa/js-toolkit/utils';
   import { degToRad } from '~/utils/math.js';
@@ -46,16 +46,18 @@
     };
   });
 
-  useEventListener(
-    document,
-    'mousemove',
-    () => {
-      useRafFn(() => {
-        size.value = damp(pointerY.value / height.value, size.value, 0.1, 0.001);
-      });
-    },
-    { once: true }
-  );
+  onMounted(() => {
+    useEventListener(
+      document,
+      'mousemove',
+      () => {
+        useRafFn(() => {
+          size.value = damp(pointerY.value / height.value, size.value, 0.1, 0.001);
+        });
+      },
+      { once: true }
+    );
+  });
 
   /**
    * Enter.

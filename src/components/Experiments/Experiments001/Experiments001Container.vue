@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import { ref, computed } from 'vue';
   import { useRafFn, usePointer, useWindowSize } from '@vueuse/core';
+  import { damp, map, easeInOutExpo } from '@studiometa/js-toolkit/utils';
   import { useRadius } from './composables.js';
-  import { damp, map, easeInOutExpo } from '~/utils/math.js';
 
   const props = defineProps({
     index: {

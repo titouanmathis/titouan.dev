@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref, unref, onUnmounted } from 'vue';
+  import { computed, ref, unref, onMounted } from 'vue';
   import { usePointer, useMousePressed, useWindowSize, useRafFn, useEventListener } from '@vueuse/core';
   import { tween, matrix, damp, map, easeOutExpo, easeInOutExpo } from '@studiometa/js-toolkit/utils';
 
@@ -51,15 +51,17 @@
     };
   });
 
-  useEventListener(document, 'mousemove', () => {
-    useRafFn(() => {
-      const targetDiffX = (pointerX.value - x.value) * ((props.index + 5) / 5 - 0.05);
-      x.value = damp(x.value + targetDiffX, x.value, 0.1, 0.01);
-      const targetDiffY = (pointerY.value - y.value) * ((props.index + 5) / 5 - 0.05);
-      y.value = damp(y.value + targetDiffY, y.value, 0.1, 0.01);
-      scale.value = damp(pressed.value ? props.index / props.total : 1, scale.value, 0.1, 0.01);
-    });
-  }, { once: true })
+  onMounted(() => {
+    useEventListener(document, 'mousemove', () => {
+      useRafFn(() => {
+        const targetDiffX = (pointerX.value - x.value) * ((props.index + 5) / 5 - 0.05);
+        x.value = damp(x.value + targetDiffX, x.value, 0.1, 0.01);
+        const targetDiffY = (pointerY.value - y.value) * ((props.index + 5) / 5 - 0.05);
+        y.value = damp(y.value + targetDiffY, y.value, 0.1, 0.01);
+        scale.value = damp(pressed.value ? props.index / props.total : 1, scale.value, 0.1, 0.01);
+      });
+    }, { once: true });
+  });
 
   function enter() {
     return new Promise((resolve) => {
