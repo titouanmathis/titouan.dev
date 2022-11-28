@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { ref, unref, computed } from 'vue';
-  import { useRafFn, usePointer, useWindowSize } from '@vueuse/core';
+  import { ref, unref, computed, watch } from 'vue';
+  import { useRafFn, usePointer, useWindowSize, useThrottledRefHistory } from '@vueuse/core';
   import { map, damp } from '@studiometa/js-toolkit/utils';
   import { degToRad } from '~/utils/math.js';
 
@@ -12,20 +12,29 @@
     size: { type: Number, required: true },
   });
 
-  const { x: pointerX } = usePointer();
-  const { width } = useWindowSize();
+  const { x: pointerX, y: pointerY } = usePointer();
+  const delayedPointerX = ref(pointerX.value);
+  const { width, height } = useWindowSize();
 
-  const progress = ref(0.5);
+  watch(pointerX, (newValue) => {
+    setTimeout(() => {
+      delayedPointerX.value = newValue;
+    }, (props.index / props.total) * 1000);
+  });
+
+  const progressX = ref(0.5);
+  const progressY = ref(0.5);
   const angle = computed(() =>
     degToRad((360 / (props.total - props.delta - 1)) * (props.index - props.delta / 2))
   );
   const x = computed(() => (props.size / 2) * Math.cos(unref(angle)));
   const y = computed(() => (props.size / 2) * Math.sin(unref(angle)));
-  const scale = computed(() => map(progress.value, 0, 1, 0.5, 1.5));
+  const z = computed(() => props.index * progressY.value * -0.5)
+  const scale = computed(() => map(progressX.value, 0, 1, 0.75, 1.75));
 
   const styles = computed(() => ({
     zIndex: props.total - props.index,
-    transform: `translate3d(${x.value}px, ${y.value}px, ${props.index * -0.1}px) scaleX(${scale.value}) scaleY(${scale.value})`,
+    transform: `translate3d(${x.value}px, ${y.value}px, ${z.value}px) scaleX(${scale.value}) scaleY(${scale.value})`,
   }));
 
   const innerStyles = computed(() => ({
@@ -34,8 +43,8 @@
   }));
 
   useRafFn(() => {
-    // @todo delay given index
-    progress.value = damp(pointerX.value / width.value, progress.value, 0.1, 0.01);
+    progressX.value = damp(delayedPointerX.value / width.value, progressX.value, 0.1, 0.01);
+    progressY.value = damp(pointerY.value / height.value, progressY.value, 0.1, 0.01);
   });
 </script>
 
@@ -53,5 +62,8 @@
     margin-top: calc(var(--size) * -1);
     margin-left: calc(var(--size) * -0.5);
     animation: rotation 5s linear infinite;
+    transition-timing-function: var(--ease-out-expo);
+    transition-duration: 0.6s;
+    transition-property: border-color, background-color;
   }
 </style>

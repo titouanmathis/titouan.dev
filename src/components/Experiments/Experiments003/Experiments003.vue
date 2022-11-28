@@ -1,6 +1,6 @@
 <script setup>
   import { computed, ref, unref } from 'vue';
-  import { usePointer, useMousePressed, useWindowSize, useRafFn } from '@vueuse/core';
+  import { useWindowSize } from '@vueuse/core';
 
   const total = ref(120);
   const delta = computed(() => unref(total) / 2);
@@ -14,28 +14,6 @@
     width: `${size.value}px`,
     height: `${size.value}px`,
   }));
-
-  // const { x: pointerX, y: pointerY } = usePointer({
-  //   initialValue: {
-  //     x: unref(width) / 2,
-  //     y: unref(height) / 2,
-  //     width: unref(width),
-  //     height: unref(height),
-  //   },
-  // });
-
-  // function loop() {
-  //   if (isDestroyed) {
-  //     return;
-  //   }
-  //   targetProgress.value = pointerX / width;
-  //   progress.value += (targetProgress.value - progress.value) * 0.05;
-  //   if (progress.value < 0.01) {
-  //     progress.value = 0;
-  //   }
-
-  //   requestAnimationFrame(loop);
-  // }
 </script>
 
 <template>
