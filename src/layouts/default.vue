@@ -18,6 +18,11 @@
       label: 'Twitter',
     },
     {
+      url: 'https://mast.eu.org/@titouanmathis',
+      label: 'Mastodon',
+      attr: { rel: 'me' },
+    },
+    {
       url: 'https://www.linkedin.com/in/titouanmathis/',
       label: 'Linkedin',
     },
@@ -56,19 +61,21 @@
     </main>
     <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
       <footer v-show="!isExperiment" class="mt-auto text-sm transition">
-        <div class="space-x-4 md:space-x-10">
-          <span class="inline-block">
-            © {{ year }}
-            <a href="/">T. Mathis</a>
-          </span>
-          <ul class="inline-flex gap-4 md:gap-10">
-            <li v-for="{ label, url } in socialLinks" :key="url" class="inline">
-              <a :href="url" rel="noopener noreferrer" target="_blank">
-                {{ label }}
-              </a>
-            </li>
-          </ul>
-        </div>
+        <span class="block sm:inline-block mr-4 md:mr-10">
+          © {{ year }}
+          <a href="/">T. Mathis</a>
+        </span>
+        <ul class="inline-flex gap-4 md:gap-10">
+          <li v-for="{ label, url, attr } in socialLinks" :key="url" class="inline">
+            <a
+              :href="url"
+              rel="noopener noreferrer"
+              target="_blank"
+              v-bind="attr ?? {}">
+              {{ label }}
+            </a>
+          </li>
+        </ul>
       </footer>
     </transition>
   </div>
