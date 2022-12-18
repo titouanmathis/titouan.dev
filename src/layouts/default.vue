@@ -20,7 +20,7 @@
     {
       url: 'https://mast.eu.org/@titouanmathis',
       label: 'Mastodon',
-      attr: { rel: 'me' },
+      attr: { rel: 'noopener noreferrer me' },
     },
     {
       url: 'https://www.linkedin.com/in/titouanmathis/',
