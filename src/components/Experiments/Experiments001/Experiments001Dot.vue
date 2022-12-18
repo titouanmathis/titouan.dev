@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, computed, onMounted } from 'vue';
+  import { ref, computed, onMounted, watch } from 'vue';
   import { usePointer, useWindowSize, useEventListener, useRafFn } from '@vueuse/core';
   import { tween, easeOutExpo, map, matrix, damp } from '@studiometa/js-toolkit/utils';
   import { degToRad } from '~/utils/math.js';
@@ -11,7 +11,15 @@
     containerSize: { type: Number, required: true },
     containerIndex: { type: Number, required: true },
     containerTotal: { type: Number, required: true },
+    active: Boolean,
   });
+
+  const targetProgress = ref(0);
+  watch(() => props.active, (newValue) => {
+    setTimeout(() => {
+      targetProgress.value = newValue ? 1 : 0;
+    }, props.index * 50)
+  })
 
   const size = ref(1);
   const progress = ref(0);
@@ -53,37 +61,68 @@
       () => {
         useRafFn(() => {
           size.value = damp(pointerY.value / height.value, size.value, 0.1, 0.001);
+          progress.value = damp(targetProgress.value, progress.value, 0.1, 0.001);
         });
       },
       { once: true }
     );
   });
 
-  /**
-   * Enter.
-   */
-  function enter(): Promise<void> {
-    return new Promise((resolve) => {
-      const t = tween(
-        (p) => {
-          progress.value = p;
-        },
-        {
-          onFinish: () => resolve(),
-          easing: easeOutExpo,
-          duration: 1 + props.index / props.total,
-        }
-      );
-      setTimeout(() => t.start(), props.containerIndex * 50);
-    });
-  }
+  // let t;
+
+  // /**
+  //  * Enter.
+  //  */
+  // function enter(el, done) {
+  //   if (t && t.pause) {
+  //     t.pause();
+  //   }
+  //   t = tween(
+  //     (p) => {
+  //       progress.value = p;
+  //     },
+  //     {
+  //       onFinish: () => done(),
+  //       easing: easeOutExpo,
+  //       duration: 1 + props.index / props.total,
+  //     }
+  //   );
+  //   setTimeout(() => t.start(), props.containerIndex * 50);
+  // }
+
+  // /**
+  //  * Leave.
+  //  * @param {HTMLElement} el
+  //  * @param {() => void} done
+  //  */
+  // function leave(el, done) {
+  //   console.log('leave');
+  //   if (t && t.pause) {
+  //     t.pause();
+  //   }
+  //   t = tween(
+  //     (p) => {
+  //       console.log({ p: 1 - p });
+  //       progress.value = 1 - p;
+  //     },
+  //     {
+  //       onFinish: () => {
+  //         done();
+  //         console.log('leave done')
+  //       },
+  //       easing: easeOutExpo,
+  //       // duration: 1 + props.index / props.total,
+  //     }
+  //   );
+  //   setTimeout(() => t.start(), props.containerIndex * 50);
+  // }
 </script>
 
 <template>
-  <transition appear @enter="enter" @leave="leave">
+  <!-- <transition appear @enter="enter" @leave="leave"> -->
     <div
       :style="styles"
       class="absolute top-1/2 left-1/2 rounded-full bg-primary border border-secondary"
     />
-  </transition>
+  <!-- </transition> -->
 </template>

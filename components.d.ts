@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     ButtonToggleTheme: typeof import('./src/components/ButtonToggleTheme.vue')['default']
     Composables: typeof import('./src/components/Experiments/Experiments001/composables.ts')['default']
+    Experiments: typeof import('./src/components/Experiments/Experiments.vue')['default']
     Experiments001: typeof import('./src/components/Experiments/Experiments001/Experiments001.vue')['default']
     Experiments001Container: typeof import('./src/components/Experiments/Experiments001/Experiments001Container.vue')['default']
     Experiments001Dot: typeof import('./src/components/Experiments/Experiments001/Experiments001Dot.vue')['default']

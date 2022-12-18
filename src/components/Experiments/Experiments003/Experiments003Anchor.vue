@@ -20,7 +20,7 @@
 
   watch(pointerX, (newValue, oldValue) => {
     const delay = newValue > oldValue ? 1 - (props.index / props.total) : props.index / props.total;
-    clearTimeout(timer);
+    // clearTimeout(timer);
     timer = setTimeout(() => {
       delayedPointerX.value = newValue;
     }, delay * 1200);

@@ -6,6 +6,7 @@
   const props = defineProps({
     index: { type: Number, required: true },
     total: { type: Number, required: true },
+    active: Boolean,
   });
 
   const { width, height } = useWindowSize();
@@ -78,7 +79,7 @@
 
 <template>
   <transition appear @enter="enter">
-    <div class="absolute top-0 left-0" :style="styles">
+    <div v-if="active" class="absolute top-0 left-0" :style="styles">
       <div
         :style="{ borderWidth: borderWidth + 'px' }"
         class="absolute top-1/2 left-1/2 w-full h-full rounded-full border-2 border-primary transform -translate-x-1/2 -translate-y-1/2 transition ease-out-expo"

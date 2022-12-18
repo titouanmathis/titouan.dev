@@ -2,6 +2,10 @@
   import { computed, ref, unref } from 'vue';
   import { useWindowSize } from '@vueuse/core';
 
+  defineProps({
+    active: Boolean,
+  });
+
   const total = ref(120);
   const delta = computed(() => unref(total) / 2);
   const duration = computed(() => unref(total) / 30);
@@ -17,7 +21,7 @@
 </script>
 
 <template>
-  <div class="xp3 fixed inset-0 pointer-events-none">
+  <div v-if="active" class="xp3 fixed inset-0 pointer-events-none">
     <div class="xp3__inner absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" :style="innerStyles">
       <Experiments003Anchor
         v-for="index in total"

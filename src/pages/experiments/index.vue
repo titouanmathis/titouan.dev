@@ -11,4 +11,5 @@
 
 <template>
   <Listing title="Experiments" :items="items" no-items-label="No experiments." tag="h1" />
+  <Experiments />
 </template>

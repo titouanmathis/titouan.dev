@@ -21,7 +21,15 @@ export const documents = {
     allItemsLabel: 'All notes',
   },
   experiments: {
-    items: useDocuments('~/pages/experiments'),
+    get items() {
+      const items = useDocuments('~/pages/experiments');
+      return computed(() =>
+        unref(items).map((item) => ({
+          ...item,
+          href: `/experiments/#id=${item.title.replace('#', '')}`,
+        }))
+      );
+    },
     get total() {
       return unref(this.items).length;
     },
@@ -31,11 +39,13 @@ export const documents = {
   },
   links: {
     get items() {
-      const items = useDocuments('~/pages/links')
-      return computed(() => unref(items).map((item) => ({
-        title: item.title,
-        href: item.link,
-      })));
+      const items = useDocuments('~/pages/links');
+      return computed(() =>
+        unref(items).map((item) => ({
+          title: item.title,
+          href: item.link,
+        }))
+      );
     },
     get total() {
       return unref(this.items).length;
@@ -61,7 +71,7 @@ export type DocumentValues = ValueOf<Documents>;
 export type Documents = typeof documents;
 export type DocumentNames = keyof Documents;
 
-export const documentNames:Array<DocumentNames> = Object.keys(documents) as DocumentNames[];
+export const documentNames: Array<DocumentNames> = Object.keys(documents) as DocumentNames[];
 
 function byPath(a, b) {
   if (a.filename < b.filename) {
