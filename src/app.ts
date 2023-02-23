@@ -22,11 +22,11 @@ export default defineApp({
         },
         {
           name: 'twitter:image',
-          content: computed(() => new URL('/android-chrome-512x512.png', config.siteUrl))
+          content: computed(() => new URL('/android-chrome-512x512.png', config.siteUrl)),
         },
         {
           name: 'og:image',
-          content: computed(() => new URL('/android-chrome-512x512.png', config.siteUrl))
+          content: computed(() => new URL('/android-chrome-512x512.png', config.siteUrl)),
         },
       ],
       link: [
@@ -68,6 +68,11 @@ export default defineApp({
       script: [
         { children: checkTheme, once: false },
         { children: toggleTheme, defer: true, once: true },
+        {
+          defer: true,
+          dataDomain: 'titouan.dev',
+          src: 'https://plausible.studiometa.dev/js/script.js',
+        },
       ],
     };
   },
