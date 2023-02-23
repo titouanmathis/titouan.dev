@@ -71,7 +71,7 @@ export default defineApp({
         {
           defer: true,
           dataDomain: 'titouan.dev',
-          src: 'https://plausible.studiometa.dev/js/script.js',
+          src: 'https://p.analytic.sh/js/script.js',
         },
       ],
     };
