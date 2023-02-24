@@ -56,9 +56,9 @@
     </header>
     <div v-if="isHome" class="max-w-4xl">
       <h2 class="text-2xl font-bold mb-20">
-        Hi 👋, I am a developer and CTO at <a href="https://www.studiometa.fr" target="_blank" rel="noopener noreferrer">Studio Meta</a> in Strasbourg, France.<br> <br>
-        I created <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener noreferrer">@studiometa/js-toolkit</a> to standardize how we write JavaScript components as a team,
-        and <a href="https://ui.studiometa.dev" target="_blank" rel="noopener noreferrer">@studiometa/ui</a>, its accompanying UI components library powered by <a href="https://twig.symfony.com/" target="_blank" rel="noopener noreferrer">Twig</a>
+        Hi 👋, I am a developer and CTO at <a href="https://www.studiometa.fr" target="_blank" rel="noopener">Studio Meta</a> in Strasbourg, France.<br> <br>
+        I created <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener">@studiometa/js-toolkit</a> to standardize how we write JavaScript components as a team,
+        and <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a>, its accompanying UI components library powered by <a href="https://twig.symfony.com/" target="_blank" rel="noopener noreferrer">Twig</a>
         and <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">Tailwind CSS</a>.
       </h2>
     </div>

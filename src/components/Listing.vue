@@ -49,7 +49,7 @@
           <a
             :href="item.href"
             :target="isExternal(item.href) ? '_blank' : undefined"
-            :rel="isExternal(item.href) ? 'noopener noreferer' : undefined"
+            :rel="isExternal(item.href) ? 'noopener' : undefined"
           >
             {{ item.title }}
           </a>
