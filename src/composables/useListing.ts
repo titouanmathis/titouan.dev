@@ -34,8 +34,9 @@ export const documents = {
       const items = useDocuments('~/pages/links')
       return computed(() => unref(items).map((item) => ({
         title: item.title,
+        description: item?.description,
         href: item.link,
-      })));
+      })).reverse());
     },
     get total() {
       return unref(this.items).length;
