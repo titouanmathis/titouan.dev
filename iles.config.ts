@@ -16,7 +16,7 @@ function addTrailingSlash(path:string):string {
 }
 
 export default defineConfig({
-  modules: [headings(), icons(), prism()],
+  modules: [headings(), icons(), prism(), '@islands/feed'],
   prettyUrls: true,
   turbo: true,
   siteUrl: process?.env?.URL ?? 'http://localhost:3000',

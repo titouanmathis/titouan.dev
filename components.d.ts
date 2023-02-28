@@ -21,6 +21,7 @@ declare module '@vue/runtime-core' {
     Island: typeof import('./node_modules/iles/dist/client/app/components/Island.vue')['default']
     Listing: typeof import('./src/components/Listing.vue')['default']
     MetaInfo: typeof import('./src/components/MetaInfo.vue')['default']
+    RenderFeed: typeof import('./node_modules/@islands/feed/dist/render-feed')['RenderFeed']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

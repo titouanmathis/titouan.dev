@@ -22,11 +22,15 @@ export default defineApp({
         },
         {
           name: 'twitter:image',
-          content: computed(() => new URL('/android-chrome-512x512.png', config.siteUrl)),
+          content: computed(() =>
+            new URL('/android-chrome-512x512.png', config.siteUrl).toString()
+          ),
         },
         {
           name: 'og:image',
-          content: computed(() => new URL('/android-chrome-512x512.png', config.siteUrl)),
+          content: computed(() =>
+            new URL('/android-chrome-512x512.png', config.siteUrl).toString()
+          ),
         },
       ],
       link: [
@@ -61,8 +65,14 @@ export default defineApp({
           'data-theme-switch': '',
         },
         {
+          rel: 'alternate',
+          type: 'application/atom+xml',
+          title: 'Atom feed',
+          href: computed(() => new URL('/feed.atom', config.siteUrl).toString()),
+        },
+        {
           rel: 'canonical',
-          href: computed(() => new URL(unref(route).path, config.siteUrl)),
+          href: computed(() => new URL(unref(route).path, config.siteUrl).toString()),
         },
       ],
       script: [
