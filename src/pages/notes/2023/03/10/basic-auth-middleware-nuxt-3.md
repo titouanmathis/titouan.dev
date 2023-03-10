@@ -1,9 +1,9 @@
 ---
-title: A simple Basic Auth middleware with Nuxt 3
-description: A basic implementation of the Basic Auth authentication with a server middleware for Nuxt 3
+title: A simple Basic Auth middleware for Nuxt 3
+description: A quick implementation of the basic authentication scheme with a server middleware and runtime config for Nuxt 3
 ---
 
-# A simple Basic Auth middleware with Nuxt 3
+# A simple Basic Auth middleware for Nuxt 3
 
 <div class="tracking-wide uppercase opacity-70"><small>10/03/2023 in #Vue #Nuxt</small></div>
 
