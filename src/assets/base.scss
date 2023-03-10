@@ -49,6 +49,11 @@ html {
   line-height: 1.75rem;
 }
 
+hr {
+  border: 0;
+  border-top: 2px solid rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), 0.1);
+}
+
 a:not([class]) {
   box-shadow: 0 2px 0 rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), 0.25);
   transition: box-shadow 0.4s var(--ease-out-expo);
