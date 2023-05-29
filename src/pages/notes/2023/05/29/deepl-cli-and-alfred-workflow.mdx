@@ -1,0 +1,155 @@
+---
+title: An Alfred Workflow for Deepl
+description: A ZSH function to use Deepl from the command line, along with an Alfred Workflow to quickly translate selected text.
+---
+
+# An Alfred Workflow for Deepl
+
+<MetaInfo class="block">29/05/2023 in #terminal #deepl #zsh #alfred</MetaInfo>
+
+I often use Deepl via its macOS application to translate various content, but it some times felt too slow for simple translations. I wanted an Alfred Workflow which could do the same translation a little bit quicker with a dedicated hotkey, so I ended up writing a small ZSH function and a corresponding Alfred Workflow.
+
+## A ZSH function
+
+Here is the ZSH function I ended up writing:
+
+```bash
+#!/usr/bin/env zsh
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+if [[ "${TRACE-0}" == "1" ]]; then
+  set -o xtrace
+fi
+
+if [[ "${1-}" =~ ^-*h(elp)?$ || $# == 0 ]]; then
+  echo '
+deepl@0.0.0
+
+Translate a string with Deepl free API. You will need to define a
+global DEEPL_API_TOKEN with your Deepl API token.
+
+Usage:
+
+    deepl [--from <from>] --to <to> <VALUE>
+    deepl [-f <from>] -t <to> <VALUE>
+
+Example:
+
+    deepl --to fr Hello World
+'
+  exit
+fi
+
+main() {
+  # Parse options with ZSH zparseopts utility
+  zparseopts -E -D -- \
+    -from:=FROM f:=FROM \
+    -to:=TO t:=TO
+
+  # Clean up option names from the values
+  FROM="${FROM/--from =/}"
+  FROM="${FROM/--from /}"
+  FROM="${FROM/-f =/}"
+  FROM="${FROM/-f /}"
+  TO="${TO/--to =/}"
+  TO="${TO/--to /}"
+  TO="${TO/-t =/}"
+  TO="${TO/-t /}"
+
+  # Make sure Deepl API token is defined
+  if [[ ! ${DEEPL_API_TOKEN:-} ]]
+  then
+    echo "Error: DEEPL_API_TOKEN not defined."
+    exit 1
+  fi
+
+  # Make sure `jq` is installed
+  if ! [[ -x "$(which jq)" ]]; then
+    echo "Error: Missing `jq` dependency. Install it with `brew install jq`."
+    exit
+  fi
+
+  # Translate the given string
+  curl -s -X POST "https://api-free.deepl.com/v2/translate" \
+    -H "Authorization: DeepL-Auth-Key $DEEPL_API_TOKEN" \
+    -d "text=$@" \
+    -d "target_lang=${TO:-en}" \
+    -d "source_lang=$FROM" | jq -r ".translations[0].text"
+}
+
+main "$@"
+```
+
+To use it, place it in a file within your `$PATH` and make sure it can be executed:
+
+```bash
+$ pbpaste > /usr/local/bin/deepl
+$ chmod +x /usr/local/bin/deepl
+```
+
+You will then be able to use it from your terminal:
+
+```bash
+$ deepl --to fr 'Hello world!'
+Bonjour à tous !
+$ deepl --to de 'Hello world!'
+Hallo Welt!
+```
+
+The source language is guessed by Deepl, but you can force it with the `--from` parameter. The default target language is English, but you can change it by editing the `target_lang` parameter in the script:
+
+```diff
+-    -d "target_lang=${TO:-en}" \
++    -d "target_lang=${TO:-fr}" \
+```
+
+## An Alfred Workflow for Deepl
+
+For the Alfred Workflow, I used a simple "Script filter" object with the following script:
+
+```bash
+# My DEEPL_API_TOKEN is stored in a `.localrc` file, it could be
+# managed with Alfred own environment variables settings.
+source ~/.localrc
+
+# Print a JSON for Alfred
+function print_json() {
+  local input="$(< /dev/stdin)";
+  printf '
+{
+  "items": [
+    {
+      "title": "%s",
+      "arg": "%s",
+      "subtitle": "Copy with ⌘+C, display with ⏎",
+      "text": {
+        "copy": "%s"
+      },
+      "mods": {
+        "cmd": {
+          "subtitle" : "Copy the result with ⌘+C"
+        }
+      }
+    }
+  ]
+}' "$input" "$input" "$input"
+}
+
+/usr/local/bin/deepl "{query}" | print_json
+```
+
+Make sure to enable the debounce feature to avoid calling the API for each new character typed in Alfred. In the "Script filter" settings, go to "Run behaviour" and in the section "Queue Delay" select the "Automatic delay after last character typed" value.
+
+I added two more objects to my workflow:
+
+- A "Hotkey" object before the "Script filter" to be able to translate any selected text quickly
+- A "Large type" object after the "Script filter", so I can display the translated string in full screen if it does not fit in Alfred's box
+
+<div style="max-width: 633px;">
+
+![-](/2023/05/29/workflow-usage.png)
+
+</div>
