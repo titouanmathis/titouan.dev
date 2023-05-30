@@ -53,8 +53,8 @@
           >
             {{ item.title }}
           </a>
-          <MetaInfo v-if="item.lastUpdated" class="ml-3">
-            {{ formatDate(item.date ?? item.lastUpdated) }}
+          <MetaInfo v-if="item.date" class="ml-3">
+            {{ formatDate(item.date) }}
           </MetaInfo>
         </li>
       </ul>
