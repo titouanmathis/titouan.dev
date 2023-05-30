@@ -83,10 +83,12 @@ main() {
 main "$@"
 ```
 
-To use it, place it in a file within your `$PATH` and make sure it can be executed:
+To use it, place it in a file within your `$PATH` and make sure it can be executed. Copy the script above and then use the following commands:
 
 ```bash
+# Paste the content of the script in a `deepl` file
 $ pbpaste > /usr/local/bin/deepl
+# Allow the file to be executed
 $ chmod +x /usr/local/bin/deepl
 ```
 
@@ -116,7 +118,7 @@ For the Alfred Workflow, I used a simple "Script filter" object with the followi
 source ~/.localrc
 
 # Print a JSON for Alfred
-function print_json() {
+function print_alfred_output() {
   local input="$(< /dev/stdin)";
   printf '
 {
@@ -125,9 +127,6 @@ function print_json() {
       "title": "%s",
       "arg": "%s",
       "subtitle": "Copy with ⌘+C, display with ⏎",
-      "text": {
-        "copy": "%s"
-      },
       "mods": {
         "cmd": {
           "subtitle" : "Copy the result with ⌘+C"
@@ -135,10 +134,10 @@ function print_json() {
       }
     }
   ]
-}' "$input" "$input" "$input"
+}' "$input" "$input"
 }
 
-/usr/local/bin/deepl "{query}" | print_json
+/usr/local/bin/deepl "{query}" | print_alfred_output
 ```
 
 Make sure to enable the debounce feature to avoid calling the API for each new character typed in Alfred. In the "Script filter" settings, go to "Run behaviour" and in the section "Queue Delay" select the "Automatic delay after last character typed" value.
