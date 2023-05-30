@@ -1,3 +1,4 @@
+import { statSync } from 'node:fs';
 import { defineConfig } from 'iles';
 import headings from '@islands/headings';
 import icons from '@islands/icons';
@@ -28,6 +29,16 @@ export default defineConfig({
         ...route,
         path: route.componentFilename.endsWith('/index.vue') ? addTrailingSlash(route.path) : route.path,
       }));
+  },
+  extendFrontmatter (frontmatter, filename) {
+    if (!frontmatter.date) {
+      const result = filename.match(/\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})/);
+
+      if (result) {
+        const [,year,month,day] = result;
+        frontmatter.date = new Date(`${year}-${month}-${day}`);
+      }
+    }
   },
   ssg: {
     beforePageRender(page) {
