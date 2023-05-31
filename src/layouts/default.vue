@@ -3,7 +3,7 @@
   import { useAllDocuments } from '~/composables/useListing';
 
   const documents = useAllDocuments();
-  const { meta } = usePage();
+  const { meta, site } = usePage();
   const isHome = computed(() => meta.href === '/');
   const isExperiment = computed(() => meta.href.startsWith('/experiments/'));
 
@@ -27,6 +27,12 @@
       label: 'Linkedin',
     },
   ];
+
+  if (meta.title) {
+    useHead({
+      title: site.makeTitle(meta.title),
+    });
+  }
 </script>
 
 <template>
