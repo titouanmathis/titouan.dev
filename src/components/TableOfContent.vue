@@ -31,7 +31,7 @@
 </script>
 
 <template>
-  <details class="z-10 sticky top-0 bg-secondary transition-colors duration-[600ms] ease-out-expo text-sm">
+  <details class="text-sm">
     <summary class="font-bold">Table of content</summary>
     <div class="py-4">
       <ol>

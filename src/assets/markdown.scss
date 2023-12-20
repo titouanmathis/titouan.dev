@@ -3,8 +3,8 @@
     margin-top: 1.66em !important;
   }
 
-  ul,
-  ol {
+  > ul,
+  > ol {
     margin-top: 1.33em !important;
   }
 
@@ -13,6 +13,7 @@
   h3,
   h4 {
     font-weight: bold;
+    scroll-margin-top: 100px;
   }
 
   h1 {
