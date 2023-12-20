@@ -24,5 +24,6 @@ declare module '@vue/runtime-core' {
     RenderFeed: typeof import('./node_modules/@islands/feed/dist/render-feed')['RenderFeed']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TableOfContent: typeof import('./src/components/TableOfContent.vue')['default']
   }
 }
