@@ -1,0 +1,194 @@
+---
+title: Do’s and don’ts of redirects with .htaccess
+description: Things to know when implementing redirects with Apache
+tags: http, redirect, apache
+---
+
+# Do’s and don’ts of redirects with .htaccess
+
+<MetaInfo class="block">20/12/2023 in #http #apache #redirect</MetaInfo>
+
+I have spent many hours configuring thousands of redirects when migrating a website. I am sharing some of the do's and don'ts I recommend to follow when working on this kind of tasks.
+
+<TableOfContent open />
+
+## Basics of URL structure
+
+To understand how to set up URL redirects, it's best to understand the structure of a URL and the terms used to describe each part. Here's a quick diagram that sums it up:
+
+<div class="group-leading-none">
+
+```
+https://www.fqdn.com:443/blogs/?sort=latests#fragment
+└┬──┘   └─┬─────────┘└┬┘└─┬───┘└─┬─────────┘└───┬───┘
+ └ scheme │      port ┘   │      │              └ fragment
+          │               │      └ query string
+          └ domain        └ path
+```
+
+</div>
+
+For more details on URL structure, make sure to check [MDN's documentation](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Web_mechanics/What_is_a_URL) and for front-end devs used to work with the `window.location` object, the following diagram can be used to compare with the previous one:
+
+<div class="group-leading-none">
+
+```
+  ┌ protocol          ┌ port
+┌─┴──┐               ┌┴┐
+https://www.fqdn.com:443/blogs/?sort=latests#fragment
+│       └──┬───────┘   │└─┬──┘ └─┬─────────┘└─┬─────┘
+│       │  └ hostname  │  │      └ search     └ hash
+│       └──┬───────────┘  └ pathname
+│          └ host      │
+└──────────┬───────────┘
+           └ origin
+```
+
+</div>
+
+## Basics of redirects with Apache
+
+Apache has 2 main directives which can be used to configure redirects:
+
+- `Redirect`
+- `RedirectMatch`
+
+They can be used to define redirects from an old path to a new URL simply:
+
+```apacheconf
+Redirect /old-path https://fqdn.com/new-path
+RedirectMatch /old-path https://fqdn.com/new-path
+```
+
+Both directives will default to a `302` temporary redirect, if you need a permanent one, make sure to specify the `301` status:
+
+```apacheconf
+Redirect 301 /old-path https://fqdn.com/new-path
+RedirectMatch 301 /old-path https://fqdn.com/new-path
+```
+
+The `RedirectPermanent` directive can also be used instead of `Redirect 301`:
+
+```apacheconf
+RedirectPermanent /old-path https://fqdn.com/new-path
+```
+
+Note that the new URL can have a different domain than the original one, i.e. we can redirect from `domain-a.com` to `domain-b.com`.
+
+## Do’s and don’ts
+
+### Prefer specific redirects to overly generic rules
+
+It's easier to specifically test redirected URLs when they're complete, rather than defining a matching pattern. You'll also have better control over the impact of your redirect rules on your site, and avoid false positives.
+
+```apacheconf
+# Do
+RedirectPermanent /blog/page/1 https://fqdn.com/
+RedirectPermanent /blog/page/2 https://fqdn.com/
+RedirectPermanent /blog/page/3 https://fqdn.com/
+RedirectPermanent /blog/page/4 https://fqdn.com/
+
+# Don't
+RedirectMatch /blog/page/* https://fqdn.com/
+```
+
+### `Redirect` directives may retain parts of the old path
+
+When a URL matches a `Redirect` directive (`Redirect`, `RedirectMatch`, `RedirectPermanent`), the part of the URL that doesn't match will be added to the redirect URL.
+
+Thus, with the following configurations:
+
+```apacheconf
+RedirectPermanent /foo https://fqdn.com/redirected
+# ou
+RedirectMatch 301 ^/foo https://fqdn.com/redirected
+```
+
+The following redirects will happen:
+
+```
+https://fqdn.com/foo      → https://fqdn.com/redirected
+https://fqdn.com/foo/     → https://fqdn.com/redirected/
+https://fqdn.com/foo/bar  → https://fqdn.com/redirected/bar
+https://fqdn.com/foo/bar/ → https://fqdn.com/redirected/bar/
+```
+
+To ensure that an exact URL redirects to another exact URL without transmitting information from the original URL, use the `RedirectMatch` direction with a `.*` pattern:
+
+```apacheconf
+RedirectMatch 301 ^/foo.* https://fqdn.com/redirected
+```
+
+The following redirects will happen:
+
+```
+https://fqdn.com/fo       → https://fqdn.com/fo
+https://fqdn.com/foo      → https://fqdn.com/redirected
+https://fqdn.com/foo/     → https://fqdn.com/redirected
+https://fqdn.com/foo/bar  → https://fqdn.com/redirected
+https://fqdn.com/foo/bar/ → https://fqdn.com/redirected
+```
+
+### The order of redirect rules is important.
+
+Redirect rules in the `.htaccess` file must be configured from the most specific one to the most generic one. The first rule matching the request URL is followed and other rules are not taken into account.
+
+So, with the following configuration :
+
+```apacheconf
+RedirectPermanent /foo https://fqdn.com/bar
+RedirectPermanent /foo/bar https://fqdn.com/foo/baz
+```
+
+The URL `https://fqdn.com/foo/bar` will be redirected by the first redirect rule, while the second rule will never be evaluated.
+
+To correct this problem, redirect rules can be sorted in reverse alphabetical order:
+
+```apacheconf
+RedirectPermanent /foo/bar https://fqdn.com/foo/baz
+RedirectPermanent /foo https://fqdn.com/bar
+```
+
+### `Redirect` directives do not take URL parameters into account
+
+If the original URL contains URL parameters (e.g. `?search=keyword`), `Redirect` directives will have no effect on the request.
+
+For example, with the following configuration:
+
+```apacheconf
+RedirectPermanent /foo/?search=news https://fqdn.com/fr/
+```
+
+A request with the `https://fqdn.com/foo?search=news` URL will not be handled.
+
+Redirects including URL parameters must be set up with `RewriteCond` and `RewriteRule`:
+
+```apacheconf
+RewriteCond %{QUERY_STRING} ^search=news$
+RewriteRule ^foo$ https://doo.com/? [L,R=301]
+```
+
+## Validating your `.htaccess` file
+
+Before deploying your redirect rules in production, it is best to validate them to ensure that they send your users to the correct location.
+
+### online htaccess tester
+
+For simple rules, you can use the very good and useful [htaccess tester](https://htaccess.madewithlove.com/) by [madewithlove](https://madewithlove.com/).
+
+### studiometa/test-redirection
+
+If you have hundreds or more rules, I would recommend to try our [own tool](https://github.com/studiometa/cli-test-redirection) based on Docker, which can test redirects defined in a CSV file, with host mocking:
+
+```bash
+# Create your .htaccess file with redirections to test
+vim .htaccess
+
+# Create a CSV fiels containing 2 columns: from,to
+vim redirects.csv
+
+# Run the Docker image by linking the current directy to /app
+docker run -it --rm -v $PWD:/app -e "DOMAINS=fqdn.com www.fqdn.com" studiometa/test-redirection redirects.csv
+```
+
+Make sure to check out the [GitHub repository](https://github.com/studiometa/cli-test-redirection) to learn more!
