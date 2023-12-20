@@ -36,7 +36,7 @@
 </script>
 
 <template>
-  <ButtonToggleTheme class="absolute top-0 right-0 mt-10 mr-10" />
+  <ButtonToggleTheme class="fixed top-0 right-0 mt-10 mr-10" />
   <div class="flex flex-col min-h-screen p-10">
     <header class="mb-20 space-y-10">
       <div>
