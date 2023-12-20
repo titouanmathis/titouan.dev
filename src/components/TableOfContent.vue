@@ -7,7 +7,7 @@
   let previousLevel2;
 
   const headings = computed(() =>
-    unref(page).headings.reduce((acc, heading) => {
+    unref(page).headings?.reduce((acc, heading) => {
       if (heading.level === 1 || heading.level > 3) {
         return acc;
       }
@@ -17,7 +17,6 @@
           ...heading,
           items: [],
         };
-        console.log(previousLevel2);
         acc.push(previousLevel2);
       }
 
