@@ -9,6 +9,7 @@ export const documents = {
     url: '/articles/',
     title: 'Articles',
     noItemsLabel: 'No articles.',
+    allItemsLabel: 'Discover all articles →',
   },
   notes: {
     items: useDocuments('~/pages/notes'),
@@ -18,7 +19,7 @@ export const documents = {
     url: '/notes/',
     title: 'Notes',
     noItemsLabel: 'No notes.',
-    allItemsLabel: 'All notes',
+    allItemsLabel: 'Discover all notes →',
   },
   experiments: {
     items: useDocuments('~/pages/experiments'),
@@ -27,6 +28,7 @@ export const documents = {
     },
     url: '/experiments/',
     title: 'Experiments',
+    allItemsLabel: 'Discover all experiments →',
     noItemsLabel: 'No experiments.',
   },
   links: {
@@ -43,6 +45,7 @@ export const documents = {
     },
     url: '/links/',
     title: 'Links',
+    allItemsLabel: 'Discover all links →',
     noItemsLabel: 'No links.',
   },
 };
