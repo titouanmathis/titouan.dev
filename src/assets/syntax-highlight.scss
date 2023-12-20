@@ -293,3 +293,13 @@ pre[class*='language-'] {
 .token.variable {
   color: var(--code-token-variable);
 }
+
+
+.group-leading-none code[class*='language-'],
+.group-leading-none pre[class*='language-'] {
+  line-height: 1;
+
+  > code {
+    line-height: 1.3;
+  }
+}
