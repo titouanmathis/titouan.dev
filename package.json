@@ -26,7 +26,6 @@
     "@tailwindcss/typography": "^0.5.9",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.41.0",
-    "iles": "^0.9.5",
     "patch-package": "^6.5.1",
     "postcss": "^8.4.24",
     "postcss-import": "^15.1.0",
@@ -45,6 +44,7 @@
     "@picocss/pico": "^1.5.10",
     "@studiometa/js-toolkit": "^2.10.3",
     "@vueuse/core": "^10.1.2",
+    "iles": "^0.9.5",
     "vue": "^3.3.4"
   },
   "overrides": {
