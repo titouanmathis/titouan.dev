@@ -3,8 +3,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--color)',
-        secondary: 'var(--bg)',
+        primary: 'rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), var(--tw-bg-opacity, 1))',
+        secondary: 'rgba(var(--bg-rgb), var(--bg-rgb), var(--bg-rgb), var(--tw-bg-opacity, 1))',
       },
       transitionTimingFunction: {
         'in-back': 'cubic-bezier(0.6, -0.28, 0.735, 0.045)',
