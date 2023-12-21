@@ -142,7 +142,7 @@ RedirectPermanent /foo/bar https://fqdn.com/foo/baz
 
 The URL `https://fqdn.com/foo/bar` will be redirected by the first redirect rule, while the second rule will never be evaluated.
 
-To quickly fix this problem, a simple trick is to sort your redirect rules in reverse alphabetical order:
+To fix this problem, a simple trick is to sort your redirect rules in reverse alphabetical order:
 
 ```apacheconf
 RedirectPermanent /foo/bar https://fqdn.com/foo/baz
