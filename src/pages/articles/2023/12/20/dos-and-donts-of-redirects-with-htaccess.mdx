@@ -100,7 +100,7 @@ Thus, with the following configurations:
 
 ```apacheconf
 RedirectPermanent /foo https://fqdn.com/redirected
-# ou
+# or with RedirectMatch
 RedirectMatch 301 ^/foo https://fqdn.com/redirected
 ```
 
@@ -113,7 +113,7 @@ https://fqdn.com/foo/bar  → https://fqdn.com/redirected/bar
 https://fqdn.com/foo/bar/ → https://fqdn.com/redirected/bar/
 ```
 
-To ensure that an exact URL redirects to another exact URL without transmitting information from the original URL, use the `RedirectMatch` direction with a `.*` pattern:
+To ensure that an exact URL redirects to another exact URL without keeping parts of the original URL, use the `RedirectMatch` directive with a `.*` pattern:
 
 ```apacheconf
 RedirectMatch 301 ^/foo.* https://fqdn.com/redirected
@@ -131,9 +131,9 @@ https://fqdn.com/foo/bar/ → https://fqdn.com/redirected
 
 ### The order of redirect rules is important.
 
-Redirect rules in the `.htaccess` file must be configured from the most specific one to the most generic one. The first rule matching the request URL is followed and other rules are not taken into account.
+Redirect rules in the `.htaccess` file must be added from the most specific one to the most generic one. The first rule matching the request URL is followed and other rules are ignored.
 
-So, with the following configuration :
+So, with the following configuration:
 
 ```apacheconf
 RedirectPermanent /foo https://fqdn.com/bar
@@ -142,16 +142,16 @@ RedirectPermanent /foo/bar https://fqdn.com/foo/baz
 
 The URL `https://fqdn.com/foo/bar` will be redirected by the first redirect rule, while the second rule will never be evaluated.
 
-To correct this problem, redirect rules can be sorted in reverse alphabetical order:
+To quickly fix this problem, a simple trick is to sort your redirect rules in reverse alphabetical order:
 
 ```apacheconf
 RedirectPermanent /foo/bar https://fqdn.com/foo/baz
 RedirectPermanent /foo https://fqdn.com/bar
 ```
 
-### `Redirect` directives do not take URL parameters into account
+### `Redirect` directives ignore URL parameters
 
-If the original URL contains URL parameters (e.g. `?search=keyword`), `Redirect` directives will have no effect on the request.
+If the URL that needs to be redirected contains URL parameters (e.g. `?search=keyword`), `Redirect` directives will have no effect on the request.
 
 For example, with the following configuration:
 
@@ -168,9 +168,16 @@ RewriteCond %{QUERY_STRING} ^search=news$
 RewriteRule ^foo$ https://doo.com/? [L,R=301]
 ```
 
+Make sure to enable the ´RewriteEngine´ mode before using ´RewriteCond´ directives:
+
+´´´apacheconf
+RewriteEngine On
+RewriteBase /
+´´´
+
 ## Validating your `.htaccess` file
 
-Before deploying your redirect rules in production, it is best to validate them to ensure that they send your users to the correct location.
+Before deploying your redirect rules in production, it is important to test and validate them. First because any syntax error in a ´.htaccess´ file will result in an error 500 when accessing the website. Second, to ensure that each rule send your users to the correct location.
 
 ### online htaccess tester
 
