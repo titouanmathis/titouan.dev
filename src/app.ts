@@ -78,11 +78,6 @@ export default defineApp({
       script: [
         { children: checkTheme, once: false },
         { children: toggleTheme, defer: true, once: true },
-        {
-          defer: true,
-          dataDomain: 'titouan.dev',
-          src: 'https://p.analytic.sh/js/script.js',
-        },
       ],
     };
   },
