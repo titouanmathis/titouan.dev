@@ -9,7 +9,7 @@ description: Configuration to enable Oxlint's LSP server in Sublime Text with th
 
 The [Sublime LSP package](https://lsp.sublimetext.io/) brings the power of LSP servers in Sublime Text, with support for many languages and tools: ESLint, Markdown, TypeScript, Tailwind CSS, etc.
 
-We have been using [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) in our [@studiometa/js-toolkit project](https://github.com/studiometa/js-toolkit) to speed up linting and reduce configuration complexity with TypeScript, but I was missing the instant and integrated feedback in my editor when editing files.
+We have been using [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) in our [@studiometa/js-toolkit project](https://github.com/studiometa/js-toolkit) to speed up linting and reduce configuration complexity with TypeScript, but I was missing the instant and integrated feedback from the [ESLint LSP server](https://github.com/sublimelsp/LSP-eslint) when editing files.
 
 With some digging, I found out that it is easy to add a custom LSP server, and the `oxlint` NPM package is shipped with the language server binary. I added the following configuration in my Sublime LSP settings:
 
