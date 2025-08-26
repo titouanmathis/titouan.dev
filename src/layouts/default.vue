@@ -14,12 +14,12 @@
       label: 'GitHub',
     },
     {
-      url: 'https://twitter.com/titouanmathis',
-      label: 'Twitter',
+      url: 'https://x.com/titouanmathis',
+      label: 'X',
     },
     {
-      url: 'https://mast.eu.org/@titouanmathis',
-      label: 'Mastodon',
+      url: 'https://bsky.app/profile/titouan.dev',
+      label: 'Bluesky',
       attr: { rel: 'noopener noreferrer me' },
     },
     {
@@ -64,13 +64,17 @@
     </header>
     <div v-if="isHome" class="max-w-4xl">
       <h2 class="text-2xl font-bold mb-20">
-        Hi 👋, I am a developer and CTO at
-        <a href="https://www.studiometa.fr" target="_blank" rel="noopener">Studio Meta</a>
+        Hi 👋, I am the CTO at
+        <a href="https://www.studiometa.fr" target="_blank" rel="noopener noreferrer">
+          Studio Meta
+        </a>
+        and
+        <a href="https://www.ikko.fr" target="_blank" rel="noopener noreferrer">Ikko</a>
         in Strasbourg, France.
         <br />
         <br />
         I created
-        <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener">
+        <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener noreferrer">
           @studiometa/js-toolkit
         </a>
         to standardize how we write JavaScript components as a team, and
