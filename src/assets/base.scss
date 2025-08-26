@@ -39,6 +39,7 @@
 
 html {
   font-size: max(16px, 1.05vw);
+  line-height: 1.75;
   color: var(--color);
   background-color: var(--bg);
   transition-timing-function: var(--ease-out-expo);
@@ -56,7 +57,6 @@ html {
 }
 
 * {
-  line-height: 1.75rem;
   scroll-behavior: smooth;
 }
 

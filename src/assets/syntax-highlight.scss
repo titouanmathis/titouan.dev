@@ -45,9 +45,8 @@ pre[class*='language-'] {
   --color-rgb: 100;
   overflow: hidden;
   font-family: monospace;
-  font-size: 0.875em;
+  font-size: 0.75em;
   hyphens: none;
-  line-height: 1.5em;
   color: var(--code-color);
   text-align: left;
   word-break: normal;
@@ -134,7 +133,7 @@ pre[class*='language-'] ::selection {
 pre[class*='language-'] {
   position: relative;
   margin: 0.5em 0;
-  padding: 1.25em 1em;
+  padding: 1em;
   overflow: auto;
 }
 
