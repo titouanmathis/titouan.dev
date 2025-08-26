@@ -44,10 +44,12 @@
           <a href="/">Titouan Mathis</a>
         </component>
         <p>
-          Developer & CTO at
+          CTO at
           <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener noreferrer">
             Studio Meta
           </a>
+          and
+          <a href="https://www.ikko.fr/" target="_blank" rel="noopener noreferrer">Ikko</a>
         </p>
       </div>
       <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
@@ -62,15 +64,30 @@
     </header>
     <div v-if="isHome" class="max-w-4xl">
       <h2 class="text-2xl font-bold mb-20">
-        Hi 👋, I am a developer and CTO at <a href="https://www.studiometa.fr" target="_blank" rel="noopener">Studio Meta</a> in Strasbourg, France.<br> <br>
-        I created <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener">@studiometa/js-toolkit</a> to standardize how we write JavaScript components as a team,
-        and <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a>, its accompanying UI components library powered by <a href="https://twig.symfony.com/" target="_blank" rel="noopener noreferrer">Twig</a>
-        and <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">Tailwind CSS</a>.
+        Hi 👋, I am a developer and CTO at
+        <a href="https://www.studiometa.fr" target="_blank" rel="noopener">Studio Meta</a>
+        in Strasbourg, France.
+        <br />
+        <br />
+        I created
+        <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener">
+          @studiometa/js-toolkit
+        </a>
+        to standardize how we write JavaScript components as a team, and
+        <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a>
+        , its accompanying UI components library powered by
+        <a href="https://twig.symfony.com/" target="_blank" rel="noopener noreferrer">Twig</a>
+        and
+        <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">
+          Tailwind CSS
+        </a>
+        .
       </h2>
     </div>
     <main
       class="mb-32 max-w-3xl"
-      :class="{ markdown: meta.filename.endsWith('.mdx') || meta.filename.endsWith('.md') }">
+      :class="{ markdown: meta.filename.endsWith('.mdx') || meta.filename.endsWith('.md') }"
+    >
       <slot />
     </main>
     <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
@@ -81,11 +98,7 @@
         </span>
         <ul class="inline-flex gap-4 md:gap-10">
           <li v-for="{ label, url, attr } in socialLinks" :key="url" class="inline">
-            <a
-              :href="url"
-              rel="noopener noreferrer"
-              target="_blank"
-              v-bind="attr ?? {}">
+            <a :href="url" rel="noopener noreferrer" target="_blank" v-bind="attr ?? {}">
               {{ label }}
             </a>
           </li>
