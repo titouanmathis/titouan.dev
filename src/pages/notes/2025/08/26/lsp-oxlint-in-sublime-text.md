@@ -31,6 +31,6 @@ With some digging, I found out that it is easy to add a custom LSP server, and t
 }
 ```
 
-And I now have code quality reports directly in Sublime Text, with code actions and all the language server tools available.
+I now have code quality reports for Oxlint directly in Sublime Text, with code actions and all the language server other tools available.
 
 ![-](/2025/08/26/oxlint-lsp-in-sublime-text.png)
