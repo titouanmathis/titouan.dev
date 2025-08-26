@@ -31,8 +31,8 @@
   --bg: rgba(var(--bg-rgb), var(--bg-rgb), var(--bg-rgb), var(--bg-alpha));
 
   --accent-alpha: 1;
-  --accent-r: 0;
-  --accent-g: 0;
+  --accent-r: 25;
+  --accent-g: 50;
   --accent-b: 200;
   --accent: rgba(var(--accent-r), var(--accent-g), var(--accent-b), var(--accent-alpha));
 }
@@ -46,12 +46,12 @@ html {
   transition-property: color, background-color;
 
   &.dark {
-    --color-rgb: 221;
-    --bg-rgb: 18;
+    --color-rgb: 245;
+    --bg-rgb: 25;
 
-    --accent-r: 60;
-    --accent-g: 100;
-    --accent-b: 250;
+    --accent-r: 90;
+    --accent-g: 130;
+    --accent-b: 255;
   }
 }
 
