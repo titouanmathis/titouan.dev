@@ -1,4 +1,5 @@
 module.exports = {
+  darkMode: 'selector',
   content: ['src/**/*.{mdx,js,ts,vue}'],
   theme: {
     extend: {
