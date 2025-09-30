@@ -70,7 +70,10 @@ a:not([class]) {
   transition: box-shadow 0.4s var(--ease-out-expo);
   color: var(--accent);
 
-  &[target='_blank'] {
+  &[target='_blank'],
+  &[href^="http://"],
+  &[href^="https://"]
+  {
     &::after {
       content: ' →';
       display: inline-block;
@@ -86,7 +89,10 @@ a:not([class]) {
   &:hover {
     box-shadow: 0 2px 0 rgba(var(--accent-r), var(--accent-g), var(--accent-b), 1);
 
-    &[target='_blank']::after {
+    &[target='_blank']::after,
+    &[href^="http://"]::after,
+    &[href^="https://"]::after
+    {
       transform: translate3d(2px, -2px, 0) rotate(-45deg);
     }
   }
