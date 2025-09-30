@@ -99,8 +99,8 @@ a:not([class]) {
 }
 
 code:not(pre code) {
-  padding: 0.25em;
-  font-size: 0.875em;
+  padding: 0.5em;
+  font-size: 0.75em;
   background-color: rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), 0.05);
   border-radius: 0.15em;
 }
