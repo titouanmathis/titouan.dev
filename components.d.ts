@@ -28,6 +28,5 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TableOfContent: typeof import('./src/components/TableOfContent.vue')['default']
-    UiPlayground: typeof import('./src/components/UiPlayground.vue')['default']
   }
 }

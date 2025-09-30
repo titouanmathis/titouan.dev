@@ -1,0 +1,22 @@
+<div class="grid gap-4">
+  <div class="flex gap-4">
+    <button data-component="Action"
+      data-option-on:click="DataModel(#date) -> target.value = new Date(target.value.setDate(target.value.getDate() - 1))"
+      class="py-2 px-3 rounded bg-gray-500 bg-opacity-30">
+      Remove 1 day
+    </button>
+    <input
+      data-component="DataModel"
+      data-option-group="date"
+      data-option-prop="valueAsDate"
+      id="date"
+      type="date"
+      value="2025-01-01"
+      class="py-2 px-3 rounded ring-2 ring-inset ring-gray-500 ring-opacity-50 bg-gray-100 bg-opacity-10">
+    <button data-component="Action"
+      data-option-on:click="DataModel(#date) -> target.value = new Date(target.value.setDate(target.value.getDate() + 1))"
+      class="py-2 px-3 rounded bg-gray-500 bg-opacity-30">
+      Add 1 day
+    </button>
+  </div>
+</div>

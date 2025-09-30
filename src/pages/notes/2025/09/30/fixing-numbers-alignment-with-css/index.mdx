@@ -1,0 +1,157 @@
+---
+title: Fixing numbers alignment with CSS
+description: On how to use CSS OpenType features to fix numbers alignment in table layout and other numbers UI.
+---
+
+# Fixing numbers alignment with CSS
+
+<MetaInfo class="block">29/30/2025 in #css</MetaInfo>
+
+While working on a demo for the [Action](https://ui.studiometa.dev/-/components/Action/) and [DataModel](https://ui.studiometa.dev/-/components/DataBind/) components from [@studiometa/ui](https://ui.studiometa.dev) involving an `<input type="date">` element, I stumbled upon a small issue I often encounter when working with numbers: small layout shifts when the number changes.
+
+## The issue
+
+In the example below, adding or removing a day from the date will slightly change the width of the `<input type="date">` element.
+
+<PreviewPlayground
+  html={() => import('./demo-bug.twig?raw')}
+  script={() => import('./demo.js?raw')}
+  css={() => import('./demo.css?raw')}></PreviewPlayground>
+
+If you do not see the small layout shifts in the demo above, the following video might be more explicit:
+
+<div class="overflow-hidden rounded max-w-lg">
+  <video muted autoplay loop class="dark:hidden scale-105">
+    <source src="/2025/09/30/input-glitch-light.mp4" type="video/mp4" />
+  </video>
+  <video muted autoplay loop class="hidden dark:block scale-105">
+    <source src="/2025/09/30/input-glitch.mp4" type="video/mp4" />
+  </video>
+</div>
+
+This issue can also be seen when displaying a list of numbers, where the line endings are not aligned, even though they contain the same number of characters.
+
+<Preview class="p-10 max-w-lg">
+  <div class="flex gap-4 justify-center">
+    <div>
+      <div>17906</div>
+      <div>50087</div>
+      <div>47395</div>
+      <div>63327</div>
+      <div>43013</div>
+      <div>20560</div>
+      <div>47430</div>
+      <div>27118</div>
+      <div>59888</div>
+      <div>28934</div>
+    </div>
+    <div class="text-center">
+      <div>21899</div>
+      <div>65701</div>
+      <div>52334</div>
+      <div>90941</div>
+      <div>86553</div>
+      <div>72253</div>
+      <div>48722</div>
+      <div>77162</div>
+      <div>50158</div>
+      <div>10179</div>
+    </div>
+    <div class="text-right">
+      <div>17906</div>
+      <div>50087</div>
+      <div>47395</div>
+      <div>63327</div>
+      <div>43013</div>
+      <div>20560</div>
+      <div>47430</div>
+      <div>27118</div>
+      <div>59888</div>
+      <div>28934</div>
+    </div>
+  </div>
+</Preview>
+
+## The solution
+
+The solution is a feature of the OpenType format called `tnum` ([wiki](https://en.wikipedia.org/wiki/List_of_typographic_features#Features_intended_for_digits_and_math)), which enables tabular figures. This means that all numbers will have the same width, preventing any misalignment or small layout shifts.
+
+This can be enabled with [Tailwind CSS](https://tailwindcss.com/) by using the [`tabular-nums` class](https://tailwindcss.com/docs/font-variant-numeric#using-tabular-figures):
+
+```diff
+-  <div class="flex gap-10 justify-center">
++  <div class="flex gap-10 justify-center tabular-nums">
+```
+
+Or directly in CSS by using the [`font-variant-numeric` property](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric):
+
+```css
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+```
+
+Adding the `tabular-nums` class to both our demos fixes them: numbers are aligned, and changing them does not trigger a layout shift.
+
+Our columns of number are nicely aligned:
+
+<Preview class="p-10 max-w-lg">
+  <div class="flex gap-4 justify-center tabular-nums">
+    <div>
+      <div>17906</div>
+      <div>50087</div>
+      <div>47395</div>
+      <div>63327</div>
+      <div>43013</div>
+      <div>20560</div>
+      <div>47430</div>
+      <div>27118</div>
+      <div>59888</div>
+      <div>28934</div>
+    </div>
+    <div class="text-center">
+      <div>21899</div>
+      <div>65701</div>
+      <div>52334</div>
+      <div>90941</div>
+      <div>86553</div>
+      <div>72253</div>
+      <div>48722</div>
+      <div>77162</div>
+      <div>50158</div>
+      <div>10179</div>
+    </div>
+    <div class="text-right">
+      <div>17906</div>
+      <div>50087</div>
+      <div>47395</div>
+      <div>63327</div>
+      <div>43013</div>
+      <div>20560</div>
+      <div>47430</div>
+      <div>27118</div>
+      <div>59888</div>
+      <div>28934</div>
+    </div>
+  </div>
+</Preview>
+
+The `<input type="date">` element will not have its width changed when its value is updated:
+
+<PreviewPlayground
+  html={() => import('./demo-fixed.twig?raw')}
+  script={() => import('./demo.js?raw')}
+  css={() => import('./demo.css?raw')}></PreviewPlayground>
+
+## Links
+
+To go further, make sure to visit the following links:
+
+- [Documentation on OpenType font features](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_fonts/OpenType_fonts_guide)
+- [Documentation for the `font-variant-numeric` property](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric)
+- [Documentation for the `tabular-nums` class of Tailwind CSS](https://tailwindcss.com/docs/font-variant-numeric#using-tabular-figures)
+
+And to learn more on the components used for the date demo:
+
+- [Documentation for the `Action` component](https://ui.studiometa.dev/-/components/Action/)
+- [Documentation for the `DataBind` family of components](https://ui.studiometa.dev/-/components/DataBind/)
