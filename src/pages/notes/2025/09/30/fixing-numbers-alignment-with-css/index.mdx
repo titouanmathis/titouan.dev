@@ -13,18 +13,24 @@ While working on a demo for the [Action](https://ui.studiometa.dev/-/components/
 
 In the example below, adding or removing a day from the date will slightly change the width of the `<input type="date">` element.
 
+import demoBugTwig from './demo-bug.twig?raw';
+import demoFixedTwig from './demo-fixed.twig?raw';
+import demoJs from './demo.js?raw';
+import demoCss from './demo.css?raw';
+
 <PreviewPlayground
-  html={() => import('./demo-bug.twig?raw')}
-  script={() => import('./demo.js?raw')}
-  css={() => import('./demo.css?raw')}></PreviewPlayground>
+  client:visible
+  html={demoBugTwig}
+  script={demoJs}
+  css={demoCss}></PreviewPlayground>
 
 If you do not see the small layout shifts in the demo above, the following video might be more explicit:
 
 <div class="overflow-hidden rounded max-w-lg">
-  <video muted autoplay loop class="dark:hidden scale-105">
+  <video muted autoplay loop playsinline class="dark:hidden scale-105">
     <source src="/2025/09/30/input-glitch-light.mp4" type="video/mp4" />
   </video>
-  <video muted autoplay loop class="hidden dark:block scale-105">
+  <video muted autoplay loop playsinline class="hidden dark:block scale-105">
     <source src="/2025/09/30/input-glitch.mp4" type="video/mp4" />
   </video>
 </div>
@@ -139,9 +145,10 @@ Our columns of number are nicely aligned:
 The `<input type="date">` element will not have its width changed when its value is updated:
 
 <PreviewPlayground
-  html={() => import('./demo-fixed.twig?raw')}
-  script={() => import('./demo.js?raw')}
-  css={() => import('./demo.css?raw')}></PreviewPlayground>
+  client:visible
+  html={demoFixedTwig}
+  script={demoJs}
+  css={demoCss}></PreviewPlayground>
 
 ## Links
 

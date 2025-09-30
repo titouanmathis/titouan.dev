@@ -26,7 +26,7 @@
   const isDark = useDark();
   const defaultContent = zip('');
 
-  function useCode(codeProp: CodeProp): [Ref<string>, Ref<boolean>] {
+  function useCode(codeProp?: CodeProp): [Ref<string>, Ref<boolean>] {
     const code = ref(defaultContent);
     let codeIsLoading = ref(false);
     if (isFunction(codeProp)) {
@@ -64,8 +64,6 @@
     searchParams.set('style-editor', 'false');
     searchParams.set('theme', unref(isDark) ? 'dark' : 'light');
     searchParams.set('header', 'hidden');
-
-    console.log(searchParams);
 
     const url = new URL('https://ui.studiometa.dev/-/play/');
     url.hash = searchParams.toString();
