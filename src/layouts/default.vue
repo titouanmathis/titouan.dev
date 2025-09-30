@@ -113,11 +113,11 @@
 </template>
 
 <style lang="scss">
-  @import 'tailwindcss/base';
-  @import '~/assets/base.scss';
-  @import '~/assets/markdown.scss';
-  @import '~/assets/syntax-highlight.scss';
+  @use 'tailwindcss/base' as *;
+  @use '~/assets/base.scss' as *;
+  @use '~/assets/markdown.scss' as *;
+  @use '~/assets/syntax-highlight.scss' as *;
 
-  @import 'tailwindcss/components';
-  @import 'tailwindcss/utilities';
+  @use 'tailwindcss/components' as *;
+  @use 'tailwindcss/utilities' as *;
 </style>
