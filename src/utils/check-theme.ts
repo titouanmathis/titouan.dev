@@ -1,5 +1,6 @@
 (() => {
-  const theme = localStorage.getItem('color-scheme') || 'auto';
+  const name = 'vueuse-color-scheme';
+  const theme = localStorage.getItem(name) || 'auto';
   if (
     theme === 'dark' ||
     (matchMedia('(prefers-color-scheme: dark)').matches && theme !== 'light')

@@ -1,7 +1,6 @@
 import { defineApp } from 'iles';
 import { computed, unref } from 'vue';
 import checkTheme from '~/utils/check-theme?raw';
-import toggleTheme from '~/utils/toggle-theme?raw';
 
 export default defineApp({
   head({ frontmatter, site, route, config }) {
@@ -77,7 +76,6 @@ export default defineApp({
       ],
       script: [
         { children: checkTheme, once: false },
-        { children: toggleTheme, defer: true, once: true },
       ],
     };
   },

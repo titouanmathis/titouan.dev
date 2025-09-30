@@ -1,4 +1,3 @@
-import { statSync } from 'node:fs';
 import { defineConfig } from 'iles';
 import headings from '@islands/headings';
 import icons from '@islands/icons';
