@@ -8,7 +8,7 @@
 <template>
   <button
     @click="() => toggleDark()"
-    class="w-5 h-5"
+    class="flex items-center justify-center w-8 h-8 rounded-full"
     type="button"
     aria-label="Toggle theme">
     <Transition
@@ -16,10 +16,10 @@
       leave-to-class="opacity-0 scale-50 translate-y-full">
       <IconBxBxMoon
         v-if="!isDark"
-        class="absolute top-0 left-0 block transition duration-500 ease-out-expo" />
+        class="absolute block transition duration-500 ease-out-expo" />
       <IconBxBxSun
         v-else
-        class="absolute top-0 left-0 block transition duration-500 ease-out-expo" />
+        class="absolute block transition duration-500 ease-out-expo" />
     </Transition>
     <span class="sr-only">Switch between dark or light theme</span>
   </button>
