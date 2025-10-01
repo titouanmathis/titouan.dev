@@ -36,8 +36,8 @@
 </script>
 
 <template>
-  <ButtonToggleTheme client:load class="fixed top-0 right-0 mt-10 mr-10" />
-  <div class="flex flex-col min-h-screen p-10">
+  <ButtonToggleTheme client:load class="fixed top-0 right-0 mt-4 mr-4 m:mt-10 m:mr-10" />
+  <div class="flex flex-col min-h-screen p-4 m:p-10">
     <header class="mb-20 space-y-10">
       <div>
         <component :is="isHome ? 'h1' : 'p'" class="font-bold">
