@@ -65,7 +65,7 @@
     searchParams.set('theme', unref(isDark) ? 'dark' : 'light');
     searchParams.set('header', 'hidden');
 
-    const url = new URL('https://ui.studiometa.dev/-/play/');
+    const url = new URL('https://feature-ui.studiometa-playground.pages.dev/');
     url.hash = searchParams.toString();
 
     return url.toString();
