@@ -38,7 +38,7 @@
 :root {
   --color: oklch(from rgb(34, 34, 34) l c h);
   --bg: oklch(from rgb(245, 245, 245) l c h);
-  --accent: oklch(from rgb(100, 120, 255) l c h);
+  --accent: oklch(from rgb(20, 40, 255) l c h);
 }
 
 html {
@@ -95,6 +95,16 @@ a:not([class]) {
     &[href^="https://"]::after
     {
       transform: translate3d(2px, -2px, 0) rotate(-45deg);
+    }
+  }
+
+  &:visited {
+    color: oklch(from var(--color-accent) calc(l - 0.3) c h);
+  }
+
+  html.dark & {
+    &:visited {
+      color: oklch(from var(--color-accent) calc(l - 0.1) c h);
     }
   }
 }
