@@ -46,11 +46,11 @@
         </component>
         <p>
           CTO at
-          <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">
             Studio Meta
           </a>
           and
-          <a href="https://www.ikko.fr/" target="_blank" rel="noopener noreferrer">Ikko</a>
+          <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
         </p>
       </div>
       <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
@@ -66,16 +66,16 @@
     <div v-if="isHome" class="max-w-4xl">
       <h2 class="text-2xl font-bold mb-20">
         Hi 👋, I am the CTO at
-        <a href="https://www.studiometa.fr" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">
           Studio Meta
         </a>
         and
-        <a href="https://www.ikko.fr" target="_blank" rel="noopener noreferrer">Ikko</a>
+        <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
         in Strasbourg, France.
         <br />
         <br />
         I created
-        <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener noreferrer">
+        <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener">
           @studiometa/js-toolkit
         </a>
         to standardize how we write JavaScript as a team and its accompanying UI components library
