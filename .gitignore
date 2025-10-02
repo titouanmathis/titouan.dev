@@ -27,3 +27,4 @@ dist-ssr
 *.sw?
 
 .iles-ssg-temp/
+.stylelintcache

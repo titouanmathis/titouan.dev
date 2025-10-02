@@ -6,7 +6,15 @@
   "scripts": {
     "dev": "iles dev",
     "build": "iles build",
-    "preview": "iles preview --open --port 5050"
+    "preview": "iles preview --open --port 5050",
+    "lint": "npm run lint:oxlint && npm run lint:stylelint && npm run lint:prettier",
+    "lint:oxlint": "oxlint src/",
+    "lint:stylelint": "stylelint src/**/*.{css,vue} --cache",
+    "lint:prettier": "prettier -c src/ --cache",
+    "fix": "npm run fix:oxlint && npm run fix:stylelint && npm run fix:prettier",
+    "fix:oxlint": "npm run lint:oxlint -- --fix",
+    "fix:stylelint": "npm run lint:stylelint -- --fix",
+    "fix:prettier": "npm run lint:prettier -- --write"
   },
   "devDependencies": {
     "@iconify-json/bx": "^1.2.2",
@@ -19,10 +27,7 @@
     "@studiometa/stylelint-config": "^4.1.1",
     "@tailwindcss/vite": "4.1.14",
     "oxlint": "1.19.0",
-    "prettier": "^3.6.2",
     "remark-gfm": "^4.0.1",
-    "sass-embedded": "1.93.2",
-    "stylelint": "^16.24.0",
     "tailwindcss": "^4.1.14",
     "typescript": "^5.9.3"
   },
@@ -38,7 +43,24 @@
     "./*": "./src/*"
   },
   "stylelint": {
-    "extends": "@studiometa/stylelint-config"
+    "extends": "@studiometa/stylelint-config",
+    "rules": {
+      "scss/at-rule-no-unknown": [
+        true,
+        {
+          "ignoreAtRules": [
+            "tailwind",
+            "apply",
+            "variants",
+            "responsive",
+            "screen",
+            "config",
+            "custom-variant",
+            "theme"
+          ]
+        }
+      ]
+    }
   },
   "prettier": "@studiometa/prettier-config"
 }
