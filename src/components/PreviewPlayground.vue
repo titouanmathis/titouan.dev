@@ -59,11 +59,8 @@
       searchParams.set('style', css.value);
     }
 
-    searchParams.set('html-editor', 'false');
-    searchParams.set('script-editor', 'false');
-    searchParams.set('style-editor', 'false');
     searchParams.set('theme', unref(isDark) ? 'dark' : 'light');
-    searchParams.set('header', 'hidden');
+    searchParams.set('embed', 'true');
 
     const url = new URL('https://feature-ui.studiometa-playground.pages.dev/');
     url.hash = searchParams.toString();
