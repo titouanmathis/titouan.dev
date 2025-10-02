@@ -1,8 +1,12 @@
 import { defineApp } from 'iles';
 import { computed, unref } from 'vue';
 import checkTheme from '~/utils/check-theme?raw';
+import Image from '~/components/Image.vue';
 
 export default defineApp({
+  mdxComponents: {
+    img: Image,
+  },
   head({ frontmatter, site, route, config }) {
     return {
       meta: [

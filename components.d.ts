@@ -18,6 +18,7 @@ declare module 'vue' {
     Experiments003Anchor: typeof import('./src/components/Experiments/Experiments003/Experiments003Anchor.vue')['default']
     IconBxBxMoon: typeof import('~icons/bx/bx-moon')['default']
     IconBxBxSun: typeof import('~icons/bx/bx-sun')['default']
+    Image: typeof import('./src/components/Image.vue')['default']
     Island: typeof import('./node_modules/iles/dist/client/app/components/Island.vue')['default']
     Listing: typeof import('./src/components/Listing.vue')['default']
     Loader: typeof import('./src/components/Loader.vue')['default']
