@@ -33,12 +33,16 @@ export const documents = {
   },
   links: {
     get items() {
-      const items = useDocuments('~/pages/links')
-      return computed(() => unref(items).map((item) => ({
-        title: item.title,
-        description: item?.description,
-        href: item.link,
-      })).reverse());
+      const items = useDocuments('~/pages/links');
+      return computed(() =>
+        unref(items)
+          .map((item) => ({
+            title: item.title,
+            description: item?.description,
+            href: item.link,
+          }))
+          .reverse(),
+      );
     },
     get total() {
       return unref(this.items).length;
@@ -65,7 +69,7 @@ export type DocumentValues = ValueOf<Documents>;
 export type Documents = typeof documents;
 export type DocumentNames = keyof Documents;
 
-export const documentNames:Array<DocumentNames> = Object.keys(documents) as DocumentNames[];
+export const documentNames: Array<DocumentNames> = Object.keys(documents) as DocumentNames[];
 
 function byPath(a, b) {
   if (a.filename < b.filename) {

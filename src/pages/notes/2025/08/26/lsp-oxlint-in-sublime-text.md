@@ -18,13 +18,7 @@ With some digging, I found out that it is easy to add a custom LSP server, and t
   "clients": {
     "LSP-oxlint": {
       "enabled": true,
-      "command": [
-        "/opt/homebrew/bin/npx",
-        "-y",
-        "--package=oxlint",
-        "-c",
-        "'oxc_language_server'"
-      ],
+      "command": ["/opt/homebrew/bin/npx", "-y", "--package=oxlint", "-c", "'oxc_language_server'"],
       "selector": "source.js | source.ts"
     }
   }

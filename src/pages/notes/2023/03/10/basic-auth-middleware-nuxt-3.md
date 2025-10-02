@@ -66,4 +66,3 @@ NUXT_BASIC_AUTH="user1:pass1\nuser2:pass2"
 ---
 
 We currently enable the middelware by injecting the file in our build pipelines, but we plan to migrate it to a [module](https://nuxt.com/docs/guide/directory-structure/modules). This will allow us to inject it whereever the `NUXT_BASIC_AUTH` environment variable is defined.
-

@@ -29,7 +29,7 @@
       0,
       1,
       map(props.containerIndex, 0, props.containerTotal, 0.15, 0),
-      map(props.containerIndex, 0, props.containerTotal, 2, 0.5)
+      map(props.containerIndex, 0, props.containerTotal, 2, 0.5),
     );
 
     return {
@@ -55,7 +55,7 @@
           size.value = damp(pointerY.value / height.value, size.value, 0.1, 0.001);
         });
       },
-      { once: true }
+      { once: true },
     );
   });
 
@@ -72,7 +72,7 @@
           onFinish: () => resolve(),
           easing: easeOutExpo,
           duration: 1 + props.index / props.total,
-        }
+        },
       );
       setTimeout(() => t.start(), props.containerIndex * 50);
     });
@@ -83,7 +83,6 @@
   <transition appear @enter="enter" @leave="leave">
     <div
       :style="styles"
-      class="absolute top-1/2 left-1/2 rounded-full bg-primary border border-secondary"
-    />
+      class="absolute top-1/2 left-1/2 rounded-full bg-primary border border-secondary" />
   </transition>
 </template>

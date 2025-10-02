@@ -49,6 +49,12 @@
     <Experiments001Dot
       v-for="i in numberOfDots"
       :key="`dot-${index}-${i}`"
-      v-bind="{ index: i, total: numberOfDots, containerSize, containerIndex: index, containerTotal: total }" />
+      v-bind="{
+        index: i,
+        total: numberOfDots,
+        containerSize,
+        containerIndex: index,
+        containerTotal: total,
+      }" />
   </div>
 </template>

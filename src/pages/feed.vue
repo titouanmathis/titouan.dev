@@ -30,7 +30,7 @@ path: /feed.atom
     title: post.title,
     description: post.description,
     content: post,
-  }))
+  }));
 </script>
 
 <template>

@@ -7,7 +7,7 @@
   const duration = computed(() => unref(total) / 30);
   const { width, height } = useWindowSize();
   const size = computed(() =>
-    (unref(width) > unref(height) ? unref(height) * 0.5 : unref(width) * 0.5)
+    unref(width) > unref(height) ? unref(height) * 0.5 : unref(width) * 0.5,
   );
 
   const innerStyles = computed(() => ({
@@ -18,7 +18,9 @@
 
 <template>
   <div class="xp3 fixed inset-0 pointer-events-none">
-    <div class="xp3__inner absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" :style="innerStyles">
+    <div
+      class="xp3__inner absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+      :style="innerStyles">
       <Experiments003Anchor
         v-for="index in total"
         :key="index"

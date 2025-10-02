@@ -78,7 +78,9 @@
         <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener noreferrer">
           @studiometa/js-toolkit
         </a>
-        to standardize how we write JavaScript as a team and its accompanying UI components library <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a> powered by
+        to standardize how we write JavaScript as a team and its accompanying UI components library
+        <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a>
+        powered by
         <a href="https://twig.symfony.com/" target="_blank" rel="noopener noreferrer">Twig</a>
         and
         <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">

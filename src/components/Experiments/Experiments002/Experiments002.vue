@@ -10,7 +10,6 @@
       v-for="index in total"
       :key="`circle-${index}`"
       :index="index - 1"
-      :total="total"
-    />
+      :total="total" />
   </div>
 </template>

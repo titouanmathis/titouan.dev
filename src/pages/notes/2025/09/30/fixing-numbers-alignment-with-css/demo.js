@@ -7,7 +7,7 @@ class App extends Base {
     components: {
       Action,
       DataModel,
-    }
+    },
   };
 }
 

@@ -19,7 +19,7 @@
   let timer;
 
   watch(pointerX, (newValue, oldValue) => {
-    const delay = newValue > oldValue ? 1 - (props.index / props.total) : props.index / props.total;
+    const delay = newValue > oldValue ? 1 - props.index / props.total : props.index / props.total;
     clearTimeout(timer);
     timer = setTimeout(() => {
       delayedPointerX.value = newValue;
@@ -30,11 +30,11 @@
   const progressX = ref(0.75);
   const progressY = ref(0.75);
   const angle = computed(() =>
-    degToRad((360 / (props.total - props.delta - 1)) * (props.index - props.delta / 2))
+    degToRad((360 / (props.total - props.delta - 1)) * (props.index - props.delta / 2)),
   );
   const x = computed(() => (props.size / 2) * Math.cos(unref(angle)));
   const y = computed(() => (props.size / 2) * Math.sin(unref(angle)));
-  const z = computed(() => props.index * progressY.value * -0.5)
+  const z = computed(() => props.index * progressY.value * -0.5);
   const scale = computed(() => map(progressX.value, 0, 1, 0.25, 1));
 
   const styles = computed(() => ({
@@ -56,12 +56,17 @@
   }));
 
   onMounted(() => {
-    useEventListener(document, 'mousemove', () => {
-      useRafFn(() => {
-        progressX.value = damp(delayedPointerX.value / width.value, progressX.value, 0.07, 0.01);
-        progressY.value = damp(pointerY.value / height.value, progressY.value, 0.07, 0.01);
-      });
-    }, { once: true });
+    useEventListener(
+      document,
+      'mousemove',
+      () => {
+        useRafFn(() => {
+          progressX.value = damp(delayedPointerX.value / width.value, progressX.value, 0.07, 0.01);
+          progressY.value = damp(pointerY.value / height.value, progressY.value, 0.07, 0.01);
+        });
+      },
+      { once: true },
+    );
   });
 
   /**
@@ -69,22 +74,27 @@
    */
   function enter() {
     return new Promise((resolve) => {
-      const t = tween((p) => {
-        progress.value = p;
-      }, {
-        easing: easeOutExpo,
-        duration: 1,
-        onFinish: resolve,
-      });
+      const t = tween(
+        (p) => {
+          progress.value = p;
+        },
+        {
+          easing: easeOutExpo,
+          duration: 1,
+          onFinish: resolve,
+        },
+      );
       setTimeout(() => t.start(), props.index * 20);
-    })
+    });
   }
 </script>
 
 <template>
   <transition appear @enter="enter">
     <div :style="styles" class="absolute top-1/2 left-1/2 w-[2px] h-[2px] -mt-px -ml-px anchor">
-      <div :style="innerStyles" class="absolute top-1/2 left-1/2 bg-secondary border-2 border-primary anchor__inner" />
+      <div
+        :style="innerStyles"
+        class="absolute top-1/2 left-1/2 bg-secondary border-2 border-primary anchor__inner" />
     </div>
   </transition>
 </template>

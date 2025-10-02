@@ -49,8 +49,7 @@
           <a
             :href="item.href"
             :target="isExternal(item.href) ? '_blank' : undefined"
-            :rel="isExternal(item.href) ? 'noopener' : undefined"
-          >
+            :rel="isExternal(item.href) ? 'noopener' : undefined">
             {{ item.title }}
           </a>
           <MetaInfo v-if="item.date" class="ml-3">
