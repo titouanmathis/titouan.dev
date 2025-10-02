@@ -78,9 +78,7 @@
         <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener noreferrer">
           @studiometa/js-toolkit
         </a>
-        to standardize how we write JavaScript components as a team, and
-        <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a>
-        , its accompanying UI components library powered by
+        to standardize how we write JavaScript as a team and its accompanying UI components library <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a> powered by
         <a href="https://twig.symfony.com/" target="_blank" rel="noopener noreferrer">Twig</a>
         and
         <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">
@@ -91,8 +89,7 @@
     </div>
     <main
       class="mb-32 max-w-3xl"
-      :class="{ markdown: meta.filename.endsWith('.mdx') || meta.filename.endsWith('.md') }"
-    >
+      :class="{ markdown: meta.filename.endsWith('.mdx') || meta.filename.endsWith('.md') }">
       <slot />
     </main>
     <transition enter-from-class="opacity-0" leave-to-class="opacity-0">

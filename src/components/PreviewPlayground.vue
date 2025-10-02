@@ -76,7 +76,7 @@
   const isVisible = ref(false);
   const iframe = ref();
   const scale = ref(Number(props.zoom));
-  const iframeKey = computed(() => script.value + html.value + isDark.value);
+  const iframeKey = computed(() => script.value + html.value);
 
   const shouldDisplayIframe = computed(() => {
     if (isLoaded) return true;

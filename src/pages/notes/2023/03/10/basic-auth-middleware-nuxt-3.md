@@ -59,7 +59,7 @@ We can then define the `NUXT_BASIC_AUTH` environment variable to enable authenti
 
 We can define multiple credentials by putting each one on a different line:
 
-```bash
+```sh
 NUXT_BASIC_AUTH="user1:pass1\nuser2:pass2"
 ```
 

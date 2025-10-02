@@ -13,7 +13,7 @@ I often use Deepl via its macOS application to translate various content, but it
 
 Here is the ZSH function I ended up writing:
 
-```bash
+```sh
 #!/usr/bin/env zsh
 
 set -o errexit
@@ -85,7 +85,7 @@ main "$@"
 
 To use it, place it in a file within your `$PATH` and make sure it can be executed. Copy the script above and then use the following commands:
 
-```bash
+```sh
 # Paste the content of the script in a `deepl` file
 $ pbpaste > /usr/local/bin/deepl
 # Allow the file to be executed
@@ -94,7 +94,7 @@ $ chmod +x /usr/local/bin/deepl
 
 You will then be able to use it from your terminal:
 
-```bash
+```sh
 $ deepl --to fr 'Hello world!'
 Bonjour à tous !
 $ deepl --to de 'Hello world!'
@@ -112,7 +112,7 @@ The source language is guessed by Deepl, but you can force it with the `--from` 
 
 For the Alfred Workflow, I used a simple "Script filter" object with the following script:
 
-```bash
+```sh
 # My DEEPL_API_TOKEN is stored in a `.localrc` file, it could be
 # managed with Alfred own environment variables settings.
 source ~/.localrc

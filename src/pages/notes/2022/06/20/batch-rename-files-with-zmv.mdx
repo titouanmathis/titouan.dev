@@ -10,7 +10,7 @@ description: Use the `zmv` utility from ZSH to easily rename multiple files.
 
 I just (re)discovered the `zmv` utility from ZSH which simplify renaming things from the command line:
 
-```bash
+```sh
 zmv '(*).log' '$1.txt'
 ```
 
@@ -22,7 +22,7 @@ autoload -U zmv
 
 It also has some flags for some advanced usages:
 
-```bash
+```sh
 # Dry run
 zmv -n '(*).log' '$1.txt'
 

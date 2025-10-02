@@ -1,14 +1,14 @@
 @import 'tailwindcss';
 
-@theme inline {
-  --color-primary: rgba(
-    var(--color-rgb),
-    var(--color-rgb),
-    var(--color-rgb),
-    var(--tw-bg-opacity, 1)
-  );
-  --color-secondary: rgba(var(--bg-rgb), var(--bg-rgb), var(--bg-rgb), var(--tw-bg-opacity, 1));
+@custom-variant dark (&:where(.dark, .dark *));
 
+@theme inline {
+  --color-primary: oklch(from var(--color) l c h / 1);
+  --color-secondary: oklch(from var(--bg) l c h / 1);
+  --color-accent: oklch(from var(--accent) l c h / 1);
+}
+
+@theme {
   --ease-in-back: cubic-bezier(0.6, -0.28, 0.735, 0.045);
   --ease-in-circ: cubic-bezier(0.6, 0.04, 0.98, 0.335);
   --ease-in-cubic: cubic-bezier(0.55, 0.055, 0.675, 0.19);
@@ -36,36 +36,24 @@
 }
 
 :root {
-  --color-alpha: 1;
-  --color-rgb: 34;
-  --color: rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), var(--color-alpha));
-  --bg-alpha: 1;
-  --bg-rgb: 245;
-  --bg: rgba(var(--bg-rgb), var(--bg-rgb), var(--bg-rgb), var(--bg-alpha));
-
-  --accent-alpha: 1;
-  --accent-r: 25;
-  --accent-g: 50;
-  --accent-b: 200;
-  --accent: rgba(var(--accent-r), var(--accent-g), var(--accent-b), var(--accent-alpha));
+  --color: oklch(from rgb(34, 34, 34) l c h);
+  --bg: oklch(from rgb(245, 245, 245) l c h);
+  --accent: oklch(from rgb(100, 120, 255) l c h);
 }
 
 html {
   font-size: max(16px, 1.05vw);
   line-height: 1.75;
-  color: var(--color);
-  background-color: var(--bg);
+  color: var(--color-primary);
+  background-color: var(--color-secondary);
   transition-timing-function: var(--ease-out-expo);
   transition-duration: 0.6s;
   transition-property: color, background-color;
 
   &.dark {
-    --color-rgb: 245;
-    --bg-rgb: 25;
-
-    --accent-r: 90;
-    --accent-g: 130;
-    --accent-b: 255;
+    --color: oklch(from rgb(245, 245, 245) l c h);
+    --bg: oklch(from #111 l c h);
+    --accent: oklch(from rgb(50, 80, 255) calc(l + 0.2) c h);
   }
 }
 
@@ -75,13 +63,13 @@ html {
 
 hr {
   border: 0;
-  border-top: 2px solid rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), 0.1);
+  border-top: 2px solid oklch(from var(--color-primary) l c h / 0.5);
 }
 
 a:not([class]) {
-  box-shadow: 0 2px 0 rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.5);
+  color: var(--color-accent);
+  box-shadow: 0 2px 0 oklch(from var(--color-accent) l c h / 0.5);
   transition: box-shadow 0.4s var(--ease-out-expo);
-  color: var(--accent);
 
   &[target='_blank'],
   &[href^="http://"],
@@ -100,7 +88,7 @@ a:not([class]) {
   }
 
   &:hover {
-    box-shadow: 0 2px 0 rgba(var(--accent-r), var(--accent-g), var(--accent-b), 1);
+    box-shadow: 0 2px 0 oklch(from var(--color-accent) l c h / 1);
 
     &[target='_blank']::after,
     &[href^="http://"]::after,
@@ -112,8 +100,8 @@ a:not([class]) {
 }
 
 code:not(pre code) {
-  padding: 0.5em;
-  font-size: 0.75em;
-  background-color: rgba(var(--color-rgb), var(--color-rgb), var(--color-rgb), 0.05);
+  padding: 0.5em 0.25em;
+  font-size: 0.8em;
+  background-color: oklch(from var(--color-primary) l c h / 0.05);
   border-radius: 0.15em;
 }

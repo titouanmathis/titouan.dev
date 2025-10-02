@@ -10,7 +10,7 @@ tags: php, scripts
 
 I have multiple versions of PHP installed with Homebrew on my computer and it has always been a nightmare to use a specific version in the terminal for different commands. For example, installing Composer dependencies with a specific PHP version:
 
-```bash
+```sh
 /usr/bin/local/php73 $(which composer) install
 ```
 
@@ -18,7 +18,7 @@ I ended up writing a small ZSH function to easily switch from one version to ano
 
 The function can be used as follows:
 
-```bash
+```sh
 # Use a specific version
 pvm use 7.4
 
@@ -46,13 +46,13 @@ This is a script created specificly to work on my local environment, I can not g
 
 You will find the script below, to start using it, add it to your `~/.zshrc` file or create a separate file and add the following to your `~/.zshrc`:
 
-```bash
+```sh
 source /path/to/pvm.zsh
 ```
 
 You also will need to have multiple versions of PHP installed with [Homebrew](https://brew.sh/) as well as the [`jq`](https://stedolan.github.io/jq/) CLI:
 
-```bash
+```sh
 brew install jq \
     shivammathur/php/php \
     shivammathur/php/php@5.6 \
@@ -66,7 +66,7 @@ brew install jq \
 
 Here is the script:
 
-```bash
+```sh
 #!/bin/zsh
 
 # Alias PHP version to Brew versions
