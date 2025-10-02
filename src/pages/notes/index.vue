@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import { useListing } from '~/composables/useListing';
+  import { usePage, useHead } from 'iles';
+  import { useListing } from '~/composables/useListing.js';
 
   const { items } = useListing('notes');
   const { site } = usePage();

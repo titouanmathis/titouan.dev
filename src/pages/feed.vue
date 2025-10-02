@@ -4,7 +4,8 @@ path: /feed.atom
 
 <script setup lang="ts">
   import type { FeedOptions, FeedItem } from '@islands/feed';
-  import { useListing } from '~/composables/useListing';
+  import { usePage } from 'iles';
+  import { useListing } from '../composables/useListing.js';
 
   const { site } = usePage();
 

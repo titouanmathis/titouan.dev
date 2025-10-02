@@ -90,10 +90,6 @@
 </template>
 
 <style scoped>
-  .anchor {
-    transform: translate3d(0, 0, 0) scaleX(0) scaleY(0);
-  }
-
   .anchor__inner {
     --size: 10vmax;
     width: var(--size);

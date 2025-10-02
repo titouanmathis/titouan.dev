@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   darkMode: 'selector',
   content: ['src/**/*.{mdx,js,ts,vue}'],
   theme: {

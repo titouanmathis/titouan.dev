@@ -22,13 +22,13 @@ export default defineApp({
         {
           name: 'twitter:image',
           content: computed(() =>
-            new URL('/android-chrome-512x512.png', config.siteUrl).toString()
+            new URL('/android-chrome-512x512.png', config.siteUrl).toString(),
           ),
         },
         {
           name: 'og:image',
           content: computed(() =>
-            new URL('/android-chrome-512x512.png', config.siteUrl).toString()
+            new URL('/android-chrome-512x512.png', config.siteUrl).toString(),
           ),
         },
       ],
@@ -74,9 +74,7 @@ export default defineApp({
           href: computed(() => new URL(unref(route).path, config.siteUrl).toString()),
         },
       ],
-      script: [
-        { children: checkTheme, once: false },
-      ],
+      script: [{ children: checkTheme, once: false }],
     };
   },
 });

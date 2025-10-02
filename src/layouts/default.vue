@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed } from 'vue';
-  import { useAllDocuments } from '~/composables/useListing';
+  import { usePage, useHead } from 'iles';
+  import { useAllDocuments } from '../composables/useListing.js';
 
   const documents = useAllDocuments();
   const { meta, site } = usePage();
@@ -36,8 +37,8 @@
 </script>
 
 <template>
-  <ButtonToggleTheme client:load class="fixed top-0 right-0 mt-4 mr-4 m:mt-10 m:mr-10" />
-  <div class="flex flex-col min-h-screen p-4 m:p-10">
+  <ButtonToggleTheme client:load class="fixed top-0 right-0 mt-4 mr-4 sm:mt-10 sm:mr-10" />
+  <div class="flex flex-col min-h-screen p-4 sm:p-10">
     <header class="mb-20 space-y-10">
       <div>
         <component :is="isHome ? 'h1' : 'p'" class="font-bold">
@@ -112,12 +113,9 @@
   </div>
 </template>
 
-<style lang="scss">
-  @use 'tailwindcss/base' as *;
-  @use '~/assets/base.scss' as *;
-  @use '~/assets/markdown.scss' as *;
-  @use '~/assets/syntax-highlight.scss' as *;
-
-  @use 'tailwindcss/components' as *;
-  @use 'tailwindcss/utilities' as *;
+<style>
+  @import 'tailwindcss';
+  @import '~/assets/base.css';
+  @import '~/assets/markdown.css';
+  @import '~/assets/syntax-highlight.css';
 </style>

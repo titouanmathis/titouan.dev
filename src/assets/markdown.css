@@ -41,6 +41,7 @@
   ol:not([class]) {
     list-style-type: decimal;
 
+    /* stylelint-disable-next-line selector-max-compound-selectors */
     > li > ol:not([class]) {
       list-style-type: lower-alpha;
     }
@@ -51,7 +52,7 @@
   }
 
   blockquote {
-    @apply border-l-2 border-current;
     padding-left: 1.125em;
+    border-left: 2px solid currentColor;;
   }
 }
