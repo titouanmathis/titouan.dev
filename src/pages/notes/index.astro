@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '~/layouts/Layout.astro';
+import Listing from '~/components/Listing.vue';
+
+const entries = await getCollection('notes');
+const items = entries
+  .sort((a, b) => a.id.localeCompare(b.id))
+  .reverse()
+  .map(item => ({
+    title: item.data.title,
+    href: `/notes/${item.slug}/`,
+    date: item.data.date,
+  }));
+---
+
+<Layout title="Notes">
+  <Listing
+    client:load
+    title="Notes"
+    items={items}
+    noItemsLabel="No notes."
+    tag="h1"
+  />
+</Layout>
