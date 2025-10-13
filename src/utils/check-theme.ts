@@ -7,7 +7,7 @@
   ) {
     document.documentElement.classList.add('dark');
   }
-  document.querySelectorAll('link[data-theme-switch]').forEach((link) => {
+  document.querySelectorAll<HTMLLinkElement>('link[data-theme-switch]').forEach((link) => {
     if (link.dataset[theme] && link.href !== link.dataset[theme]) {
       link.href = link.dataset[theme];
     }

@@ -3,6 +3,8 @@ title: Using Oxlint LSP server in Sublime Text
 description: Configuration to enable Oxlint's LSP server in Sublime Text with the Sublime LSP package.
 ---
 
+import MetaInfo from '~/components/MetaInfo.vue';
+
 # Using Oxlint LSP server in Sublime Text
 
 <MetaInfo class="block">26/08/2025 in #sublimetext #lsp</MetaInfo>

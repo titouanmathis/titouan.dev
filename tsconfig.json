@@ -8,5 +8,6 @@
       "@/*": ["src/*"],
       "~/*": ["src/*"]
     }
-  }
+  },
+  "exclude": ["_*.ts", "src/_*.ts", "src/**/_*.ts", "src/pages/_*.vue", "src/composables/_*.ts"]
 }

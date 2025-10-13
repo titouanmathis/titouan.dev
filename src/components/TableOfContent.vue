@@ -1,32 +1,35 @@
 <script setup lang="ts">
-  import { computed, unref } from 'vue';
-  import { usePage } from 'iles';
+  import { computed, onMounted, ref } from 'vue';
 
-  const { page } = usePage();
+  const headings = ref([]);
 
-  let previousLevel2;
+  onMounted(() => {
+    let previousLevel2;
 
-  const headings = computed(() =>
-    unref(page).headings?.reduce((acc, heading) => {
-      if (heading.level === 1 || heading.level > 3) {
-        return acc;
-      }
+    const elements = Array.from(document.querySelectorAll('h2, h3'));
+    const processed = elements.reduce((acc, el) => {
+      const level = parseInt(el.tagName[1]);
+      const heading = {
+        level,
+        slug: el.id,
+        title: el.textContent,
+        items: [],
+      };
 
-      if (heading.level === 2) {
-        previousLevel2 = {
-          ...heading,
-          items: [],
-        };
+      if (level === 2) {
+        previousLevel2 = heading;
         acc.push(previousLevel2);
       }
 
-      if (heading.level === 3) {
+      if (level === 3 && previousLevel2) {
         previousLevel2.items.push(heading);
       }
 
       return acc;
-    }, []),
-  );
+    }, []);
+
+    headings.value = processed;
+  });
 </script>
 
 <template>

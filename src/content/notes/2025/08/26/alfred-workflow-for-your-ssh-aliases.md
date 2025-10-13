@@ -3,6 +3,8 @@ title: An Alfred Workflow for SSH aliases
 description: A workflow to quickly open a connection to your SSH aliases
 ---
 
+import MetaInfo from '~/components/MetaInfo.vue';
+
 # An Alfred Workflow for SSH aliases
 
 <MetaInfo class="block">26/08/2025 in #terminal #ssh #alfred</MetaInfo>

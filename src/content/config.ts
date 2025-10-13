@@ -1,24 +1,11 @@
 import { defineCollection, z } from 'astro:content';
 
-const extractDateFromPath = (id: string) => {
-  const match = id.match(/([0-9]{4})\/([0-9]{2})\/([0-9]{2})/);
-  if (match) {
-    const [, year, month, day] = match;
-    return new Date(`${year}-${month}-${day}`);
-  }
-  return undefined;
-};
-
 const articles = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    date: z.date().optional().transform((date, ctx) => {
-      if (date) return date;
-      const extracted = extractDateFromPath(ctx.path);
-      return extracted || new Date();
-    }),
+    date: z.coerce.date().optional(),
   }),
 });
 
@@ -27,11 +14,7 @@ const notes = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    date: z.date().optional().transform((date, ctx) => {
-      if (date) return date;
-      const extracted = extractDateFromPath(ctx.path);
-      return extracted || new Date();
-    }),
+    date: z.coerce.date().optional(),
   }),
 });
 
@@ -40,11 +23,7 @@ const experiments = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    date: z.date().optional().transform((date, ctx) => {
-      if (date) return date;
-      const extracted = extractDateFromPath(ctx.path);
-      return extracted || new Date();
-    }),
+    date: z.coerce.date().optional(),
   }),
 });
 
@@ -54,11 +33,7 @@ const links = defineCollection({
     title: z.string(),
     description: z.string().optional(),
     link: z.string().url(),
-    date: z.date().optional().transform((date, ctx) => {
-      if (date) return date;
-      const extracted = extractDateFromPath(ctx.path);
-      return extracted || new Date();
-    }),
+    date: z.coerce.date().optional(),
   }),
 });
 

@@ -1,5 +1,4 @@
 ---
-import { getCollection } from 'astro:content';
 import ButtonToggleTheme from '~/components/ButtonToggleTheme.vue';
 
 interface Props {
@@ -131,7 +130,7 @@ const checkTheme = `
           <ul class="inline-flex gap-4 md:gap-10">
             {socialLinks.map(({ label, url, attr }) => (
               <li class="inline">
-                <a href={url} rel="noopener noreferrer" target="_blank" {...(attr || {})}>
+                <a href={url} target="_blank" {...(attr || { rel: 'noopener noreferrer' })}>
                   {label}
                 </a>
               </li>

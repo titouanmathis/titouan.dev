@@ -1,0 +1,15 @@
+
+export default new Map([
+["src/content/experiments/001.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fexperiments%2F001.mdx&astroContentModuleFlag=true")],
+["src/content/experiments/002.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fexperiments%2F002.mdx&astroContentModuleFlag=true")],
+["src/content/experiments/003.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fexperiments%2F003.mdx&astroContentModuleFlag=true")],
+["src/content/articles/2023/12/20/dos-and-donts-of-redirects-with-htaccess.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Farticles%2F2023%2F12%2F20%2Fdos-and-donts-of-redirects-with-htaccess.mdx&astroContentModuleFlag=true")],
+["src/content/notes/2022/05/30/proxy-request-backend-nuxt3.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fnotes%2F2022%2F05%2F30%2Fproxy-request-backend-nuxt3.mdx&astroContentModuleFlag=true")],
+["src/content/notes/2022/06/15/php-version-manager.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fnotes%2F2022%2F06%2F15%2Fphp-version-manager.mdx&astroContentModuleFlag=true")],
+["src/content/notes/2022/07/22/redirecting-correctly-with-the-location-header.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fnotes%2F2022%2F07%2F22%2Fredirecting-correctly-with-the-location-header.mdx&astroContentModuleFlag=true")],
+["src/content/notes/2022/06/20/batch-rename-files-with-zmv.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fnotes%2F2022%2F06%2F20%2Fbatch-rename-files-with-zmv.mdx&astroContentModuleFlag=true")],
+["src/content/notes/2023/05/29/deepl-alfred-workflow.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fnotes%2F2023%2F05%2F29%2Fdeepl-alfred-workflow.mdx&astroContentModuleFlag=true")],
+["src/content/notes/2022/01/01/new-year-new-site.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fnotes%2F2022%2F01%2F01%2Fnew-year-new-site.mdx&astroContentModuleFlag=true")],
+["src/content/notes/2022/11/03/applying-patch-from-github.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fnotes%2F2022%2F11%2F03%2Fapplying-patch-from-github.mdx&astroContentModuleFlag=true")],
+["src/content/notes/2025/09/30/fixing-numbers-alignment-with-css/index.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fnotes%2F2025%2F09%2F30%2Ffixing-numbers-alignment-with-css%2Findex.mdx&astroContentModuleFlag=true")]]);
+		

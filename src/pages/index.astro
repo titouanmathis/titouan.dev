@@ -44,7 +44,7 @@ const blocks = Object.values(collections)
       .slice(0, 5)
       .map(item => ({
         title: item.data.title,
-        href: item.data.link || `/${item.collection}/${item.slug}/`,
+        href: 'link' in item.data ? item.data.link : `/${item.collection}/${item.slug}/`,
         date: item.data.date,
       })),
     count: 5,
@@ -64,6 +64,7 @@ const blocks = Object.values(collections)
           items={block.items}
           noItemsLabel={block.noItemsLabel}
           allItemsLabel={block.allItemsLabel}
+          tag="p"
         />
       </>
     ))}
