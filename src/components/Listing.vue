@@ -20,10 +20,8 @@
     },
   });
 
-  const { site } = usePage();
-
   function getOrigin() {
-    return typeof window !== 'undefined' ? window.location.origin : site.url;
+    return typeof window !== 'undefined' ? window.location.origin : import.meta.env.SITE;
   }
 
   function isExternal(url: string): boolean {

@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '~/layouts/Layout.astro';
+import Listing from '~/components/Listing.vue';
+
+const collections = {
+  articles: {
+    items: await getCollection('articles'),
+    url: '/articles/',
+    title: 'Articles',
+    noItemsLabel: 'No articles.',
+    allItemsLabel: 'Discover all articles →',
+  },
+  notes: {
+    items: await getCollection('notes'),
+    url: '/notes/',
+    title: 'Notes',
+    noItemsLabel: 'No notes.',
+    allItemsLabel: 'Discover all notes →',
+  },
+  experiments: {
+    items: await getCollection('experiments'),
+    url: '/experiments/',
+    title: 'Experiments',
+    allItemsLabel: 'Discover all experiments →',
+    noItemsLabel: 'No experiments.',
+  },
+  links: {
+    items: await getCollection('links'),
+    url: '/links/',
+    title: 'Links',
+    allItemsLabel: 'Discover all links →',
+    noItemsLabel: 'No links.',
+  },
+};
+
+const blocks = Object.values(collections)
+  .filter(block => block.items.length > 0)
+  .map(block => ({
+    ...block,
+    items: block.items
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .reverse()
+      .slice(0, 5)
+      .map(item => ({
+        title: item.data.title,
+        href: item.data.link || `/${item.collection}/${item.slug}/`,
+        date: item.data.date,
+      })),
+    count: 5,
+    total: block.items.length,
+  }));
+---
+
+<Layout isHome={true}>
+  <div class="space-y-10">
+    {blocks.map((block, index) => (
+      <>
+        {index > 0 && <hr class="my-10 border border-current opacity-10" />}
+        <Listing
+          client:load
+          title={block.title}
+          allItemsUrl={block.total > block.count ? block.url : undefined}
+          items={block.items}
+          noItemsLabel={block.noItemsLabel}
+          allItemsLabel={block.allItemsLabel}
+        />
+      </>
+    ))}
+  </div>
+</Layout>

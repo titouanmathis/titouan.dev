@@ -1,0 +1,151 @@
+---
+import { getCollection } from 'astro:content';
+import ButtonToggleTheme from '~/components/ButtonToggleTheme.vue';
+
+interface Props {
+  title?: string;
+  description?: string;
+  isHome?: boolean;
+  isExperiment?: boolean;
+  isMarkdown?: boolean;
+}
+
+const { title, description, isHome = false, isExperiment = false, isMarkdown = false } = Astro.props;
+
+const year = new Date().getUTCFullYear();
+const site = {
+  title: 'Titouan Mathis · Developer & CTO at Studio Meta & Ikko',
+  author: 'Titouan Mathis',
+  description: 'Notes and experiments by Titouan Mathis, developer & CTO at Studio Meta between Paris, Strasbourg and Copenhagen.',
+};
+
+const pageTitle = title ? `${title} · Titouan Mathis` : site.title;
+
+const documents = [
+  { url: '/articles/', title: 'Articles' },
+  { url: '/notes/', title: 'Notes' },
+  { url: '/experiments/', title: 'Experiments' },
+  { url: '/links/', title: 'Links' },
+];
+
+const socialLinks = [
+  { url: 'https://github.com/titouanmathis', label: 'GitHub' },
+  { url: 'https://x.com/titouanmathis', label: 'X' },
+  { url: 'https://bsky.app/profile/titouan.dev', label: 'Bluesky', attr: { rel: 'noopener noreferrer me' } },
+  { url: 'https://www.linkedin.com/in/titouanmathis/', label: 'Linkedin' },
+];
+
+const checkTheme = `
+(function() {
+  const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.classList.add(theme);
+  document.querySelectorAll('[data-theme-switch]').forEach(el => {
+    ['href', 'content'].forEach(attr => {
+      if (el.hasAttribute(attr)) {
+        el.setAttribute(attr, el.dataset[theme]);
+      }
+    });
+  });
+})();
+`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="author" content={site.author} />
+    <meta name="description" content={description || site.description} />
+    <meta name="twitter:site" content="@titouanmathis" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:image" content={new URL('/android-chrome-512x512.png', Astro.site).toString()} />
+    <meta property="og:image" content={new URL('/android-chrome-512x512.png', Astro.site).toString()} />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" data-light="/light-favicon.ico" data-dark="/favicon.ico" data-theme-switch />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" data-light="/light-icon.svg" data-dark="/icon.svg" data-theme-switch />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" data-light="/light-apple-touch-icon.png" data-dark="/apple-touch-icon.png" data-theme-switch />
+    <link rel="manifest" href="/site.webmanifest" data-light="/light-site.webmanifest" data-dark="/site.webmanifest" data-theme-switch />
+    <link rel="alternate" type="application/atom+xml" title="Atom feed" href={new URL('/feed.xml', Astro.site).toString()} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).toString()} />
+
+    <script is:inline set:html={checkTheme} />
+  </head>
+  <body>
+    <ButtonToggleTheme client:load class="fixed top-0 right-0 mt-4 mr-4 sm:mt-10 sm:mr-10" />
+    <div class="flex flex-col min-h-screen p-4 sm:p-10">
+      <header class="mb-20 space-y-10">
+        <div>
+          {isHome ? (
+            <h1 class="font-bold"><a href="/">Titouan Mathis</a></h1>
+          ) : (
+            <p class="font-bold"><a href="/">Titouan Mathis</a></p>
+          )}
+          <p>
+            CTO at
+            <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
+            and
+            <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
+          </p>
+        </div>
+        {!isExperiment && (
+          <nav class="transition">
+            <ul class="flex space-x-10">
+              {documents.map(doc => (
+                <li><a href={doc.url}>{doc.title}</a></li>
+              ))}
+            </ul>
+          </nav>
+        )}
+      </header>
+      {isHome && (
+        <div class="max-w-4xl">
+          <h2 class="text-2xl font-bold mb-20">
+            Hi 👋, I am the CTO at
+            <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
+            and
+            <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
+            in Strasbourg, France.
+            <br /><br />
+            I created
+            <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener">@studiometa/js-toolkit</a>
+            to standardize how we write JavaScript as a team and its accompanying UI components library
+            <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a>
+            powered by
+            <a href="https://twig.symfony.com/" target="_blank" rel="noopener noreferrer">Twig</a>
+            and
+            <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">Tailwind CSS</a>.
+          </h2>
+        </div>
+      )}
+      <main class:list={['mb-32', 'max-w-3xl', { markdown: isMarkdown }]}>
+        <slot />
+      </main>
+      {!isExperiment && (
+        <footer class="mt-auto text-sm transition">
+          <span class="block sm:inline-block mr-4 md:mr-10">
+            © {year}
+            <a href="/">T. Mathis</a>
+          </span>
+          <ul class="inline-flex gap-4 md:gap-10">
+            {socialLinks.map(({ label, url, attr }) => (
+              <li class="inline">
+                <a href={url} rel="noopener noreferrer" target="_blank" {...(attr || {})}>
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </footer>
+      )}
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  @import 'tailwindcss';
+  @import '~/assets/base.css';
+  @import '~/assets/markdown.css';
+  @import '~/assets/syntax-highlight.css';
+</style>
