@@ -15,13 +15,13 @@ In the example below, adding or removing a day from the date will slightly chang
 
 import demoBugTwig from './demo-bug.twig?raw';
 import demoFixedTwig from './demo-fixed.twig?raw';
-import demoJs from './demo.js?raw';
+import demoTs from './demo.ts?raw';
 import demoCss from './demo.css?raw';
 
 <PreviewPlayground
   client:visible
   html={demoBugTwig}
-  script={demoJs}
+  script={demoTs}
   css={demoCss}></PreviewPlayground>
 
 If you do not see the small layout shifts in the demo above, the following video might be more explicit:
@@ -147,7 +147,7 @@ The `<input type="date">` element will not have its width changed when its value
 <PreviewPlayground
   client:visible
   html={demoFixedTwig}
-  script={demoJs}
+  script={demoTs}
   css={demoCss}></PreviewPlayground>
 
 ## Links
