@@ -1,3 +1,3 @@
 <template>
-  <img loading="lazy">
+  <img loading="lazy" />
 </template>

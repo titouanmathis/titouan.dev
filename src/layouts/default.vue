@@ -46,9 +46,7 @@
         </component>
         <p>
           CTO at
-          <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">
-            Studio Meta
-          </a>
+          <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
           and
           <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
         </p>
@@ -66,9 +64,7 @@
     <div v-if="isHome" class="max-w-4xl">
       <h2 class="text-2xl font-bold mb-20">
         Hi 👋, I am the CTO at
-        <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">
-          Studio Meta
-        </a>
+        <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
         and
         <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
         in Strasbourg, France.
