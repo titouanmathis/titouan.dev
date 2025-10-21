@@ -41,7 +41,7 @@
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="grid grid-cols-1 gap-4">
     <component :is="tag" class="text-2xl font-bold">{{ title }}</component>
     <template v-if="items.length">
       <ul class="">
