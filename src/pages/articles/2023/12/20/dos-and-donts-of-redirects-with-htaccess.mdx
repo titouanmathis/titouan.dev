@@ -168,12 +168,12 @@ RewriteCond %{QUERY_STRING} ^search=news$
 RewriteRule ^foo$ https://doo.com/? [L,R=301]
 ```
 
-Make sure to enable the ´RewriteEngine´ mode before using ´RewriteCond´ directives:
+Make sure to enable the `RewriteEngine` mode before using `RewriteCond` directives:
 
-´´´apacheconf
+```apacheconf
 RewriteEngine On
 RewriteBase /
-´´´
+```
 
 ## Validating your `.htaccess` file
 
@@ -185,17 +185,51 @@ For simple rules, you can use the very good and useful [htaccess tester](https:/
 
 ### studiometa/test-redirection
 
-If you have hundreds or more rules, I would recommend to try our [own tool](https://github.com/studiometa/cli-test-redirection) based on Docker, which can test redirects defined in a CSV file, with host mocking:
+If you have hundreds of rules or more, I would recommend to try [the tool](https://github.com/studiometa/cli-test-redirection) we createt at [Studio Meta](https://www.studiometa.fr/). It can be used with Docker, and will test Apache redirects defined in a CSV file, with host mocking and `https` support, useful to test before going live.
 
 ```sh
 # Create your .htaccess file with redirections to test
-vim .htaccess
+$ cat .htaccess
+RedirectPermanent /foo/bar https://www.fqdn.com/foo/baz
+RedirectMatch 301 ^/foo$ https://www.fqdn.com/bar
 
-# Create a CSV fiels containing 2 columns: from,to
-vim redirects.csv
+# Create a CSV file with 2 columns "from" and "to"
+$ cat redirects.csv
+from,to
+https://fqdn.com/foo/bar,https://www.fqdn.com/foo/baz
+https://fqdn.com/foo,https://www.fqdn.com/bar
 
 # Run the Docker image by linking the current directy to /app
-docker run -it --rm -v $PWD:/app -e "DOMAINS=fqdn.com www.fqdn.com" studiometa/test-redirection redirects.csv
+$ docker run -it --rm -v $PWD:/app -e "DOMAINS=fqdn.com www.fqdn.com" \
+  studiometa/test-redirection redirects.csv --verbose
+
+[1/2] ✅ https://fqdn.com/foo
+  → https://www.fqdn.com/bar
+[2/2] ✅ https://fqdn.com/foo/bar
+  → https://www.fqdn.com/foo/baz
+
+🟢 All 2 redirection tests passed.
+
+```
+
+Or you can use the CLI directly with [`npx`](https://docs.npmjs.com/cli/v11/commands/npx) to test your redirects on your live site:
+
+```sh
+$ cat redirects.csv
+from,to
+https://fqdn.com/foo/bar,https://www.fqdn.com/foo/baz
+https://fqdn.com/foo,https://www.fqdn.com/bar
+
+$ npx @studiometa/cli-test-redirection redirects.csv --verbose
+
+[1/2] ✅ https://fqdn.com/foo
+  → https://www.fqdn.com/bar
+[2/2] 🚫 https://fqdn.com/foo/bar
+  → - https://www.fqdn.com/foo/baz
+  → + https://fqdn.com/foo/bar
+
+🟢 1 out of 2 tests passed.
+🔴 1 out of 2 tests failed.
 ```
 
 Make sure to check out the [GitHub repository](https://github.com/studiometa/cli-test-redirection) to learn more!
