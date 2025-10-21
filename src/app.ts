@@ -2,10 +2,12 @@ import { defineApp } from 'iles';
 import { computed, unref } from 'vue';
 import checkTheme from '~/utils/check-theme?raw';
 import Image from '~/components/Image.vue';
+import Anchor from '~/components/Anchor.vue';
 
 export default defineApp({
   mdxComponents: {
     img: Image,
+    a: Anchor,
   },
   head({ frontmatter, site, route, config }) {
     return {

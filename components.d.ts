@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Anchor: typeof import('./src/components/Anchor.vue')['default']
     ButtonToggleTheme: typeof import('./src/components/ButtonToggleTheme.vue')['default']
     Composables: typeof import('./src/components/Experiments/Experiments001/composables.ts')['default']
     Experiments001: typeof import('./src/components/Experiments/Experiments001/Experiments001.vue')['default']
