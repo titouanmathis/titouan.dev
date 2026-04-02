@@ -1,6 +1,5 @@
 ---
 import { getEmDashEntry } from 'emdash';
-import Base from '../../layouts/Base.astro';
 
 const { slug } = Astro.params;
 
@@ -8,22 +7,375 @@ if (!slug) {
   return Astro.redirect('/404');
 }
 
-const { entry: experiment, cacheHint } = await getEmDashEntry('experiments', slug);
+const { entry: experiment } = await getEmDashEntry('experiments', slug);
 
 if (!experiment) {
   return Astro.redirect('/404');
 }
 
-Astro.cache.set(cacheHint);
+const number = experiment.data.number || parseInt(slug, 10) || 0;
+const padded = String(number).padStart(3, '0');
+const siteTitle = 'Titouan Mathis';
+const defaultTitle = `${siteTitle} · Developer & CTO at Studio Meta & Ikko`;
+const pageTitle = experiment.data.title
+  ? `${experiment.data.title} · ${defaultTitle}`
+  : defaultTitle;
+
+const isExperiment = true;
 ---
 
-<Base title={experiment.data.title}>
-  <article>
-    <h2 class="text-2xl font-bold mb-4" {...experiment.edit.title}>
-      {experiment.data.title}
-    </h2>
-    <p class="opacity-60">
-      Interactive experiment — coming soon.
-    </p>
-  </article>
-</Base>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline>
+      (function () {
+        const theme = document.cookie.match(/(?:^|; )theme=(\w+)/)?.[1];
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+      })();
+    </script>
+    <style is:inline>
+      @import '/src/styles/theme.css';
+    </style>
+  </head>
+  <body>
+    <button
+      id="theme-toggle"
+      type="button"
+      class="fixed top-0 right-0 mt-4 mr-4 sm:mt-10 sm:mr-10 flex items-center justify-center w-8 h-8 rounded-full cursor-pointer z-10"
+      aria-label="Toggle theme"
+    >
+      <svg class="dark:hidden block w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      <svg class="hidden dark:block w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    </button>
+
+    <div class="flex flex-col min-h-screen p-4 sm:p-10">
+      <header class="space-y-10">
+        <div>
+          <p class="font-bold"><a href="/">Titouan Mathis</a></p>
+          <p>
+            CTO at{' '}
+            <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
+            {' '}and{' '}
+            <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
+          </p>
+        </div>
+      </header>
+    </div>
+
+    <div id="experiment-canvas"></div>
+
+    <script is:inline define:vars={{ padded }}>
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        document.cookie = `theme=${isDark ? 'dark' : 'light'};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
+      });
+    </script>
+
+    {padded === '001' && (
+      <script is:inline>
+        (function() {
+          const TOTAL = 10;
+          const canvas = document.getElementById('experiment-canvas');
+          canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;';
+
+          let pointerX = window.innerWidth / 2;
+          let progress = 0.5;
+          const dots = [];
+
+          function getRadius(factor = 1) {
+            const w = window.innerWidth, h = window.innerHeight;
+            return (w > h ? h / 50 : w / 50) * factor;
+          }
+
+          function damp(target, current, factor) {
+            const diff = target - current;
+            return Math.abs(diff) < 0.0001 ? target : current + diff * factor;
+          }
+
+          function map(v, a, b, c, d) { return c + (v - a) / (b - a) * (d - c); }
+
+          function easeInOutExpo(t) {
+            if (t === 0 || t === 1) return t;
+            return t < 0.5
+              ? Math.pow(2, 20 * t - 10) / 2
+              : (2 - Math.pow(2, -20 * t + 10)) / 2;
+          }
+
+          function easeOutExpo(t) {
+            return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+          }
+
+          function degToRad(d) { return d * Math.PI / 180; }
+
+          // Create containers and dots
+          for (let i = 0; i < TOTAL; i++) {
+            const container = document.createElement('div');
+            container.style.cssText = 'position:absolute;top:50%;left:50%;';
+            canvas.appendChild(container);
+
+            const numDots = i + 1;
+            const containerDots = [];
+            for (let j = 0; j < numDots; j++) {
+              const dot = document.createElement('div');
+              dot.style.cssText = 'position:absolute;top:50%;left:50%;border-radius:50%;background:var(--color-primary);border:1px solid var(--color-secondary);';
+              container.appendChild(dot);
+              containerDots.push({ el: dot, progress: 0, size: 0, index: j });
+            }
+            dots.push({ el: container, dots: containerDots, index: i });
+          }
+
+          let pointerY = window.innerHeight / 2;
+          let sizeProgress = [];
+          for (let i = 0; i < TOTAL; i++) sizeProgress[i] = 0;
+
+          document.addEventListener('mousemove', (e) => {
+            pointerX = e.clientX;
+            pointerY = e.clientY;
+          });
+
+          // Entrance animation
+          dots.forEach((c) => {
+            setTimeout(() => {
+              const start = performance.now();
+              const dur = 1000 + c.index / TOTAL * 1000;
+              function anim() {
+                const t = Math.min(1, (performance.now() - start) / dur);
+                const p = easeOutExpo(t);
+                c.dots.forEach(d => { d.progress = p; });
+                if (t < 1) requestAnimationFrame(anim);
+              }
+              requestAnimationFrame(anim);
+            }, c.index * 50);
+          });
+
+          function render() {
+            const radius = getRadius();
+            progress = damp(pointerX / window.innerWidth, progress, 0.05);
+
+            for (let i = 0; i < TOTAL; i++) {
+              sizeProgress[i] = damp(pointerY / window.innerHeight, sizeProgress[i], 0.1);
+            }
+
+            dots.forEach((c) => {
+              const containerSize = 3 * c.index * radius;
+              const delay = c.index / 5;
+              const time = Math.max(0, map(progress, 0, 1, -delay / 10, 1));
+              const rotate = map(easeInOutExpo(time), 0, 1, 90, 270);
+
+              c.el.style.zIndex = TOTAL - c.index;
+              c.el.style.width = containerSize + 'px';
+              c.el.style.height = containerSize + 'px';
+              c.el.style.marginTop = containerSize / -2 + 'px';
+              c.el.style.marginLeft = containerSize / -2 + 'px';
+              c.el.style.transform = `rotate(${rotate}deg)`;
+
+              const numDots = c.index + 1;
+              c.dots.forEach((d) => {
+                const r = getRadius(5);
+                const angle = degToRad((360 / numDots) * d.index);
+                const tx = numDots > 1 ? (containerSize / 2) * Math.cos(angle) : 0;
+                const ty = numDots > 1 ? (containerSize / 2) * Math.sin(angle) : 0;
+                const sp = sizeProgress[c.index];
+                const scale = map(sp, 0, 1, map(c.index, 0, TOTAL, 0.15, 0), map(c.index, 0, TOTAL, 2, 0.5));
+
+                d.el.style.width = r + 'px';
+                d.el.style.height = r + 'px';
+                d.el.style.marginTop = r / -2 + 'px';
+                d.el.style.marginLeft = r / -2 + 'px';
+                d.el.style.transform = `translate(${tx * d.progress}px, ${ty * d.progress}px) scale(${scale * d.progress})`;
+              });
+            });
+
+            requestAnimationFrame(render);
+          }
+          requestAnimationFrame(render);
+        })();
+      </script>
+    )}
+
+    {padded === '002' && (
+      <script is:inline>
+        (function() {
+          const TOTAL = 10;
+          const canvas = document.getElementById('experiment-canvas');
+          canvas.style.cssText = 'position:fixed;inset:0;overflow:hidden;pointer-events:none;';
+
+          let pointerX = window.innerWidth / 2;
+          let pointerY = window.innerHeight / 2;
+          let pressed = false;
+          const circles = [];
+
+          function damp(target, current, factor) {
+            const diff = target - current;
+            return Math.abs(diff) < 0.001 ? target : current + diff * factor;
+          }
+
+          function easeOutExpo(t) {
+            return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+          }
+
+          function getRadius() {
+            const w = window.innerWidth, h = window.innerHeight;
+            const r = w > h ? h / 60 : w / 60;
+            return Math.round(r / 2) * 2;
+          }
+
+          for (let i = 0; i < TOTAL; i++) {
+            const outer = document.createElement('div');
+            outer.style.cssText = 'position:absolute;top:0;left:0;';
+            const inner = document.createElement('div');
+            inner.style.cssText = 'position:absolute;top:50%;left:50%;width:100%;height:100%;border-radius:50%;border:2px solid var(--color-primary);transform:translate(-50%,-50%);';
+            outer.appendChild(inner);
+            canvas.appendChild(outer);
+            circles.push({ el: outer, inner, index: i, x: window.innerWidth / 2, y: window.innerHeight / 2, scale: 1, progress: 0 });
+          }
+
+          document.addEventListener('mousemove', (e) => { pointerX = e.clientX; pointerY = e.clientY; });
+          document.addEventListener('mousedown', () => { pressed = true; });
+          document.addEventListener('mouseup', () => { pressed = false; });
+
+          // Entrance
+          circles.forEach(c => {
+            setTimeout(() => {
+              const start = performance.now();
+              function anim() {
+                const t = Math.min(1, (performance.now() - start) / 1000);
+                c.progress = easeOutExpo(t);
+                if (t < 1) requestAnimationFrame(anim);
+              }
+              requestAnimationFrame(anim);
+            }, c.index * 20);
+          });
+
+          function render() {
+            const radius = getRadius();
+            const bw = Math.ceil(radius / 7);
+
+            circles.forEach(c => {
+              const targetDiffX = (pointerX - c.x) * ((c.index + 5) / 5 - 0.05);
+              c.x = damp(c.x + targetDiffX, c.x, 0.1);
+              const targetDiffY = (pointerY - c.y) * ((c.index + 5) / 5 - 0.05);
+              c.y = damp(c.y + targetDiffY, c.y, 0.1);
+              c.scale = damp(pressed ? c.index / TOTAL : 1, c.scale, 0.1);
+
+              const size = c.index * 2 * radius;
+              c.el.style.zIndex = TOTAL - c.index;
+              c.el.style.width = size + 'px';
+              c.el.style.height = size + 'px';
+              c.el.style.marginTop = size / -2 - bw + 'px';
+              c.el.style.marginLeft = size / -2 - bw + 'px';
+              c.el.style.transform = `translate(${c.x}px, ${c.y}px) scale(${c.scale * c.progress})`;
+              c.inner.style.borderWidth = bw + 'px';
+            });
+
+            requestAnimationFrame(render);
+          }
+          requestAnimationFrame(render);
+        })();
+      </script>
+    )}
+
+    {padded === '003' && (
+      <script is:inline>
+        (function() {
+          const TOTAL = 120;
+          const DELTA = TOTAL / 2;
+          const DURATION = TOTAL / 30;
+          const canvas = document.getElementById('experiment-canvas');
+          canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;animation:xp3-rotation 30s linear infinite;';
+
+          const style = document.createElement('style');
+          style.textContent = `
+            @keyframes xp3-rotation { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+            @keyframes xp3-inner-rotation { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+          `;
+          document.head.appendChild(style);
+
+          function getSize() {
+            const w = window.innerWidth, h = window.innerHeight;
+            return w > h ? h * 0.5 : w * 0.5;
+          }
+
+          function damp(target, current, factor) {
+            const diff = target - current;
+            return Math.abs(diff) < 0.001 ? target : current + diff * factor;
+          }
+
+          function map(v, a, b, c, d) { return c + (v - a) / (b - a) * (d - c); }
+          function degToRad(d) { return d * Math.PI / 180; }
+          function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+
+          let pointerX = window.innerWidth / 2;
+          let pointerY = window.innerHeight / 2;
+
+          const inner = document.createElement('div');
+          inner.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);transform-style:preserve-3d;perspective:20px;';
+          canvas.appendChild(inner);
+
+          const anchors = [];
+          for (let i = 0; i < TOTAL; i++) {
+            const anchor = document.createElement('div');
+            anchor.style.cssText = 'position:absolute;top:50%;left:50%;width:2px;height:2px;margin:-1px;';
+            const dot = document.createElement('div');
+            const sz = '10vmax';
+            dot.style.cssText = `position:absolute;top:50%;left:50%;background:var(--color-secondary);border:2px solid var(--color-primary);width:${sz};height:calc(${sz} * 2);margin-top:calc(${sz} * -1);margin-left:calc(${sz} * -0.5);animation:xp3-inner-rotation ${DURATION}s linear infinite;animation-delay:${i * (DURATION / 100) * -1}s;transition:border-color 0.6s,background-color 0.6s;`;
+            anchor.appendChild(dot);
+            inner.appendChild(anchor);
+            anchors.push({ el: anchor, index: i, progress: 0, progressX: 0.75, progressY: 0.75, delayedPointerX: pointerX });
+          }
+
+          document.addEventListener('mousemove', (e) => {
+            const prevX = pointerX;
+            pointerX = e.clientX;
+            pointerY = e.clientY;
+            anchors.forEach(a => {
+              const delay = pointerX > prevX ? 1 - a.index / TOTAL : a.index / TOTAL;
+              clearTimeout(a._timer);
+              a._timer = setTimeout(() => { a.delayedPointerX = pointerX; }, delay * 1200);
+            });
+          });
+
+          // Entrance
+          anchors.forEach(a => {
+            setTimeout(() => {
+              const start = performance.now();
+              function anim() {
+                const t = Math.min(1, (performance.now() - start) / 1000);
+                a.progress = easeOutExpo(t);
+                if (t < 1) requestAnimationFrame(anim);
+              }
+              requestAnimationFrame(anim);
+            }, a.index * 20);
+          });
+
+          function render() {
+            const size = getSize();
+            inner.style.width = size + 'px';
+            inner.style.height = size + 'px';
+
+            anchors.forEach(a => {
+              a.progressX = damp(a.delayedPointerX / window.innerWidth, a.progressX, 0.07);
+              a.progressY = damp(pointerY / window.innerHeight, a.progressY, 0.07);
+
+              const angle = degToRad((360 / (TOTAL - DELTA - 1)) * (a.index - DELTA / 2));
+              const x = (size / 2) * Math.cos(angle);
+              const y = (size / 2) * Math.sin(angle);
+              const z = a.index * a.progressY * -0.5;
+              const scale = map(a.progressX, 0, 1, 0.25, 1);
+
+              a.el.style.zIndex = TOTAL - a.index;
+              a.el.style.transform = `translate3d(${x * a.progress}px, ${y * a.progress}px, ${z}px) scale(${scale * a.progress})`;
+            });
+
+            requestAnimationFrame(render);
+          }
+          requestAnimationFrame(render);
+        })();
+      </script>
+    )}
+  </body>
+</html>
