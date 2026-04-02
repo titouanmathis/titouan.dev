@@ -1,0 +1,142 @@
+---
+import '../styles/theme.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  isMarkdown?: boolean;
+}
+
+const { title, description, isMarkdown = false } = Astro.props;
+const isHome = Astro.url.pathname === '/';
+const isExperiment = Astro.url.pathname.startsWith('/experiments/');
+const year = new Date().getUTCFullYear();
+const siteTitle = 'Titouan Mathis';
+const pageTitle = title ? `${title} — ${siteTitle}` : siteTitle;
+
+const navItems = [
+  { href: '/articles', label: 'Articles' },
+  { href: '/notes', label: 'Notes' },
+  { href: '/experiments', label: 'Experiments' },
+  { href: '/links', label: 'Links' },
+];
+
+const socialLinks = [
+  { url: 'https://github.com/titouanmathis', label: 'GitHub' },
+  { url: 'https://x.com/titouanmathis', label: 'X' },
+  { url: 'https://bsky.app/profile/titouan.dev', label: 'Bluesky', rel: 'noopener noreferrer me' },
+  { url: 'https://www.linkedin.com/in/titouanmathis/', label: 'LinkedIn' },
+];
+
+// Read theme from cookie
+const themeCookie = Astro.cookies.get('theme')?.value;
+const isDark = themeCookie === 'dark';
+---
+
+<!doctype html>
+<html lang="en" class={isDark ? 'dark' : ''}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {description && <meta name="description" content={description} />}
+    <title>{pageTitle}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={siteTitle} href="/rss.xml" />
+    <script is:inline>
+      // Prevent flash: apply theme from cookie before paint
+      (function () {
+        const theme = document.cookie.match(/(?:^|; )theme=(\w+)/)?.[1];
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      })();
+    </script>
+  </head>
+  <body>
+    <button
+      id="theme-toggle"
+      type="button"
+      class="fixed top-0 right-0 mt-4 mr-4 sm:mt-10 sm:mr-10 cursor-pointer z-10 text-sm"
+      aria-label="Toggle dark mode"
+    >
+      <span class="dark:hidden">🌙</span>
+      <span class="hidden dark:inline">☀️</span>
+    </button>
+
+    <div class="flex flex-col min-h-screen p-4 sm:p-10">
+      <header class="mb-20 space-y-10">
+        <div>
+          {isHome ? (
+            <h1 class="font-bold"><a href="/">Titouan Mathis</a></h1>
+          ) : (
+            <p class="font-bold"><a href="/">Titouan Mathis</a></p>
+          )}
+          <p>
+            CTO at{' '}
+            <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
+            {' '}and{' '}
+            <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
+          </p>
+        </div>
+        {!isExperiment && (
+          <nav>
+            <ul class="flex space-x-10">
+              {navItems.map(({ href, label }) => (
+                <li>
+                  <a href={href}>{label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+      </header>
+
+      {isHome && (
+        <div class="max-w-4xl">
+          <h2 class="text-2xl font-bold mb-20">
+            Hi 👋, I am the CTO at{' '}
+            <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
+            {' '}and{' '}
+            <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
+            {' '}in Strasbourg, France.
+            <br /><br />
+            I created{' '}
+            <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener">@studiometa/js-toolkit</a>
+            {' '}to standardize how we write JavaScript as a team and its accompanying UI components library{' '}
+            <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a>
+            {' '}powered by{' '}
+            <a href="https://twig.symfony.com/" target="_blank" rel="noopener noreferrer">Twig</a>
+            {' '}and{' '}
+            <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">Tailwind CSS</a>.
+          </h2>
+        </div>
+      )}
+
+      <main class:list={['mb-32 max-w-3xl', { markdown: isMarkdown }]}>
+        <slot />
+      </main>
+
+      {!isExperiment && (
+        <footer class="mt-auto text-sm">
+          <span class="block sm:inline-block mr-4 md:mr-10">
+            © {year}{' '}
+            <a href="/">T. Mathis</a>
+          </span>
+          <ul class="inline-flex gap-4 md:gap-10">
+            {socialLinks.map(({ url, label, rel }) => (
+              <li class="inline">
+                <a href={url} rel={rel ?? 'noopener noreferrer'} target="_blank">{label}</a>
+              </li>
+            ))}
+          </ul>
+        </footer>
+      )}
+    </div>
+
+    <script is:inline>
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        document.cookie = `theme=${isDark ? 'dark' : 'light'};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
+      });
+    </script>
+  </body>
+</html>

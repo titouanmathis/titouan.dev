@@ -1,0 +1,29 @@
+---
+import { getEmDashEntry } from 'emdash';
+import Base from '../../layouts/Base.astro';
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/404');
+}
+
+const { entry: experiment, cacheHint } = await getEmDashEntry('experiments', slug);
+
+if (!experiment) {
+  return Astro.redirect('/404');
+}
+
+Astro.cache.set(cacheHint);
+---
+
+<Base title={experiment.data.title}>
+  <article>
+    <h2 class="text-2xl font-bold mb-4" {...experiment.edit.title}>
+      {experiment.data.title}
+    </h2>
+    <p class="opacity-60">
+      Interactive experiment — coming soon.
+    </p>
+  </article>
+</Base>

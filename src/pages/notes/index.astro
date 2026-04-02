@@ -1,0 +1,40 @@
+---
+import { getEmDashCollection } from 'emdash';
+import Base from '../../layouts/Base.astro';
+
+function formatDate(date: Date | null): string {
+  if (!date) return '';
+  const d = String(date.getDate()).padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+const { entries: notes } = await getEmDashCollection('notes', {
+  orderBy: { published_at: 'desc' },
+});
+---
+
+<Base title="Notes">
+  <div class="grid grid-cols-1 gap-4">
+    <h1 class="text-2xl font-bold">Notes</h1>
+    {notes.length > 0 ? (
+      <ul>
+        {notes.map((note) => (
+          <li>
+            <a href={`/notes/${note.id}`}>
+              {note.data.title}
+            </a>
+            {note.data.publishedAt && (
+              <small class="ml-3 tracking-wide uppercase opacity-70">
+                {formatDate(note.data.publishedAt)}
+              </small>
+            )}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>No notes.</p>
+    )}
+  </div>
+</Base>

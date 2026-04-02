@@ -1,0 +1,115 @@
+---
+import { getEmDashCollection } from 'emdash';
+import Base from '../layouts/Base.astro';
+
+function formatDate(date: Date | null): string {
+  if (!date) return '';
+  const d = String(date.getDate()).padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+const { entries: articles } = await getEmDashCollection('articles', {
+  orderBy: { published_at: 'desc' },
+  limit: 5,
+});
+
+const { entries: notes } = await getEmDashCollection('notes', {
+  orderBy: { published_at: 'desc' },
+  limit: 5,
+});
+
+const { entries: experiments } = await getEmDashCollection('experiments', {
+  orderBy: { published_at: 'desc' },
+  limit: 5,
+});
+
+const { entries: links } = await getEmDashCollection('links', {
+  orderBy: { published_at: 'desc' },
+  limit: 5,
+});
+
+const sections = [
+  {
+    title: 'Articles',
+    href: '/articles',
+    items: articles,
+    prefix: '/articles',
+    noItemsLabel: 'No articles.',
+    allItemsLabel: 'Discover all articles →',
+    isExternal: false,
+    showDate: true,
+  },
+  {
+    title: 'Notes',
+    href: '/notes',
+    items: notes,
+    prefix: '/notes',
+    noItemsLabel: 'No notes.',
+    allItemsLabel: 'Discover all notes →',
+    isExternal: false,
+    showDate: true,
+  },
+  {
+    title: 'Experiments',
+    href: '/experiments',
+    items: experiments,
+    prefix: '/experiments',
+    noItemsLabel: 'No experiments.',
+    allItemsLabel: 'Discover all experiments →',
+    isExternal: false,
+    showDate: false,
+  },
+  {
+    title: 'Links',
+    href: '/links',
+    items: links,
+    prefix: '/links',
+    noItemsLabel: 'No links.',
+    allItemsLabel: 'Discover all links →',
+    isExternal: true,
+    showDate: false,
+  },
+].filter(s => s.items.length > 0);
+---
+
+<Base>
+  <div class="grid gap-10">
+    {sections.map((section, index) => (
+      <>
+        {index > 0 && <hr class="border border-current opacity-10" />}
+        <div class="grid grid-cols-1 gap-4">
+          <p class="text-2xl font-bold">{section.title}</p>
+          {section.items.length > 0 ? (
+            <>
+              <ul>
+                {section.items.map((item) => (
+                  <li>
+                    <a
+                      href={section.isExternal && item.data.link ? item.data.link : `${section.prefix}/${item.id}`}
+                      target={section.isExternal ? '_blank' : undefined}
+                      rel={section.isExternal ? 'noopener' : undefined}
+                    >
+                      {item.data.title}
+                    </a>
+                    {section.showDate && item.data.publishedAt && (
+                      <small class="ml-3 tracking-wide uppercase opacity-70">
+                        {formatDate(item.data.publishedAt)}
+                      </small>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {section.items.length >= 5 && (
+                <p><a href={section.href}>{section.allItemsLabel}</a></p>
+              )}
+            </>
+          ) : (
+            <p>{section.noItemsLabel}</p>
+          )}
+        </div>
+      </>
+    ))}
+  </div>
+</Base>

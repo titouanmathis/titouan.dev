@@ -1,0 +1,27 @@
+---
+import { getEmDashCollection } from 'emdash';
+import Base from '../../layouts/Base.astro';
+
+const { entries: experiments } = await getEmDashCollection('experiments', {
+  orderBy: { published_at: 'desc' },
+});
+---
+
+<Base title="Experiments">
+  <div class="grid grid-cols-1 gap-4">
+    <h1 class="text-2xl font-bold">Experiments</h1>
+    {experiments.length > 0 ? (
+      <ul>
+        {experiments.map((exp) => (
+          <li>
+            <a href={`/experiments/${exp.id}`}>
+              {exp.data.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>No experiments.</p>
+    )}
+  </div>
+</Base>

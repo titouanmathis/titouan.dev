@@ -1,0 +1,42 @@
+---
+import { getEmDashEntry } from 'emdash';
+import { PortableText } from 'emdash/ui';
+import Base from '../../layouts/Base.astro';
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/404');
+}
+
+const { entry: article, cacheHint } = await getEmDashEntry('articles', slug);
+
+if (!article) {
+  return Astro.redirect('/404');
+}
+
+Astro.cache.set(cacheHint);
+
+function formatDate(date: Date | null): string {
+  if (!date) return '';
+  const d = String(date.getDate()).padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+const tagList = article.data.tags ? article.data.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [];
+---
+
+<Base title={article.data.title} description={article.data.description} isMarkdown>
+  <h1 class="text-3xl font-bold">{article.data.title}</h1>
+
+  <small class="block tracking-wide uppercase opacity-70">
+    {article.data.publishedAt && formatDate(article.data.publishedAt)}
+    {tagList.length > 0 && (
+      <> in {tagList.map((tag: string) => `#${tag}`).join(' ')}</>
+    )}
+  </small>
+
+  <PortableText value={article.data.content} />
+</Base>

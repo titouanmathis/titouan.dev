@@ -1,0 +1,27 @@
+---
+import { getEmDashCollection } from 'emdash';
+import Base from '../../layouts/Base.astro';
+
+const { entries: links } = await getEmDashCollection('links', {
+  orderBy: { published_at: 'desc' },
+});
+---
+
+<Base title="Links">
+  <div class="grid grid-cols-1 gap-4">
+    <h1 class="text-2xl font-bold">Links</h1>
+    {links.length > 0 ? (
+      <ul>
+        {links.map((link) => (
+          <li>
+            <a href={link.data.link} target="_blank" rel="noopener">
+              {link.data.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>No links.</p>
+    )}
+  </div>
+</Base>

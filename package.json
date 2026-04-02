@@ -1,46 +1,35 @@
 {
-  "name": "~",
+  "name": "titouan-dev",
+  "version": "0.0.1",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "iles dev",
-    "build": "iles build",
-    "preview": "iles preview --open --port 5050",
-    "lint": "npm run lint:oxlint && npm run lint:stylelint && npm run lint:prettier",
-    "lint:oxlint": "oxlint src/",
-    "lint:stylelint": "stylelint src/**/*.{css,vue} --cache",
-    "lint:prettier": "prettier -c src/ --cache",
-    "fix": "npm run fix:oxlint && npm run fix:stylelint && npm run fix:prettier",
-    "fix:oxlint": "npm run lint:oxlint -- --fix",
-    "fix:stylelint": "npm run lint:stylelint -- --fix",
-    "fix:prettier": "npm run lint:prettier -- --write"
+  "emdash": {
+    "seed": "seed/seed.json"
   },
-  "devDependencies": {
-    "@iconify-json/bx": "^1.2.2",
-    "@iconify-json/carbon": "^1.2.13",
-    "@islands/feed": "^0.10.0-beta.1",
-    "@islands/headings": "^0.10.0-beta.1",
-    "@islands/icons": "^0.10.0-beta.1",
-    "@islands/prism": "^0.10.0-beta.1",
-    "@studiometa/prettier-config": "^4.4.0",
-    "@studiometa/stylelint-config": "^4.1.1",
-    "@tailwindcss/vite": "4.1.14",
-    "oxlint": "1.19.0",
-    "remark-gfm": "^4.0.1",
-    "tailwindcss": "^4.1.14",
-    "typescript": "^5.9.3"
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "node ./dist/server/entry.mjs",
+    "bootstrap": "emdash init && emdash seed",
+    "seed": "emdash seed",
+    "typecheck": "astro check"
   },
   "dependencies": {
-    "@studiometa/js-toolkit": "^3.1.1",
-    "@studiometa/playground": "0.1.5",
-    "@vueuse/components": "13.9.0",
-    "@vueuse/core": "^13.9.0",
-    "iles": "^0.10.0-beta.1",
-    "vue": "3.5.22"
+    "@astrojs/node": "^10.0.0",
+    "@astrojs/react": "^5.0.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "astro": "^6.1.2",
+    "better-sqlite3": "^11.10.0",
+    "emdash": "^0.0.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwindcss": "^4.1.14"
   },
-  "exports": {
-    "./*": "./src/*"
+  "devDependencies": {
+    "@astrojs/check": "^0.9.7",
+    "@studiometa/prettier-config": "^4.4.0",
+    "@studiometa/stylelint-config": "^4.1.1"
   },
   "stylelint": {
     "extends": "@studiometa/stylelint-config",
@@ -62,5 +51,8 @@
       ]
     }
   },
-  "prettier": "@studiometa/prettier-config"
+  "prettier": "@studiometa/prettier-config",
+  "overrides": {
+    "vite": "^7"
+  }
 }

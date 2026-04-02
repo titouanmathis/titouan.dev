@@ -1,0 +1,196 @@
+{
+	"$schema": "https://emdashcms.com/seed.schema.json",
+	"version": "1",
+	"meta": {
+		"name": "titouan.dev",
+		"description": "Personal website with articles, notes, experiments, and links",
+		"author": "Titouan Mathis"
+	},
+
+	"settings": {
+		"title": "titouan.dev",
+		"tagline": "Articles, notes, and experiments"
+	},
+
+	"collections": [
+		{
+			"slug": "articles",
+			"label": "Articles",
+			"labelSingular": "Article",
+			"supports": ["drafts", "revisions", "search", "seo"],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "description",
+					"label": "Description",
+					"type": "text",
+					"searchable": true
+				},
+				{
+					"slug": "tags",
+					"label": "Tags",
+					"type": "text"
+				},
+				{
+					"slug": "featured_image",
+					"label": "Featured Image",
+					"type": "image"
+				},
+				{
+					"slug": "content",
+					"label": "Content",
+					"type": "portableText",
+					"searchable": true
+				}
+			]
+		},
+		{
+			"slug": "notes",
+			"label": "Notes",
+			"labelSingular": "Note",
+			"supports": ["drafts", "revisions", "search", "seo"],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "description",
+					"label": "Description",
+					"type": "text",
+					"searchable": true
+				},
+				{
+					"slug": "tags",
+					"label": "Tags",
+					"type": "text"
+				},
+				{
+					"slug": "content",
+					"label": "Content",
+					"type": "portableText",
+					"searchable": true
+				}
+			]
+		},
+		{
+			"slug": "pages",
+			"label": "Pages",
+			"labelSingular": "Page",
+			"supports": ["drafts", "revisions", "search"],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "content",
+					"label": "Content",
+					"type": "portableText",
+					"searchable": true
+				}
+			]
+		},
+		{
+			"slug": "experiments",
+			"label": "Experiments",
+			"labelSingular": "Experiment",
+			"supports": ["drafts", "revisions"],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "number",
+					"label": "Number",
+					"type": "number"
+				},
+				{
+					"slug": "component",
+					"label": "Component",
+					"type": "text"
+				}
+			]
+		},
+		{
+			"slug": "links",
+			"label": "Links",
+			"labelSingular": "Link",
+			"supports": ["drafts"],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "link",
+					"label": "URL",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "description",
+					"label": "Description",
+					"type": "text"
+				},
+				{
+					"slug": "tags",
+					"label": "Tags",
+					"type": "text"
+				}
+			]
+		}
+	],
+
+	"taxonomies": [
+		{
+			"name": "tag",
+			"label": "Tags",
+			"labelSingular": "Tag",
+			"hierarchical": false,
+			"collections": ["notes", "articles"],
+			"terms": [
+				{ "slug": "http", "label": "HTTP" },
+				{ "slug": "redirect", "label": "Redirect" },
+				{ "slug": "apache", "label": "Apache" },
+				{ "slug": "css", "label": "CSS" },
+				{ "slug": "php", "label": "PHP" },
+				{ "slug": "git", "label": "Git" },
+				{ "slug": "cli", "label": "CLI" },
+				{ "slug": "nuxt", "label": "Nuxt" },
+				{ "slug": "ssh", "label": "SSH" },
+				{ "slug": "sublime-text", "label": "Sublime Text" }
+			]
+		}
+	],
+
+	"menus": [
+		{
+			"name": "primary",
+			"label": "Primary Navigation",
+			"items": [
+				{ "type": "custom", "label": "Articles", "url": "/articles" },
+				{ "type": "custom", "label": "Notes", "url": "/notes" },
+				{ "type": "custom", "label": "Experiments", "url": "/experiments" }
+			]
+		}
+	]
+}
