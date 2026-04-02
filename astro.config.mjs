@@ -6,6 +6,7 @@ import emdash, { local } from "emdash/astro";
 import { sqlite } from "emdash/db";
 
 export default defineConfig({
+	site: process.env.SITE_URL || "https://ikko-dev-titouan.dab-agama.ts.net",
 	output: "server",
 	adapter: node({
 		mode: "standalone",
