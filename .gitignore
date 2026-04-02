@@ -9,3 +9,4 @@ data.db-wal
 .DS_Store
 *.local
 .stylelintcache
+pnpm-lock.yaml
