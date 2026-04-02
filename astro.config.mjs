@@ -23,5 +23,8 @@ export default defineConfig({
 			}),
 		}),
 	],
+	experimental: {
+		cache: true,
+	},
 	devToolbar: { enabled: false },
 });
