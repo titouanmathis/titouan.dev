@@ -1,7 +1,7 @@
 import node from "@astrojs/node";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "astro/config";
+import { defineConfig, memoryCache } from "astro/config";
 import emdash, { local } from "emdash/astro";
 import { sqlite } from "emdash/db";
 
@@ -24,7 +24,9 @@ export default defineConfig({
 		}),
 	],
 	experimental: {
-		cache: true,
+		cache: {
+			provider: memoryCache({ max: 500 }),
+		},
 	},
 	devToolbar: { enabled: false },
 });
