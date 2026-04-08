@@ -37,6 +37,38 @@ npm run dev
 npm run build
 ```
 
+### Import legacy notes/articles from `main` into EmDash
+
+Use the migration script to import markdown content from the previous version of the site stored on the `main` branch.
+
+```sh
+EMDASH_URL=http://localhost:4321 \
+EMDASH_TOKEN=your_api_token \
+npm run import:legacy -- --dry-run
+```
+
+Then run the real import:
+
+```sh
+EMDASH_URL=http://localhost:4321 \
+EMDASH_TOKEN=your_api_token \
+npm run import:legacy
+```
+
+Options:
+
+- `--dry-run` — preview what would be imported
+- `--verbose` — log parsed entry payloads
+
+Notes:
+
+- Reads legacy `.md`/`.mdx` files from the `main` branch via `git show`
+- Imports `src/pages/notes/**` into `notes`
+- Imports `src/pages/articles/**` into `articles`
+- Skips entries whose slug already exists
+- Creates missing tag taxonomy terms, then assigns them to imported entries
+- Strips legacy MDX-only UI components/imports during migration
+
 ### Run Unit Tests with [Cypress Component Testing](https://docs.cypress.io/guides/component-testing/introduction)
 
 ```sh
