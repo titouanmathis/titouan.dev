@@ -1,0 +1,44 @@
+---
+import { deflateSync } from 'node:zlib';
+
+interface Props {
+  value: {
+    html?: string;
+    css?: string;
+    js?: string;
+  };
+}
+
+const value = Astro.props.node ?? Astro.props.value ?? {};
+const html = value.html ?? '';
+const css = value.css ?? '';
+const js = value.js ?? '';
+
+function compressForPlayground(input: string) {
+  return deflateSync(Buffer.from(input, 'utf8'), { level: 9 }).toString('base64');
+}
+
+const playgroundUrl = html
+  ? (() => {
+      const params = new URLSearchParams();
+      params.set('html', compressForPlayground(html));
+      params.set('script', compressForPlayground(js));
+      params.set('style', compressForPlayground(css));
+      params.set('theme', 'light');
+      params.set('embed', 'true');
+      return `https://studiometa-playground.pages.dev/#${params.toString()}`;
+    })()
+  : '';
+---
+
+{html && (
+  <div class="relative my-4 overflow-hidden rounded bg-white dark:bg-primary/5">
+    <iframe
+      src={playgroundUrl}
+      title="Playground preview"
+      loading="lazy"
+      class="block w-full border-0"
+      style="height: 95px;"
+    />
+  </div>
+)}

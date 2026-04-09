@@ -6,6 +6,9 @@
   "emdash": {
     "seed": "seed/seed.json"
   },
+  "workspaces": [
+    "plugins/*"
+  ],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -16,11 +19,13 @@
     "typecheck": "astro check",
     "import:legacy": "node ./scripts/import-legacy-content.mjs",
     "import:legacy:extras": "node ./scripts/import-legacy-experiments-links.mjs",
-    "backfill:published-at": "node ./scripts/backfill-published-at.mjs"
+    "backfill:published-at": "node ./scripts/backfill-published-at.mjs",
+    "fix:imported-mdx": "node ./scripts/fix-imported-mdx-content.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^10.0.0",
     "@astrojs/react": "^5.0.0",
+    "@studiometa/playground-preview": "0.3.8",
     "@tailwindcss/vite": "^4.1.14",
     "astro": "^6.1.2",
     "better-sqlite3": "^11.10.0",

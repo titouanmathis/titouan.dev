@@ -1,0 +1,27 @@
+---
+interface Props {
+  value: {
+    lightSrc?: string;
+    darkSrc?: string;
+  };
+}
+
+const value = Astro.props.node ?? Astro.props.value ?? {};
+const lightSrc = value.lightSrc ?? '';
+const darkSrc = value.darkSrc ?? '';
+---
+
+{(lightSrc || darkSrc) && (
+  <div class="my-4 overflow-hidden rounded max-w-lg bg-white dark:bg-primary/5">
+    {lightSrc && (
+      <video muted autoplay loop playsinline class="dark:hidden scale-105 w-full">
+        <source src={lightSrc} type="video/mp4" />
+      </video>
+    )}
+    {darkSrc && (
+      <video muted autoplay loop playsinline class="hidden dark:block scale-105 w-full">
+        <source src={darkSrc} type="video/mp4" />
+      </video>
+    )}
+  </div>
+)}

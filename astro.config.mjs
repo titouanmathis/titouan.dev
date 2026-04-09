@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, memoryCache } from "astro/config";
 import emdash, { local } from "emdash/astro";
 import { sqlite } from "emdash/db";
+import legacyMdxPlugin from "legacy-mdx-plugin";
 
 export default defineConfig({
 	site: process.env.SITE_URL || "https://ikko-dev-titouan.dab-agama.ts.net",
@@ -22,6 +23,7 @@ export default defineConfig({
 				directory: "./uploads",
 				baseUrl: "/_emdash/api/media/file",
 			}),
+			plugins: [legacyMdxPlugin()],
 		}),
 	],
 	experimental: {

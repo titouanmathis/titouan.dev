@@ -1,0 +1,36 @@
+---
+interface Props {
+  value: {
+    columns?: string;
+    note?: string;
+  };
+}
+
+const value = Astro.props.node ?? Astro.props.value ?? {};
+const columnsJson = value.columns ?? '[]';
+const note = value.note ?? '';
+
+let columns: string[][] = [];
+try {
+  const parsed = JSON.parse(columnsJson);
+  if (Array.isArray(parsed)) {
+    columns = parsed.filter(Array.isArray);
+  }
+} catch {}
+
+const useTabularNums = /tabular/i.test(note);
+---
+
+{columns.length > 0 && (
+  <div class:list={['my-4 max-w-lg rounded bg-white p-10 dark:bg-primary/5', useTabularNums && 'tabular-nums']}>
+    <div class="flex gap-4 justify-center">
+      {columns.map((col, index) => (
+        <div class:list={[index === 1 && 'text-center', index === 2 && 'text-right']}>
+          {col.map((item) => (
+            <div>{item}</div>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+)}

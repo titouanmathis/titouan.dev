@@ -1,0 +1,17 @@
+{
+  "name": "legacy-mdx-plugin",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./astro": "./src/astro/index.ts"
+  },
+  "files": ["src"],
+  "peerDependencies": {
+    "astro": ">=6.0.0-beta.0",
+    "emdash": "*"
+  },
+  "dependencies": {
+    "@emdash-cms/blocks": "^0.0.1"
+  }
+}
