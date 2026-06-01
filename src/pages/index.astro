@@ -87,7 +87,7 @@ const sections = [
                 {section.items.map((item) => (
                   <li>
                     <a
-                      href={section.isExternal && item.data.link ? item.data.link : `${section.prefix}/${item.id}`}
+                      href={section.isExternal && 'link' in item.data && item.data.link ? item.data.link : `${section.prefix}/${item.id}`}
                       target={section.isExternal ? '_blank' : undefined}
                       rel={section.isExternal ? 'noopener' : undefined}
                     >
