@@ -17,6 +17,7 @@
     "bootstrap": "emdash init && emdash seed",
     "seed": "emdash seed",
     "typecheck": "astro check",
+    "token:create": "node ./scripts/create-admin-token.mjs",
     "import:legacy": "node ./scripts/import-legacy-content.mjs",
     "import:legacy:extras": "node ./scripts/import-legacy-experiments-links.mjs",
     "backfill:published-at": "node ./scripts/backfill-published-at.mjs",

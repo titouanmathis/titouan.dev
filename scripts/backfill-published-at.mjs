@@ -22,7 +22,8 @@ function execGit(args) {
 function extractDateFromPath(path) {
   const match = path.match(/\/(\d{4})\/(\d{2})\/(\d{2})\//);
   if (!match) return null;
-  return `${match[1]}-${match[2]}-${match[3]} 00:00:00`;
+  // EmDash 0.15 requires ISO 8601 for publishedAt
+  return `${match[1]}-${match[2]}-${match[3]}T00:00:00.000Z`;
 }
 
 function extractSlugFromPath(path) {
@@ -49,7 +50,9 @@ async function main() {
       const page = await client.list(collection, { limit: 100, cursor, status: 'published' });
       for (const item of page.items) {
         const targetDate = wanted.get(`${collection}:${item.slug}`);
-        if (!targetDate || item.publishedAt) continue;
+        // Always re-apply the original date: publishing stamps publishedAt to
+        // "now", so we can't skip entries that already have a publishedAt.
+        if (!targetDate || item.publishedAt === targetDate) continue;
 
         if (dryRun) {
           console.log(`[dry-run] ${collection}/${item.slug} -> ${targetDate}`);
@@ -63,11 +66,7 @@ async function main() {
             'Content-Type': 'application/json',
             Accept: 'application/json',
           },
-          body: JSON.stringify({
-            status: 'published',
-            publishedAt: targetDate,
-            data: item.data,
-          }),
+          body: JSON.stringify({ publishedAt: targetDate }),
         });
 
         if (!response.ok) {

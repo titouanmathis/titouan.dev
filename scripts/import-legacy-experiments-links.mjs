@@ -100,11 +100,14 @@ async function createEntry(entry, existing) {
     return;
   }
 
-  await client.create(entry.collection, {
+  // EmDash 0.15: create as draft, then publish via the dedicated endpoint.
+  const item = await client.create(entry.collection, {
     slug: entry.slug,
-    status: 'published',
+    status: 'draft',
     data: entry.data,
   });
+
+  await client.publish(entry.collection, item.id);
 
   console.log(`imported ${entry.collection}/${entry.slug}`);
 }

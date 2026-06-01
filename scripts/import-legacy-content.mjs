@@ -2,7 +2,7 @@
 
 import { execFileSync } from 'node:child_process';
 import process from 'node:process';
-import { EmDashClient } from 'emdash/client';
+import { EmDashClient, markdownToPortableText } from 'emdash/client';
 
 const args = new Set(process.argv.slice(2));
 const dryRun = args.has('--dry-run');
@@ -63,7 +63,8 @@ function parseFrontmatter(raw) {
 function extractDateFromPath(path) {
   const match = path.match(/\/(\d{4})\/(\d{2})\/(\d{2})\//);
   if (!match) return null;
-  return `${match[1]}-${match[2]}-${match[3]} 00:00:00`;
+  // EmDash 0.15 requires ISO 8601 for publishedAt
+  return `${match[1]}-${match[2]}-${match[3]}T00:00:00.000Z`;
 }
 
 function extractSlugFromPath(path) {
@@ -164,10 +165,12 @@ async function ensureTag(tag) {
   }
 
   try {
-    const created = await client.createTerm('tag', {
+    const response = await client.createTerm('tag', {
       slug: tag.slug,
       label: tag.label,
     });
+    // EmDash 0.15 wraps the new term: { term: { id, slug, ... } }
+    const created = response.term ?? response;
     map.set(created.slug, created);
     return created;
   } catch (error) {
@@ -239,29 +242,33 @@ async function createEntry(entry) {
     title: entry.title,
     description: entry.description,
     tags: entry.tags.map((tag) => tag.slug).join(', '),
-    content: entry.content,
+    content: markdownToPortableText(entry.content),
   };
 
+  // EmDash 0.15: entries are created as drafts, then published via the
+  // dedicated endpoint. publishedAt can only be backdated afterwards.
   const item = await client.create(entry.collection, {
     slug: entry.slug,
-    status: 'published',
+    status: 'draft',
     data: payload,
   });
 
+  await client.publish(entry.collection, item.id);
+
   if (entry.publishedAt) {
-    await fetch(`${baseUrl}/_emdash/api/content/${encodeURIComponent(entry.collection)}/${encodeURIComponent(item.id)}`, {
+    const response = await fetch(`${baseUrl}/_emdash/api/content/${encodeURIComponent(entry.collection)}/${encodeURIComponent(item.id)}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      body: JSON.stringify({
-        status: 'published',
-        publishedAt: entry.publishedAt,
-        data: payload,
-      }),
+      body: JSON.stringify({ publishedAt: entry.publishedAt }),
     });
+
+    if (!response.ok) {
+      throw new Error(`Failed to backdate ${entry.collection}/${entry.slug}: ${response.status} ${await response.text()}`);
+    }
   }
 
   existing.push(item);

@@ -22,8 +22,31 @@ function gitShow(path) {
   return execFileSync('git', ['show', `main:${path}`], { encoding: 'utf8' });
 }
 
+// Legacy interactive blocks collected while building the markdown. EmDash 0.15's
+// markdownToPortableText() drops HTML comments, so instead we emit each block as a
+// unique placeholder paragraph that survives the conversion, then swap those
+// placeholders for real portable-text blocks of the matching plugin block type.
+const legacyBlocks = [];
+
 function opaqueBlock(block) {
-  return `<!--ec:block ${JSON.stringify(block)} -->`;
+  const index = legacyBlocks.push(block) - 1;
+  return `@@LEGACYBLOCK${index}@@`;
+}
+
+function blockPlainText(block) {
+  if (!block || block._type !== 'block' || !Array.isArray(block.children)) return '';
+  return block.children.map((child) => child.text ?? '').join('');
+}
+
+function buildLegacyNoteContent() {
+  legacyBlocks.length = 0;
+  const blocks = markdownToPortableText(buildLegacyNoteMarkdown());
+  return blocks.map((block) => {
+    const match = /^@@LEGACYBLOCK(\d+)@@$/.exec(blockPlainText(block).trim());
+    if (!match) return block;
+    // Preserve the generated _key, swap in the legacy block (_type + fields).
+    return { ...legacyBlocks[Number(match[1])], _key: block._key };
+  });
 }
 
 function buildLegacyNoteMarkdown() {
@@ -161,7 +184,7 @@ const fixes = [
   {
     collection: 'notes',
     slug: 'fixing-numbers-alignment-with-css',
-    content: markdownToPortableText(buildLegacyNoteMarkdown()),
+    content: buildLegacyNoteContent(),
   },
 ];
 
@@ -184,11 +207,16 @@ async function main() {
       continue;
     }
 
+    // EmDash 0.15: update() writes a draft revision, so we must publish() to
+    // promote the new content to the live version the site reads. Publishing
+    // re-stamps publishedAt to "now" — run backfill:published-at afterwards to
+    // restore the original dates.
     await client.update(fix.collection, item.id, {
       data: updatedData,
-      status: current.status,
       _rev: current._rev,
     });
+
+    await client.publish(fix.collection, item.id);
 
     console.log(`updated ${fix.collection}/${fix.slug}`);
   }
