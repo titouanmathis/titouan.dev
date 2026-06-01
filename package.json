@@ -63,6 +63,7 @@
   },
   "prettier": "@studiometa/prettier-config",
   "overrides": {
-    "vite": "^7"
+    "vite": "^7",
+    "@cloudflare/kumo": "2.3.0"
   }
 }
