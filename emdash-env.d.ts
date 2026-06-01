@@ -12,7 +12,7 @@ export interface Article {
   title: string;
   description?: string;
   tags?: string;
-  featured_image?: { id: string; src?: string; alt?: string; width?: number; height?: number };
+  featured_image?: { id: string; src?: string; alt?: string; width?: number; height?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> };
   content?: PortableTextBlock[];
   createdAt: Date;
   updatedAt: Date;

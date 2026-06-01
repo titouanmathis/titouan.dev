@@ -12,6 +12,6 @@
     "emdash": "*"
   },
   "dependencies": {
-    "@emdash-cms/blocks": "^0.0.1"
+    "@emdash-cms/blocks": "^0.15.0"
   }
 }

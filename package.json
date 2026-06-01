@@ -25,11 +25,12 @@
   "dependencies": {
     "@astrojs/node": "^10.0.0",
     "@astrojs/react": "^5.0.0",
+    "@emdash-cms/auth-atproto": "^0.2.8",
     "@studiometa/playground-preview": "0.3.8",
     "@tailwindcss/vite": "^4.1.14",
     "astro": "^6.1.2",
-    "better-sqlite3": "^11.10.0",
-    "emdash": "^0.0.3",
+    "better-sqlite3": "^12.8.0",
+    "emdash": "^0.15.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.1.14"
