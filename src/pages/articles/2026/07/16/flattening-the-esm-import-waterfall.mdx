@@ -73,7 +73,7 @@ When I need to keep modules granular, the native solution is [`<link rel="module
 ```html
 <!-- Don't: import the entry and let the browser discover the rest one level at a time -->
 <script type="module">
-  import { Base } from 'https://esm.sh/@studiometa/js-toolkit@3.6.0';
+  import { Base } from 'https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle=false';
 </script>
 
 <!-- Do: declare the deep modules up front so they load in parallel -->
@@ -84,7 +84,7 @@ When I need to keep modules granular, the native solution is [`<link rel="module
   rel="modulepreload"
   href="https://esm.sh/@studiometa/js-toolkit@3.6.0/es2022/utils/dom/index.nobundle.mjs" />
 <script type="module">
-  import { Base } from 'https://esm.sh/@studiometa/js-toolkit@3.6.0';
+  import { Base } from 'https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle=false';
 </script>
 ```
 
@@ -97,12 +97,20 @@ I use import maps as well, but they solve a different problem. They decouple the
 ```html
 <!-- Don't: expect the import map alone to fix load performance -->
 <script type="importmap">
-  { "imports": { "@studiometa/js-toolkit": "https://esm.sh/@studiometa/js-toolkit@3.6.0" } }
+  {
+    "imports": {
+      "@studiometa/js-toolkit": "https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle=false"
+    }
+  }
 </script>
 
 <!-- Do: pair it with modulepreload so the graph is both mapped and preloaded -->
 <script type="importmap">
-  { "imports": { "@studiometa/js-toolkit": "https://esm.sh/@studiometa/js-toolkit@3.6.0" } }
+  {
+    "imports": {
+      "@studiometa/js-toolkit": "https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle=false"
+    }
+  }
 </script>
 <link
   rel="modulepreload"
