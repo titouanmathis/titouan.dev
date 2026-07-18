@@ -20,7 +20,7 @@ export default defineConfig({
   modules: [headings(), icons(), prism(), '@islands/feed'],
   prettyUrls: true,
   turbo: true,
-  siteUrl: process?.env?.URL ?? 'http://localhost:3000',
+  siteUrl: process?.env?.URL ?? process?.env?.CF_PAGES_URL ?? 'http://localhost:3000',
   vite: {
     plugins: [tailwindcss()],
   },
