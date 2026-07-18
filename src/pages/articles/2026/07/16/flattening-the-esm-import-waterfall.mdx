@@ -44,7 +44,7 @@ So the goal isn't to have fewer connections, but to flatten the graph, by making
 
 ### Check your esm.sh bundling flags
 
-The first thing to check is whether you asked for the waterfall yourself. `?bundle=false` tells esm.sh to serve every sub-module separately, which is what produced the 148-file fan-out above. The default already bundles sub-modules, and `?bundle` goes further and rolls the dependencies into a single response.
+The first thing to check is how you are bundling. `?bundle=false` tells esm.sh to serve every sub-module separately, which is what produced the 148-file fan-out above. The default already bundles sub-modules, and `?bundle` goes further and rolls the dependencies into a single response.
 
 ```js
 // Don't: one import explodes into a deep tree of separate requests
@@ -60,7 +60,7 @@ A few flags from the [esm.sh documentation](https://github.com/esm-dev/esm.sh) a
 - `?standalone` goes further and inlines external dependencies too, except `peerDependencies`.
 - `?deps=react@18.3.1` pins a shared dependency so you don't end up with duplicated sub-trees across imports.
 
-The trade-off is deduplication: aggressive bundling can ship the same shared module more than once across several bundled entries. I would recommend to use it only on the imports with the deepest dependency trees.
+The trade-off is deduplication, and it can go the other way too. esm.sh bundles each output on its own, so a shared dependency gets inlined into several of them. If that dependency keys a singleton on class identity, the duplicated copies are no longer the same class, and you get competing instances. That is actually why the page above serves `@studiometa/js-toolkit` with `?bundle=false`: with the default bundling, js-toolkit shipped two copies of its service classes, so a component writing to one `ScrollService` and a decorator reading from the other never agreed, and scroll-driven components stopped updating. Serving the un-bundled files gives every importer the same module, at the cost of the waterfall you saw above. So bundle for speed, but keep it off where correctness depends on a single shared instance, and preload the deep modules to pay down the waterfall.
 
 ### Preloading the deep modules
 
