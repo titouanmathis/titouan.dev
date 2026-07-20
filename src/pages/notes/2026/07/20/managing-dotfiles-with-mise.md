@@ -7,6 +7,6 @@ description: Replacing custom Homebrew shell scripts with a portable mise config
 
 <MetaInfo class="block">20/07/2026 in #dotfiles #mise</MetaInfo>
 
-Until recently, bootstrapping my dotfiles meant maintaining custom shell scripts built around [Homebrew](https://brew.sh/). They worked well on macOS, but using the same setup on Linux servers required extra paths and special cases.
+I recently replaced the custom Homebrew shell scripts I used to bootstrap my dotfiles with [mise’s new dotfiles support](https://github.com/jdx/mise/releases/tag/v2026.6.6). It lets me manage tools, versions, and dotfiles from one declarative configuration. The biggest benefit is portability: the same setup works on macOS and Linux servers, with fewer scripts and special cases to maintain.
 
-I have now moved tool installation and version management to [mise](https://mise.jdx.dev/). The biggest win is portability: the same declarative configuration works on both macOS and Linux. My dotfiles contain less installation logic, and setting up a laptop or server now follows the same workflow.
+If you already use mise—or maintain your own dotfiles bootstrap scripts, I recommend giving it a try.
