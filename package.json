@@ -19,16 +19,16 @@
   "devDependencies": {
     "@iconify-json/bx": "^1.2.2",
     "@iconify-json/carbon": "^1.2.13",
-    "@islands/feed": "^0.10.0-beta.1",
-    "@islands/headings": "^0.10.0-beta.1",
-    "@islands/icons": "^0.10.0-beta.1",
-    "@islands/prism": "^0.10.0-beta.1",
+    "@islands/feed": "^0.10.0",
+    "@islands/headings": "^0.10.0",
+    "@islands/icons": "^0.10.0",
+    "@islands/prism": "^0.10.0",
     "@studiometa/prettier-config": "^4.4.0",
     "@studiometa/stylelint-config": "^4.1.1",
-    "@tailwindcss/vite": "4.1.14",
+    "@tailwindcss/vite": "^4.3.3",
     "oxlint": "1.19.0",
     "remark-gfm": "^4.0.1",
-    "tailwindcss": "^4.1.14",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -36,7 +36,7 @@
     "@studiometa/playground": "0.1.5",
     "@vueuse/components": "13.9.0",
     "@vueuse/core": "^13.9.0",
-    "iles": "^0.10.0-beta.1",
+    "iles": "^0.10.0",
     "vue": "3.5.22"
   },
   "exports": {
