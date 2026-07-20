@@ -106,9 +106,9 @@
     height: calc(var(--size) * 2);
     margin-top: calc(var(--size) * -1);
     margin-left: calc(var(--size) * -0.5);
-    animation: rotation 10s linear infinite;
     transition-timing-function: var(--ease-out-expo);
     transition-duration: 0.6s;
     transition-property: border-color, background-color;
+    animation: rotation 10s linear infinite;
   }
 </style>
