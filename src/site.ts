@@ -1,4 +1,4 @@
-const defaultTitle = 'Titouan Mathis · Developer & CTO at Studio Meta & Ikko';
+const defaultTitle = 'Titouan Mathis · Developer & CTO at Studio Meta & ikko';
 
 export default {
   makeTitle: (title) => (title ? `${title} · Titouan Mathis` : defaultTitle),

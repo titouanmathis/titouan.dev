@@ -48,7 +48,7 @@
           CTO at
           <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
           and
-          <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
+          <a href="https://www.ikko.fr/" target="_blank" rel="noopener">ikko</a>
         </p>
       </div>
       <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
@@ -66,7 +66,7 @@
         Hi 👋, I am the CTO at
         <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
         and
-        <a href="https://www.ikko.fr/" target="_blank" rel="noopener">Ikko</a>
+        <a href="https://www.ikko.fr/" target="_blank" rel="noopener">ikko</a>
         in Strasbourg, France.
         <br />
         <br />
