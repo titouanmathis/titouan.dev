@@ -10,15 +10,15 @@ tags: ai, agents, determinism
 
 Sunil Pai's [*one document, two hands*](https://sunilpai.dev/posts/one-document-two-hands/) puts clean words on a rule I keep coming back to: the model handles the fuzzy intent, and deterministic code handles the precise work.
 
-The practical version is simple. When a workflow gets repetitive, an agent is rarely the right tool. Use the model to write a deterministic program, then keep the agent out of the runtime as much as possible. You pay for the model once, when the tool is built, and after that it is ordinary code: predictable, testable, and cheap to run.
+The practical version is simple: when a workflow gets repetitive and needs deterministic output, an agent is rarely the right tool. Use the model to write a deterministic program, then keep the agent out of the runtime as much as possible. You pay for the model once to build the tool, and after that it is ordinary code: predictable, testable, and cheap to run.
 
 ## Why not an agent
 
-A non-deterministic agent has two recurring costs. It spends tokens, because it re-derives the context and re-plans on every run. And it is hard to reason about, because what it does today is not necessarily what it does tomorrow. Most of a workflow is not fuzzy anyway. Staging files, filtering noise, pulling repository context and shaping a prompt are deterministic steps that a script handles for free. The useful question is not which agent should run a task, but which parts of it are deterministic and whether the model can write that code.
+A non-deterministic agent has two recurring costs. It spends tokens, because it re-derives the context and re-plans on every run. And it is hard to reason about, because what it does today is not necessarily what it does tomorrow. Most of a workflow is not fuzzy anyway: staging files, filtering noise, pulling repository context and shaping a prompt are deterministic steps that a script handles for free. The useful question is not which agent should run a task, but which parts of it are deterministic and whether the model can write that code.
 
 ## A measured example
 
-Our code reviewer, `@weareikko/code-review`, gathers context deterministically. It stages the files that are not noise, pulls repository context, and configures the relevant skills, and then the model reviews. That was not the first design. Letting the agent discover its own context is the more natural one, and it is where the project started. The measurements changed that.
+Our code reviewer [`@weareikko/code-review`](https://github.com/weareikko/code-review) gathers context deterministically. It stages the files that are not noise, pulls repository and PR context, and configures the relevant skills, and then the model reviews. We tried letting the agent discover its own context by giving it the right tools, thinking this was the most efficient way for it to review a diff, but the measurements told us the opposite.
 
 A [controlled test](https://github.com/weareikko/code-review/pull/131) used synthetic diffs with bugs planted at known locations, so recall was measurable. The clearest case was a 269k diff, 2.7 times the budget, with the bugs in the small files that get dropped first.
 
