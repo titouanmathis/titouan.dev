@@ -8,7 +8,7 @@ tags: ai, agents, determinism
 
 <MetaInfo class="block">21/07/2026 in #ai #agents #determinism</MetaInfo>
 
-Sunil Pai's [_one document, two hands_](https://sunilpai.dev/posts/one-document-two-hands/) describes a rule I use: models handle ambiguous intent; deterministic code handles defined steps.
+Sunil Pai's [_one document, two hands_](https://sunilpai.dev/posts/one-document-two-hands/) describes a rule I use and share with the team at [Ikko](https://ikko.fr): models handle ambiguous intent; deterministic code handles defined steps.
 
 When a repetitive workflow requires consistent output, use a model to write a program instead of running an agent each time. The resulting code is predictable, testable, and cheap to run.
 
