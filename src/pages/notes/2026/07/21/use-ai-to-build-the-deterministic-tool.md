@@ -1,10 +1,10 @@
 ---
-title: Use AI to build deterministic tools, not to run repetitive workflows
+title: Use AI to build deterministic tools
 description: A code-review experiment comparing deterministic context staging with agent-led context discovery.
 tags: ai, agents, determinism
 ---
 
-# Use AI to build deterministic tools, not to run repetitive workflows
+# Use AI to build deterministic tools
 
 <MetaInfo class="block">21/07/2026 in #ai #agents #determinism</MetaInfo>
 
