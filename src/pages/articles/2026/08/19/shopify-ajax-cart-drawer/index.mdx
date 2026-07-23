@@ -93,9 +93,19 @@ The last piece connects the two components. `Fetch` emits a bubbling `fetch-upda
 
 Because `Fetch`'s events bubble, one `Action` on the wrapper handles every add-to-cart form on the page. `Panel -> target.open()` calls the drawer's `open()` method, and `open()` is a no-op if it is already open, so adding a second item just refreshes the contents.
 
+Register the four components this drawer uses once, in your theme's main script:
+
+```js twoslash
+// @noErrors
+import { registerComponent } from '@studiometa/js-toolkit';
+import { Action, Fetch, Panel, Transition } from '@studiometa/ui';
+
+[Action, Fetch, Panel, Transition].forEach(registerComponent);
+```
+
 ## How the demo simulates it
 
-The playground has no cart, so the demo mocks `POST /cart/add.js`: it keeps an in-memory cart, and returns the same JSON shape Shopify does, a `sections` object with the rendered `cart-drawer` and `cart-count` HTML.
+The playground has no cart, so the demo mocks `POST /cart/add.js`: it keeps an in-memory cart, and returns what Shopify returns from that endpoint, the added line item plus a `sections` object holding the rendered `cart-drawer` and `cart-count` HTML. The added line is the item itself, with fields like `id`, `key`, `quantity` and `title`; a top-level `items` array is what `/cart.js` returns, not `/cart/add.js`.
 
 ```js twoslash
 // @noErrors
@@ -106,10 +116,11 @@ window.fetch = async (input, init) => {
   );
   if (url.pathname.endsWith('/cart/add.js')) {
     const id = init.body instanceof FormData ? String(init.body.get('id')) : '101';
-    /* update the in-memory cart */
+    /* update the in-memory cart, then return the added line item… */
     return new Response(
       JSON.stringify({
-        items: cart,
+        id, quantity: 1, title: 'Cap',
+        // …plus a `sections` object because the request carried a `sections` param.
         sections: { 'cart-drawer': drawerSection(), 'cart-count': countSection() },
       }),
       { headers: { 'content-type': 'application/json' } },
@@ -126,5 +137,5 @@ window.fetch = async (input, init) => {
 Submitting the add-to-cart form now adds the selected variant, refreshes the drawer and count from one bundled request, and opens an accessible panel. The section-swapping underneath it all is the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).
 
 :::info[Next article]
-The last article, [Shopify product recommendations](/articles/2026/09/02/shopify-product-recommendations/), lazy-loads recommendations that pair well inside the cart.
+Next, [Shopify predictive search](/articles/2026/08/26/shopify-predictive-search/) adds a debounced, keyboard-navigable suggestions dropdown over the search endpoint.
 :::

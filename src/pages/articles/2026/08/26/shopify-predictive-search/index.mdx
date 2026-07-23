@@ -38,18 +38,40 @@ The [Predictive Search API](https://shopify.dev/docs/api/ajax/reference/predicti
 `Fetch` fires on link clicks and form submits, not on keystrokes. So the trigger is an [`Action`](https://ui.studiometa.dev/components/Action/) listening for `input`, with a `debounce` modifier, that submits the search form:
 
 ```html
-<form action="/search/suggest" method="get"
-  data-component="Fetch Action"
-  data-on:input.debounce300="Fetch -> target.$el.requestSubmit()">
+<form action="{{ routes.search_url }}" method="get"
+  data-component="PredictiveSearchFetch Action"
+  data-on:input.debounce300="PredictiveSearchFetch -> target.$el.requestSubmit()">
   <input type="hidden" name="resources[type]" value="product">
-  <input type="hidden" name="section_id" value="predictive-search">
-  <input type="search" name="q" autocomplete="off" aria-controls="predictive-search" aria-autocomplete="list">
+  <input type="search" name="q" autocomplete="off" role="combobox"
+    aria-controls="shopify-section-predictive-search" aria-autocomplete="list">
 </form>
 
-<div id="shopify-section-predictive-search"><!-- results land here --></div>
+<div id="shopify-section-predictive-search" role="listbox"><!-- results land here --></div>
 ```
 
-`data-on:input.debounce300` waits 300ms after the last keystroke before submitting, the same interval Dawn uses. `requestSubmit()` triggers the form's submit, `Fetch` builds the URL from the form fields (`q`, `resources[type]`, `section_id`), fetches `/search/suggest`, and swaps the `#shopify-section-predictive-search` section it gets back. The debounce lives entirely in an attribute, and the request logic is the same `Fetch` used throughout the series.
+The form's `action` is `{{ routes.search_url }}` on purpose: with JavaScript off, submitting runs an ordinary search and lands on the full results page, the honest no-JS baseline. The enhancement, though, wants the lighter suggestions endpoint at `/search/suggest` (`{{ routes.predictive_search_url }}`). Since `Fetch` fetches whatever the form's `action` is, a small subclass repoints the enhanced request and adds the `section_id`, so that parameter never leaks into the no-JS URL:
+
+```js twoslash
+// @noErrors
+import { registerComponent } from '@studiometa/js-toolkit';
+import { Action, Fetch } from '@studiometa/ui';
+
+class PredictiveSearchFetch extends Fetch {
+  static config = { ...Fetch.config, name: 'PredictiveSearchFetch' };
+
+  get url() {
+    const url = super.url; // built from the form: routes.search_url + ?q=…
+    url.pathname += '/suggest'; // routes.search_url -> routes.predictive_search_url
+    url.searchParams.set('section_id', 'predictive-search');
+    return url;
+  }
+}
+
+registerComponent(Action);
+registerComponent(PredictiveSearchFetch);
+```
+
+`data-on:input.debounce300` waits 300ms after the last keystroke before submitting, the same interval Dawn uses. `requestSubmit()` fires the form's submit; `PredictiveSearchFetch` builds the URL from the form fields (`q`, `resources[type]`), reroutes it to `/search/suggest`, and swaps the `#shopify-section-predictive-search` section it gets back. So the native path goes to the search page and the enhanced path to `/search/suggest`, from the same markup.
 
 The `debounce` modifier accepts a delay in milliseconds (`debounce300`); js-toolkit also exports a standalone [`debounce`](https://js-toolkit.studiometa.dev/utils/debounce.html) utility if you need it outside `Action`.
 
@@ -81,6 +103,7 @@ A suggestions dropdown should be operable with the arrow keys and Enter. [`Index
 
 ```js twoslash
 // @noErrors
+import { registerComponent } from '@studiometa/js-toolkit';
 import { Indexable } from '@studiometa/ui';
 
 class PredictiveSearch extends Indexable {
@@ -95,9 +118,13 @@ class PredictiveSearch extends Indexable {
     return this.$refs.option?.length ?? 0;
   }
 
-  onKeydown({ event }) {
-    if (event.key === 'ArrowDown') { event.preventDefault(); this.goNext(); }
-    if (event.key === 'ArrowUp') { event.preventDefault(); this.goPrev(); }
+  // `keyed` is the key service hook (js-toolkit drops the `on` prefix); it
+  // fires on every keydown/keyup with parsed key flags.
+  keyed({ event, isDown, UP, DOWN }) {
+    if (!isDown || !(UP || DOWN)) return;
+    event.preventDefault();
+    if (DOWN) this.goNext();
+    if (UP) this.goPrev();
   }
 
   // Fires on the `index` event; move the highlight and the ARIA active descendant.
@@ -108,6 +135,8 @@ class PredictiveSearch extends Indexable {
     });
   }
 }
+
+registerComponent(PredictiveSearch);
 ```
 
 Set `data-option-boundary="loop"` so arrowing past the last suggestion returns to the first. Because the results section is re-rendered on each search, re-resolve the options after a swap by listening for the bubbling `fetch-update-after` event and refreshing the index bounds. Pair this with the ARIA (Accessible Rich Internet Applications) `combobox`/`listbox` roles from Shopify's [predictive search guide](https://shopify.dev/docs/storefronts/themes/navigation-search/search/predictive-search) so screen readers announce the active suggestion.

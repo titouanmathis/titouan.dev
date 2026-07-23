@@ -3,7 +3,6 @@
   method="get"
   data-component="Fetch Action"
   data-option-response="response.json().then((data) => Object.values(data).join('\n'))"
-  data-option-history
   data-on:change="Fetch -> target.$el.requestSubmit()"
   data-on:fetch-before="Transition(#loader) -> target.enter()"
   data-on:fetch-after="Transition(#loader) -> target.leave()"

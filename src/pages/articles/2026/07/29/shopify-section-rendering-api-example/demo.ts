@@ -20,11 +20,6 @@ const grid = (items: typeof products) =>
 const count = (items: typeof products) =>
   `<div id="shopify-section-results-count" class="text-sm text-current/70">${items.length} products</div>`;
 
-// `data-option-history` calls history.pushState, which the sandboxed playground
-// iframe blocks (SecurityError). Stub it so the URL sync is a no-op in the demo.
-history.pushState = () => {};
-history.replaceState = () => {};
-
 const realFetch = window.fetch.bind(window);
 window.fetch = async (input, init) => {
   const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');

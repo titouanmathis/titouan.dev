@@ -33,7 +33,7 @@ Everything reactive here is declared in markup with the `Data` family of compone
 
 ## The Data family
 
-`@studiometa/ui` ships a small set of components that bind form state to the DOM reactively, grouped by a shared key. The [documentation](https://ui.studiometa.dev/components/DataBind/) calls them the `Data` family. Four of them cover a variant selector:
+`@studiometa/ui` ships a small set of components that bind form state to the DOM reactively, grouped by a shared key. The [documentation](https://ui.studiometa.dev/components/DataBind/) calls them the `Data` family. Five of them cover a variant selector:
 
 - [`DataScope`](https://ui.studiometa.dev/components/DataScope/) defines a boundary and a shared group, so the components inside talk to each other without wiring.
 - [`DataModel`](https://ui.studiometa.dev/components/DataModel/) is the source. Put it on the option inputs; the selected value is published to the group under the input's `name`. Radios sharing a `name` behave as one value.
@@ -106,17 +106,19 @@ Shopify recommends rendering one selector per option from [`product.options_with
     </fieldset>
   {% endfor %}
 
-  <div id="shopify-section-price">
-    {% render 'price', variant: current_variant %}
-  </div>
+  {% comment %} price must be a real section (sections/price.liquid), not a
+     snippet: only sections can be re-rendered with ?sections=price. The
+     {% section %} tag wraps it in <div id="shopify-section-price"> for you,
+     and the section itself reads current_variant's price and availability. {% endcomment %}
+  {% section 'price' %}
 </form>
 ```
 
-When a variant is deep-linked with the `?variant={id}` URL parameter, `product.selected_variant` reflects it, and `product.selected_or_first_available_variant` gives you a sensible default otherwise. To refresh the authoritative `price` section on selection, fetch the product URL for the chosen variant and swap the section by `id`, the exact `Fetch` recipe from the [Section Rendering article](/articles/2026/07/29/shopify-section-rendering-api-example/):
+When a variant is deep-linked with the `?variant={id}` URL parameter, `product.selected_variant` reflects it, and `product.selected_or_first_available_variant` gives you a sensible default otherwise. `price` here is a genuine theme section (`sections/price.liquid`), because the Section Rendering API only re-renders real section files, not a snippet you wrap in a hand-written `<div id="shopify-section-price">`. To refresh that authoritative section on selection, fetch the product URL for the chosen variant and swap the section by `id`, the exact `Fetch` recipe from the [Section Rendering article](/articles/2026/07/29/shopify-section-rendering-api-example/):
 
 ```html
 <a
-  href="{{ product.url }}?variant={{ variant.id }}&sections=price"
+  href="{{ product.url }}?variant={{ current_variant.id }}&sections=price"
   data-component="Fetch"
   data-option-response="response.json().then((s) => Object.values(s).filter(Boolean).join(''))">
   …

@@ -58,8 +58,7 @@ In a collection template it looks like this:
 <a
   href="{{ collection.url }}?sort_by=price-ascending&sections=main-collection-product-grid,collection-results-count"
   data-component="Fetch"
-  data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))"
-  data-option-history>
+  data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))">
   Price, low to high
 </a>
 
@@ -80,13 +79,13 @@ registerComponent(Fetch);
 registerComponent(Transition);
 ```
 
-Two more options are worth knowing. `data-option-history` pushes the new URL (using the toolkit's `historyPush`) and restores state on back/forward, so the sort survives a page refresh and the back button. View Transitions are on by default when the browser supports them; disable them with `data-option-no-view-transition`. Keep the default `replace` mode (or `morph`) so each section is swapped in place, because `append` and `prepend` would insert the new markup *inside* the existing wrapper and duplicate its content.
+Two more options are worth knowing. View Transitions are on by default when the browser supports them; disable them with `data-option-no-view-transition`. Keep the default `replace` mode (or `morph`) so each section is swapped in place, because `append` and `prepend` would insert the new markup *inside* the existing wrapper and duplicate its content. One option is deliberately left off: `data-option-history`. A `?sections=…` URL returns raw section JSON, so pushing it would make a refresh or a shared link load that JSON instead of a page. The sort state that *is* shareable lives in the `sort_by` parameter, which Shopify applies server-side, so the canonical `?sort_by=…` URL bookmarks and refreshes fine on its own; the enhanced swap just leaves the address bar untouched.
 
 The loader is the one bit of glue: [`Action`](https://ui.studiometa.dev/components/Action/) listens for the bubbling `fetch-before` and `fetch-after` events and drives a [`Transition`](https://ui.studiometa.dev/components/Transition/) on the `#loader` element. Because `Fetch` events bubble, the `Action` can sit on any parent.
 
 ## How the demo simulates it
 
-The playground has no Shopify backend, so the demo's script mocks `window.fetch`: when it sees a `sections` parameter it sorts an in-memory product list and returns the two sections as JSON, each wrapped in its `shopify-section-*` element, exactly as Shopify would.
+The playground has no Shopify backend, so the demo's script mocks `window.fetch`: when it sees a `sections` parameter it sorts an in-memory product list and returns the two sections as JSON, each wrapped in its `shopify-section-*` element, exactly as Shopify would. The demo uses short section ids (`product-grid`, `results-count`) for brevity; on a real store these are your theme's section filenames (for example `main-collection-product-grid`). The names are free to differ because `Fetch` swaps by each `shopify-section-*` element's `id` and ignores the response's JSON keys entirely.
 
 ```js twoslash
 // @noErrors
@@ -164,7 +163,7 @@ registerComponent(ShopifyPartialsFetch);
 
 Use the **Section Rendering API** today: it is stable, needs no extra package, and the `Fetch` recipe above is production-ready. Reach for **`{% partial %}` and `ShopifyPartialsFetch`** when you want the ergonomics and automatic state preservation of the newer primitive and you are on the July '26 preview. Both share the same component model, so moving between them is a matter of the component name and the option.
 
-The sort link above swaps two server-rendered sections, the grid and the count, with no request code and a URL that survives a refresh. For the setup, see the [pillar](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+The sort link above swaps two server-rendered sections, the grid and the count, with no request code, while leaving the `?sections=` URL out of the address bar so a refresh never lands on raw section JSON. For the setup, see the [pillar](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
 
 :::info[Next article]
 [AJAX collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/) turns that link into a full faceted form.

@@ -46,12 +46,14 @@ The [Product Recommendations API](https://shopify.dev/docs/api/ajax/reference/pr
 </div>
 ```
 
+Register every component this article uses once, in your theme's main script (each is covered in the sections below):
+
 ```js twoslash
 // @noErrors
 import { registerComponent } from '@studiometa/js-toolkit';
-import { LazyInclude } from '@studiometa/ui';
+import { LazyInclude, PrefetchWhenOver, PrefetchWhenVisible, TrackShopify } from '@studiometa/ui';
 
-registerComponent(LazyInclude);
+[LazyInclude, PrefetchWhenVisible, PrefetchWhenOver, TrackShopify].forEach(registerComponent);
 ```
 
 `LazyInclude` hides the `loading` ref and injects the response into its own element when the content arrives, and reveals the `error` ref if the request fails. Use `intent=related` for "You may also like" and `intent=complementary` for "Pairs well with"; the API caps results at 10.
@@ -80,17 +82,17 @@ window.fetch = async (input, init) => {
 
 ## Tracking events
 
-[`TrackShopify`](https://ui.studiometa.dev/components/Track/) publishes analytics events declaratively through `window.Shopify.analytics.publish`. Add a `data-track:<event>` attribute with a JSON payload, and the event fires on that DOM event:
+[`TrackShopify`](https://ui.studiometa.dev/components/TrackShopify/) publishes analytics events declaratively through `window.Shopify.analytics.publish`. Add a `data-track:<event>` attribute with a JSON payload, and the event fires on that DOM event:
 
 ```html
 <button
   data-component="TrackShopify"
-  data-track:click='{"event": "add_to_cart", "product": "canvas-cap"}'>
+  data-track:click='{"event": "app:add_to_cart", "product": "canvas-cap"}'>
   Add to cart
 </button>
 ```
 
-Its sibling [`Track`](https://ui.studiometa.dev/components/Track/) publishes to `window.dataLayer` for Google Tag Manager or Google Analytics 4 (GA4). `TrackContext` lets a parent supply payload fields inherited by every tracked element inside it, for stamping a list name or position onto product-card events. The event name is the payload's `event` key; you can also track `mounted` (fires on mount, for impressions) and a viewport-based `view` event.
+Its sibling [`Track`](https://ui.studiometa.dev/components/Track/) publishes to `window.dataLayer` for Google Tag Manager or Google Analytics 4 (GA4). `TrackContext` lets a parent supply payload fields inherited by every tracked element inside it, for stamping a list name or position onto product-card events. The event name is the payload's `event` key, which you should namespace (here `app:add_to_cart`) so it does not collide with Shopify's own web-pixel events. You can also track `mounted` (fires on mount, for impressions) and a viewport-based `view` event.
 
 ## Prefetching links
 
@@ -102,7 +104,7 @@ The last touch cuts the delay when a customer follows a product link. [`Prefetch
 
 Its sibling `PrefetchWhenOver` prefetches on `mouseenter` instead. Both only prefetch same-origin URLs, skip the current page, and de-duplicate across the page, so they are safe to add to product links.
 
-One caveat: components only mount on elements that exist when you register them. Product links rendered by your Liquid templates are enhanced normally. Links injected later (for instance, the recommendations `LazyInclude` just loaded) are not mounted automatically. To enhance injected markup, re-run registration once the content is in, using the `content` event `LazyInclude` emits, or mount the subtree with a js-toolkit app. Keep `PrefetchWhenVisible` and `TrackShopify` on server-rendered elements unless you add that step.
+One nice consequence: `registerComponent` adds each component to a global registry backed by a `MutationObserver`, so elements injected after startup are mounted automatically. The recommendation links the `LazyInclude` just loaded get `PrefetchWhenVisible` and `TrackShopify` with no extra step — you register once and both server-rendered and dynamically loaded markup are enhanced.
 
 ## The end of the series
 

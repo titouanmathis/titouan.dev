@@ -16,7 +16,7 @@ tags: shopify, collection-filtering, section-rendering-api, progressive-enhancem
 
 Collection filtering is a common AJAX feature on a storefront. A customer ticks a facet or changes the sort order, and the product grid updates in place, without a full reload and without losing their scroll position. Shopify already filters and sorts collections server-side from URL parameters, so with [`@studiometa/ui`](https://ui.studiometa.dev), built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), you only enhance the form.
 
-Tick a facet or change the sort below. The grid and the count update in place, and the URL stays in sync:
+Tick a facet or change the sort below. The grid and the count update in place, without a full reload:
 
 import demoTwig from './demo.twig?raw';
 import demoTs from './demo.ts?raw';
@@ -40,14 +40,13 @@ A `<form method="get">` is exactly that. Put [`Fetch`](https://ui.studiometa.dev
 ```html
 <form action="/collections/all" method="get"
   data-component="Fetch"
-  data-option-history
   data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))">
   <input type="hidden" name="sections" value="product-grid,results-count">
   <!-- facet inputs and a sort <select> -->
 </form>
 ```
 
-Four things carry the behaviour. `data-component="Fetch"` enhances the form. `data-option-history` keeps the URL in sync so the result is shareable and the back button works. The hidden `sections` input tells Shopify which sections to render. And `data-option-response` parses the JSON the Section Rendering API returns (a `?sections=` request answers with JSON, whether it comes from a link or a form), so `Fetch` swaps each section by `id`, exactly as in the Section Rendering article.
+Three things carry the behaviour. `data-component="Fetch"` enhances the form. The hidden `sections` input tells Shopify which sections to render. And `data-option-response` parses the JSON the Section Rendering API returns (a `?sections=` request answers with JSON, whether it comes from a link or a form), so `Fetch` swaps each section by `id`, exactly as in the Section Rendering article. One attribute is deliberately absent: `data-option-history`. A `?sections=` URL answers with raw section JSON, so pushing it would make a refresh or a shared link load that JSON instead of a page. Shareability comes from the no-JS baseline instead, as the next section explains.
 
 ## Submitting on change
 
@@ -58,7 +57,6 @@ Customers expect the grid to react as soon as they tick a box, so submit the for
   action="/collections/all"
   method="get"
   data-component="Fetch Action"
-  data-option-history
   data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))"
   data-on:change="Fetch -> target.$el.requestSubmit()"
   data-on:fetch-before="Transition(#loader) -> target.enter()"
@@ -104,7 +102,6 @@ On a real store you do not invent facet inputs. Merchants configure filters in t
 ```liquid
 <form action="{{ collection.url }}" method="get"
   data-component="Fetch Action"
-  data-option-history
   data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))"
   data-on:change="Fetch -> target.$el.requestSubmit()"
   data-on:fetch-before="Transition(#loader) -> target.enter()"
@@ -140,11 +137,11 @@ On a real store you do not invent facet inputs. Merchants configure filters in t
 
 `value.param_name` and `value.value` come straight from Shopify and already encode the `filter.*` structure, so you never hand-write parameter names. Wrap the product grid and the results count in their own sections (`main-collection-product-grid`, `collection-results-count` in Dawn) so they can be requested with `?sections=` and swapped independently.
 
-One thing to keep: filters and the sort must both survive a refresh. `data-option-history` handles the URL, and because the checkboxes are rendered `checked` from `value.active` and the sort `<option>` from `collection.sort_by`, a reload rebuilds the exact same form state server-side.
+One thing to keep: filters and the sort stay shareable and refresh-safe through the no-JS baseline, not through a pushed `?sections=` URL. Submitting the plain GET form (the `<noscript>` path) navigates to a clean `filter.*`/`sort_by` URL, and because the checkboxes are rendered `checked` from `value.active` and the sort `<option>` from `collection.sort_by`, Shopify rebuilds the exact same form state server-side on a reload. The enhanced path deliberately leaves that URL untouched, since a `?sections=` address would reload raw section JSON.
 
 ## Where this goes next
 
-Changing a facet now submits a GET form, swaps the grid and the count, and records the selected state in a shareable URL, with the `<noscript>` button as the fallback. For the mechanics, see the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).
+Changing a facet now submits a GET form and swaps the grid and the count in place, with the `<noscript>` button as the fallback and the plain GET navigation as the shareable, refresh-safe baseline. For the mechanics, see the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).
 
 :::info[Next article]
 The same shape covers a [variant selector](/articles/2026/08/12/shopify-variant-selector/) and [predictive search](/articles/2026/08/26/shopify-predictive-search/): a control whose state drives a server-rendered section.

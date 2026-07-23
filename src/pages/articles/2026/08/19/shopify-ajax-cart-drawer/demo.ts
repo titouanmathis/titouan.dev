@@ -2,10 +2,11 @@ import { registerComponent } from '@studiometa/js-toolkit';
 import { Action, Fetch, Panel, Transition } from '@studiometa/ui';
 
 // --- Simulated Cart AJAX API ------------------------------------------------
-// Shopify's POST /cart/add.js accepts a `sections` parameter and returns JSON
-// with a `sections` key holding the rendered HTML for each requested section
-// (bundled section rendering). We reproduce that here with an in-memory cart.
-// Delete this block to hit the real endpoint.
+// Shopify's POST /cart/add.js returns the added line item (id, key, quantity,
+// title, …), and when a `sections` parameter is sent it also includes a
+// `sections` key with the rendered HTML for each requested section (bundled
+// section rendering). We reproduce that here with an in-memory cart. Delete
+// this block to hit the real endpoint.
 type Line = { id: string; title: string; price: number; qty: number };
 const catalog: Record<string, { title: string; price: number }> = {
   '101': { title: 'Cap', price: 25 },
@@ -39,12 +40,19 @@ window.fetch = async (input, init) => {
     const body = init?.body;
     const id = body instanceof FormData ? String(body.get('id')) : '101';
     const product = catalog[id];
-    const line = cart.find((l) => l.id === id);
+    let line = cart.find((l) => l.id === id);
     if (line) line.qty += 1;
-    else if (product) cart.push({ id, title: product.title, price: product.price, qty: 1 });
+    else if (product) {
+      line = { id, title: product.title, price: product.price, qty: 1 };
+      cart.push(line);
+    }
     await new Promise((resolve) => setTimeout(resolve, 400)); // fake latency
+    // /cart/add.js returns the added line item, plus a `sections` object because
+    // the form sent a `sections` param (bundled section rendering).
     const payload = {
-      items: cart,
+      id: line?.id,
+      quantity: line?.qty,
+      title: line?.title,
       sections: { 'cart-drawer': drawerSection(), 'cart-count': countSection() },
     };
     return new Response(JSON.stringify(payload), { headers: { 'content-type': 'application/json' } });
