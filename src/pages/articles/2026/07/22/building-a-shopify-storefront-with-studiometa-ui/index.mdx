@@ -20,7 +20,7 @@ tags: shopify, progressive-enhancement, liquid, studiometa-ui, storefront
 
 Shopify themes render on the server. Liquid produces HTML, the browser gets a page that works, and Google gets something to index. Adding richer interactions like AJAX collection filtering, a cart drawer or predictive search usually means writing and wiring a fair amount of JavaScript by hand.
 
-[`@studiometa/ui`](https://ui.studiometa.dev) is a library of unstyled, accessible components built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), a lightweight progressive-enhancement framework. Both are open-source packages we build and maintain at [ikko](https://ikko.fr). You declare behaviour with `data-` attributes on the HTML your theme already renders, and the components do the wiring. This first article sets up the component model; across the series I build the storefront's interactive pieces one at a time, each on the Liquid your theme already renders.
+[`@studiometa/ui`](https://ui.studiometa.dev) is a library of JavaScript components built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), a lightweight progressive-enhancement framework. Both are open-source packages we build and maintain at [ikko](https://ikko.fr). You declare behaviour with `data-` attributes on the HTML your theme already renders, and the components do the wiring. This first article sets up the component model; across the series I will build the storefront's interactive pieces one at a time, each on the Liquid your theme already renders.
 
 Here is the whole idea in one demo. It is a storefront navigation that swaps the page's main region without a full reload, with a loader during the request:
 
@@ -108,15 +108,19 @@ Every demo in this series works the same way: the component markup is exactly wh
 
 Each interactive piece of a storefront gets its own article, its own primary technique, and its own working demo. Start anywhere; they all build on the setup above.
 
-- **[Shopify Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/)**. Fetch and swap server-rendered theme sections, the foundation for everything below (plus the July '26 `{% partial %}` preview).
-- **[Shopify AJAX collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/)**. Filter and sort a collection with a `<form method="get">`, updating the grid and the URL without a reload.
-- **[Shopify variant selector](/articles/2026/08/12/shopify-variant-selector/)**. Reflect variant choices into price, availability and the buy button with the reactive `Data` components.
-- **[Shopify AJAX cart drawer](/articles/2026/08/19/shopify-ajax-cart-drawer/)**. Add to cart and open an accessible slide-in drawer with focus trapping and scroll lock.
-- **[Shopify predictive search](/articles/2026/08/26/shopify-predictive-search/)**. A debounced, keyboard-navigable suggestions dropdown over the predictive search endpoint.
-- **[Shopify product recommendations](/articles/2026/09/02/shopify-product-recommendations/)**. Lazy-load recommendations and finishing touches like prefetching and analytics.
+- **[Shopify Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/)**: fetch and swap server-rendered theme sections, the foundation for everything below (plus the July '26 `{% partial %}` preview).
+- **[Shopify AJAX collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/)**: filter and sort a collection with a `<form method="get">`, updating the grid and the URL without a reload.
+- **[Shopify variant selector](/articles/2026/08/12/shopify-variant-selector/)**: reflect variant choices into price, availability and the buy button with the reactive `Data` components.
+- **[Shopify AJAX cart drawer](/articles/2026/08/19/shopify-ajax-cart-drawer/)**: add to cart and open an accessible slide-in drawer with focus trapping and scroll lock.
+- **[Shopify predictive search](/articles/2026/08/26/shopify-predictive-search/)**: a debounced, keyboard-navigable suggestions dropdown over the predictive search endpoint.
+- **[Shopify product recommendations](/articles/2026/09/02/shopify-product-recommendations/)**: lazy-load recommendations and finishing touches like prefetching and analytics.
 
 ## A note on the demos
 
 The playground runs Twig, HTML, JavaScript and CSS, not Liquid against a real Shopify store. So every demo is a simulation: the component markup is production-accurate, but the network responses are mocked with a small `window.fetch` shim, and Twig stands in for Liquid. Each article shows the real Shopify wiring next to the demo and tells you exactly what to delete to go live. This keeps each demo runnable without shipping a companion theme to clone.
 
-The navigation above swaps a region, shows a loader and keeps the back button working, from a few attributes and no custom fetch code. Next: [the Section Rendering API](/articles/2026/07/29/shopify-section-rendering-api-example/), the technique the rest of the series leans on.
+The navigation above swaps a region, shows a loader and keeps the back button working, from a few attributes and no custom fetch code.
+
+:::info[Next]
+[The Section Rendering API](/articles/2026/07/29/shopify-section-rendering-api-example/), the technique the rest of the series leans on.
+:::
