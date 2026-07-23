@@ -128,7 +128,7 @@ That is the entry point to [AJAX collection filtering](/articles/shopify-ajax-co
 The following uses Shopify's [partial rendering](https://shopify.dev/docs/storefronts/themes/getting-started/developer-preview/partial) API, part of the **Liquid July '26 developer preview**. It relies on the optional [`@shopify/partial-rendering`](https://www.npmjs.com/package/@shopify/partial-rendering) package. Treat it as forward-looking until it ships as stable.
 :::
 
-The Section Rendering API is stable and works today. Shopify is also previewing a newer primitive: you mark a region with the `{% partial %}` tag and refresh it by name, and the update preserves focus, text selection, form values and scroll position out of the box. `@studiometa/ui` ships a [`ShopifyPartialsFetch`](https://ui.studiometa.dev/components/ShopifyPartialsFetch/) component for it, which extends `Fetch`.
+The Section Rendering API is stable and works today. Shopify is also previewing a newer primitive: you mark a region with the `{% partial %}` tag and refresh it by name, and the update preserves focus, text selection, form values and scroll position out of the box. `@studiometa/ui` ships a [`FetchShopifyPartial`](https://ui.studiometa.dev/components/FetchShopifyPartial/) component for it, which extends `Fetch`.
 
 ```liquid
 {% partial 'product-grid' %}
@@ -141,7 +141,7 @@ The Section Rendering API is stable and works today. Shopify is also previewing 
 
 <a
   href="{{ collection.url }}?sort_by=price-ascending"
-  data-component="ShopifyPartialsFetch"
+  data-component="FetchShopifyPartial"
   data-option-partials='["product-grid", "product-count"]'
   data-option-history>
   Price, low to high
@@ -151,16 +151,16 @@ The Section Rendering API is stable and works today. Shopify is also previewing 
 ```js twoslash
 // @noErrors
 import { registerComponents } from '@studiometa/js-toolkit';
-import { ShopifyPartialsFetch } from '@studiometa/ui';
+import { FetchShopifyPartial } from '@studiometa/ui';
 
-registerComponents(ShopifyPartialsFetch);
+registerComponents(FetchShopifyPartial);
 ```
 
-`ShopifyPartialsFetch` **falls back to `Fetch`** automatically, which lowers the risk of adopting the preview early. It uses the partial rendering path only when the `partials` option lists at least one name and the preview package resolves and the request is a plain `GET`. Otherwise (no package installed, no partials configured, a `POST` form, custom headers) it behaves exactly like the base `Fetch` and does the id-based swap. So the same markup degrades cleanly on a store that is not on the preview.
+`FetchShopifyPartial` **falls back to `Fetch`** automatically, which lowers the risk of adopting the preview early. It uses the partial rendering path only when the `partials` option lists at least one name and the preview package resolves and the request is a plain `GET`. Otherwise (no package installed, no partials configured, a `POST` form, custom headers) it behaves exactly like the base `Fetch` and does the id-based swap. So the same markup degrades cleanly on a store that is not on the preview.
 
 ## Which one to reach for
 
-Use the **Section Rendering API** today: it is stable, needs no extra package, and the `Fetch` recipe above is production-ready. Reach for **`{% partial %}` and `ShopifyPartialsFetch`** when you want the ergonomics and automatic state preservation of the newer primitive and you are on the July '26 preview. Both share the same component model, so moving between them is a matter of the component name and the option.
+Use the **Section Rendering API** today: it is stable, needs no extra package, and the `Fetch` recipe above is production-ready. Reach for **`{% partial %}` and `FetchShopifyPartial`** when you want the ergonomics and automatic state preservation of the newer primitive and you are on the July '26 preview. Both share the same component model, so moving between them is a matter of the component name and the option.
 
 The sort link above swaps two server-rendered sections, the grid and the count, with no request code, while leaving the `?sections=` URL out of the address bar so a refresh never lands on raw section JSON. For the setup, see the [pillar](/articles/building-a-shopify-storefront-with-studiometa-ui).
 
