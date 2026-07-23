@@ -56,21 +56,21 @@ Apache has 2 main directives which can be used to configure redirects:
 
 They can be used to define redirects from an old path to a new URL simply:
 
-```apacheconf
+```apache
 Redirect /old-path https://fqdn.com/new-path
 RedirectMatch /old-path https://fqdn.com/new-path
 ```
 
 Both directives will default to a `302` temporary redirect, if you need a permanent one, make sure to specify the `301` status:
 
-```apacheconf
+```apache
 Redirect 301 /old-path https://fqdn.com/new-path
 RedirectMatch 301 /old-path https://fqdn.com/new-path
 ```
 
 The `RedirectPermanent` directive can also be used instead of `Redirect 301`:
 
-```apacheconf
+```apache
 RedirectPermanent /old-path https://fqdn.com/new-path
 ```
 
@@ -82,7 +82,7 @@ Note that the new URL can have a different domain than the original one, i.e. we
 
 It's easier to specifically test redirected URLs when they're complete, rather than defining a matching pattern. You'll also have better control over the impact of your redirect rules on your site, and avoid false positives.
 
-```apacheconf
+```apache
 # Do
 RedirectPermanent /blog/page/1 https://fqdn.com/
 RedirectPermanent /blog/page/2 https://fqdn.com/
@@ -99,7 +99,7 @@ When a URL matches a `Redirect` directive (`Redirect`, `RedirectMatch`, `Redirec
 
 Thus, with the following configurations:
 
-```apacheconf
+```apache
 RedirectPermanent /foo https://fqdn.com/redirected
 # or with RedirectMatch
 RedirectMatch 301 ^/foo https://fqdn.com/redirected
@@ -116,7 +116,7 @@ https://fqdn.com/foo/bar/ → https://fqdn.com/redirected/bar/
 
 To ensure that an exact URL redirects to another exact URL without keeping parts of the original URL, use the `RedirectMatch` directive with a `.*` pattern:
 
-```apacheconf
+```apache
 RedirectMatch 301 ^/foo.* https://fqdn.com/redirected
 ```
 
@@ -136,7 +136,7 @@ Redirect rules in the `.htaccess` file must be added from the most specific one 
 
 So, with the following configuration:
 
-```apacheconf
+```apache
 RedirectPermanent /foo https://fqdn.com/bar
 RedirectPermanent /foo/bar https://fqdn.com/foo/baz
 ```
@@ -145,7 +145,7 @@ The URL `https://fqdn.com/foo/bar` will be redirected by the first redirect rule
 
 To fix this problem, a simple trick is to sort your redirect rules in reverse alphabetical order:
 
-```apacheconf
+```apache
 RedirectPermanent /foo/bar https://fqdn.com/foo/baz
 RedirectPermanent /foo https://fqdn.com/bar
 ```
@@ -156,7 +156,7 @@ If the URL that needs to be redirected contains URL parameters (e.g. `?search=ke
 
 For example, with the following configuration:
 
-```apacheconf
+```apache
 RedirectPermanent /foo/?search=news https://fqdn.com/fr/
 ```
 
@@ -164,14 +164,14 @@ A request with the `https://fqdn.com/foo?search=news` URL will not be handled.
 
 Redirects including URL parameters must be set up with `RewriteCond` and `RewriteRule`:
 
-```apacheconf
+```apache
 RewriteCond %{QUERY_STRING} ^search=news$
 RewriteRule ^foo$ https://doo.com/? [L,R=301]
 ```
 
 Make sure to enable the `RewriteEngine` mode before using `RewriteCond` directives:
 
-```apacheconf
+```apache
 RewriteEngine On
 RewriteBase /
 ```
