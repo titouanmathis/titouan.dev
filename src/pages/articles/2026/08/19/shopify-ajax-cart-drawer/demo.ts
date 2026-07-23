@@ -1,5 +1,5 @@
 import { registerComponent } from '@studiometa/js-toolkit';
-import { Action, Fetch, Panel, Transition } from '@studiometa/ui';
+import { Action, Fetch, Dialog, ViewTransition, Transition } from '@studiometa/ui';
 
 // --- Simulated Cart AJAX API ------------------------------------------------
 // Shopify's POST /cart/add.js returns the added line item (id, key, quantity,
@@ -63,5 +63,6 @@ window.fetch = async (input, init) => {
 
 registerComponent(Action);
 registerComponent(Fetch);
-registerComponent(Panel);
+registerComponent(Dialog);
+registerComponent(ViewTransition);
 registerComponent(Transition);
