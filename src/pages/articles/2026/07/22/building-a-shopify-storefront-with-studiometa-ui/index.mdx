@@ -33,7 +33,8 @@ import pillarTs from './demo.ts?raw';
 <UiPlayground
   client:visible
   html={pillarTwig}
-  script={pillarTs}></UiPlayground>
+  script={pillarTs}
+  height="200px"></UiPlayground>
 
 The links are ordinary `<a href>` elements. Without JavaScript they navigate like any link. With JavaScript, `@studiometa/ui` intercepts the click, fetches the target, and swaps the matching region in place. That is progressive enhancement: the server-rendered version is the baseline, and the enhancement is a layer on top that can fail without breaking the page.
 
