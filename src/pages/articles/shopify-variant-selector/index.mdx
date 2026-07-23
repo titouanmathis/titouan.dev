@@ -11,7 +11,7 @@ tags: shopify, variant-selector, reactive-data, progressive-enhancement, studiom
 
 :::info[The series]
 
-**Part 4 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/building-a-shopify-storefront-with-studiometa-ui/).
+**Part 4 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/building-a-shopify-storefront-with-studiometa-ui).
 
 :::
 
@@ -83,7 +83,7 @@ The price map in the demo (`{ S: '19 €', … }`) is a stand-in for your produc
 
 ## The real wiring: options and the Section Rendering API
 
-Shopify recommends rendering one selector per option from [`product.options_with_values`](https://shopify.dev/docs/api/liquid/objects/product), and using the [Section Rendering API](/articles/shopify-section-rendering-api-example/) to load the price and availability for the newly selected variant. Each option value already tells you whether it is `selected` and `available`, so the initial state is server-rendered and correct.
+Shopify recommends rendering one selector per option from [`product.options_with_values`](https://shopify.dev/docs/api/liquid/objects/product), and using the [Section Rendering API](/articles/shopify-section-rendering-api-example) to load the price and availability for the newly selected variant. Each option value already tells you whether it is `selected` and `available`, so the initial state is server-rendered and correct.
 
 ```liquid
 {% assign current_variant = product.selected_or_first_available_variant %}
@@ -115,7 +115,7 @@ Shopify recommends rendering one selector per option from [`product.options_with
 </form>
 ```
 
-When a variant is deep-linked with the `?variant={id}` URL parameter, `product.selected_variant` reflects it, and `product.selected_or_first_available_variant` gives you a sensible default otherwise. `price` here is a genuine theme section (`sections/price.liquid`), because the Section Rendering API only re-renders real section files, not a snippet you wrap in a hand-written `<div id="shopify-section-price">`. To refresh that authoritative section on selection, fetch the product URL for the chosen variant and swap the section by `id`, the exact `Fetch` recipe from the [Section Rendering article](/articles/shopify-section-rendering-api-example/):
+When a variant is deep-linked with the `?variant={id}` URL parameter, `product.selected_variant` reflects it, and `product.selected_or_first_available_variant` gives you a sensible default otherwise. `price` here is a genuine theme section (`sections/price.liquid`), because the Section Rendering API only re-renders real section files, not a snippet you wrap in a hand-written `<div id="shopify-section-price">`. To refresh that authoritative section on selection, fetch the product URL for the chosen variant and swap the section by `id`, the exact `Fetch` recipe from the [Section Rendering article](/articles/shopify-section-rendering-api-example):
 
 ```html
 <a
@@ -126,12 +126,12 @@ When a variant is deep-linked with the `?variant={id}` URL parameter, `product.s
 </a>
 ```
 
-In practice you derive the selected variant id from the option inputs with a `DataComputed`, and trigger the fetch on change, as with the sort control in [collection filtering](/articles/shopify-ajax-collection-filtering/). The `Data` components handle the instant feedback; the Section Rendering call handles the price and the availability. Note that `product.variants` is capped at 250, so for high-variant products lean on `options_with_values` and Section Rendering rather than dumping the full variant list as JSON.
+In practice you derive the selected variant id from the option inputs with a `DataComputed`, and trigger the fetch on change, as with the sort control in [collection filtering](/articles/shopify-ajax-collection-filtering). The `Data` components handle the instant feedback; the Section Rendering call handles the price and the availability. Note that `product.variants` is capped at 250, so for high-variant products lean on `options_with_values` and Section Rendering rather than dumping the full variant list as JSON.
 
 ## Where this goes next
 
-The selector above derives price, label and button state from the option inputs, declared entirely in markup, with Shopify rendering the authoritative price. For the section-swapping mechanics, see the [Section Rendering API example](/articles/shopify-section-rendering-api-example/).
+The selector above derives price, label and button state from the option inputs, declared entirely in markup, with Shopify rendering the authoritative price. For the section-swapping mechanics, see the [Section Rendering API example](/articles/shopify-section-rendering-api-example).
 
 :::info[Next article]
-The [AJAX cart drawer](/articles/shopify-ajax-cart-drawer/) adds the selected variant to the cart and opens a drawer without a reload.
+The [AJAX cart drawer](/articles/shopify-ajax-cart-drawer) adds the selected variant to the cart and opens a drawer without a reload.
 :::
