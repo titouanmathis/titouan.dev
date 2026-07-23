@@ -8,7 +8,11 @@ tags: shopify, collection-filtering, section-rendering-api, progressive-enhancem
 
 <MetaInfo class="block">05/08/2026 in #shopify #collection-filtering #progressive-enhancement</MetaInfo>
 
-> **Part 3 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+:::info[The series]
+
+**Part 3 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+
+:::
 
 Collection filtering is a common AJAX feature on a storefront. A customer ticks a facet or changes the sort order, and the product grid updates in place, without a full reload and without losing their scroll position. Shopify already filters and sorts collections server-side from URL parameters, so with [`@studiometa/ui`](https://ui.studiometa.dev), built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), you only enhance the form.
 
@@ -139,4 +143,8 @@ One thing to keep: filters and the sort must both survive a refresh. `data-optio
 
 ## Where this goes next
 
-Changing a facet now submits a GET form, swaps the grid and the count, and records the selected state in a shareable URL, with the `<noscript>` button as the fallback. The same shape covers a [variant selector](/articles/2026/08/12/shopify-variant-selector/) and [predictive search](/articles/2026/08/26/shopify-predictive-search/): a control whose state drives a server-rendered section. For the mechanics, see the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).
+Changing a facet now submits a GET form, swaps the grid and the count, and records the selected state in a shareable URL, with the `<noscript>` button as the fallback. For the mechanics, see the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).
+
+:::info[Next article]
+The same shape covers a [variant selector](/articles/2026/08/12/shopify-variant-selector/) and [predictive search](/articles/2026/08/26/shopify-predictive-search/): a control whose state drives a server-rendered section.
+:::

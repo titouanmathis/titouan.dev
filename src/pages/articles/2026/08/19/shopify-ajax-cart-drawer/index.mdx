@@ -8,7 +8,11 @@ tags: shopify, cart-drawer, ajax-cart, progressive-enhancement, studiometa-ui
 
 <MetaInfo class="block">19/08/2026 in #shopify #cart-drawer #progressive-enhancement</MetaInfo>
 
-> **Part 5 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+:::info[The series]
+
+**Part 5 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+
+:::
 
 A cart drawer confirms an add-to-cart in a panel that slides in, without leaving the page. It also has the most moving parts: an accessible overlay, a focus trap, a scroll lock, and a cart that stays in sync. [`@studiometa/ui`](https://ui.studiometa.dev) gives you the drawer and the AJAX wiring as components, on top of [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev).
 
@@ -119,4 +123,8 @@ window.fetch = async (input, init) => {
 
 ## Where this goes next
 
-Submitting the add-to-cart form now adds the selected variant, refreshes the drawer and count from one bundled request, and opens an accessible panel. The last article, [Shopify product recommendations](/articles/2026/09/02/shopify-product-recommendations/), lazy-loads recommendations that pair well inside the cart. The section-swapping underneath it all is the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).
+Submitting the add-to-cart form now adds the selected variant, refreshes the drawer and count from one bundled request, and opens an accessible panel. The section-swapping underneath it all is the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).
+
+:::info[Next article]
+The last article, [Shopify product recommendations](/articles/2026/09/02/shopify-product-recommendations/), lazy-loads recommendations that pair well inside the cart.
+:::

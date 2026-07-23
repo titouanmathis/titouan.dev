@@ -8,7 +8,11 @@ tags: shopify, predictive-search, ajax-search, progressive-enhancement, studiome
 
 <MetaInfo class="block">26/08/2026 in #shopify #predictive-search #progressive-enhancement</MetaInfo>
 
-> **Part 6 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+:::info[The series]
+
+**Part 6 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+
+:::
 
 Predictive search shows product suggestions as the customer types, in a dropdown under the search field. It needs debouncing so you are not firing a request per keystroke, and it needs to stay accessible from the keyboard. Both stay small with [`@studiometa/ui`](https://ui.studiometa.dev) and [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), because the search results are another server-rendered section.
 
@@ -110,4 +114,8 @@ Set `data-option-boundary="loop"` so arrowing past the last suggestion returns t
 
 ## Where this goes next
 
-The field above debounces input and swaps in a keyboard-navigable suggestions dropdown, from one attribute plus a small `Indexable` subclass. Like [collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/), it is a control whose state drives a server-rendered section through [`Fetch`](/articles/2026/07/29/shopify-section-rendering-api-example/). Last in the series, [product recommendations](/articles/2026/09/02/shopify-product-recommendations/) loads a section lazily after the page.
+The field above debounces input and swaps in a keyboard-navigable suggestions dropdown, from one attribute plus a small `Indexable` subclass. Like [collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/), it is a control whose state drives a server-rendered section through [`Fetch`](/articles/2026/07/29/shopify-section-rendering-api-example/).
+
+:::info[Next article]
+Last in the series, [product recommendations](/articles/2026/09/02/shopify-product-recommendations/) loads a section lazily after the page.
+:::

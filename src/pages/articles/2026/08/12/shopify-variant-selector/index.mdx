@@ -8,7 +8,11 @@ tags: shopify, variant-selector, reactive-data, progressive-enhancement, studiom
 
 <MetaInfo class="block">12/08/2026 in #shopify #variant-selector #progressive-enhancement</MetaInfo>
 
-> **Part 4 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+:::info[The series]
+
+**Part 4 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+
+:::
 
 A variant selector has one job: when the customer picks an option, the price, the availability and the buy button reflect the chosen variant. That is state management, but small and local, and [`@studiometa/ui`](https://ui.studiometa.dev) has a set of components for exactly that. Built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), they keep your server-rendered Liquid and add reactivity in place.
 
@@ -122,4 +126,8 @@ In practice you derive the selected variant id from the option inputs with a `Da
 
 ## Where this goes next
 
-The selector above derives price, label and button state from the option inputs, declared entirely in markup, with Shopify rendering the authoritative price. Next, the [AJAX cart drawer](/articles/2026/08/19/shopify-ajax-cart-drawer/) adds the selected variant to the cart and opens a drawer without a reload. For the section-swapping mechanics, see the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).
+The selector above derives price, label and button state from the option inputs, declared entirely in markup, with Shopify rendering the authoritative price. For the section-swapping mechanics, see the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).
+
+:::info[Next article]
+The [AJAX cart drawer](/articles/2026/08/19/shopify-ajax-cart-drawer/) adds the selected variant to the cart and opens a drawer without a reload.
+:::

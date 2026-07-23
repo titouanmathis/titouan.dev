@@ -8,7 +8,11 @@ tags: shopify, section-rendering-api, progressive-enhancement, liquid, studiomet
 
 <MetaInfo class="block">29/07/2026 in #shopify #section-rendering-api #progressive-enhancement</MetaInfo>
 
-> **Part 2 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+:::info[The series]
+
+**Part 2 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+
+:::
 
 Shopify's [Section Rendering API](https://shopify.dev/docs/api/ajax/section-rendering) lets you ask the server for the rendered HTML of specific theme sections and drop them into the current page, without a full reload. It covers AJAX navigation, filtering and cart updates, because the HTML still comes from your Liquid sections. This post is a concrete example of consuming it with [`@studiometa/ui`](https://ui.studiometa.dev), a component library built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev).
 
@@ -159,4 +163,8 @@ registerComponent(ShopifyPartialsFetch);
 
 Use the **Section Rendering API** today: it is stable, needs no extra package, and the `Fetch` recipe above is production-ready. Reach for **`{% partial %}` and `ShopifyPartialsFetch`** when you want the ergonomics and automatic state preservation of the newer primitive and you are on the July '26 preview. Both share the same component model, so moving between them is a matter of the component name and the option.
 
-The sort link above swaps two server-rendered sections, the grid and the count, with no request code and a URL that survives a refresh. Next, [AJAX collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/) turns that link into a full faceted form. For the setup, see the [pillar](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+The sort link above swaps two server-rendered sections, the grid and the count, with no request code and a URL that survives a refresh. For the setup, see the [pillar](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+
+:::info[Next article]
+[AJAX collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/) turns that link into a full faceted form.
+:::
