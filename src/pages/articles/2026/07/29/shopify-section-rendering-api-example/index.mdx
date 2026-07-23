@@ -112,9 +112,9 @@ window.fetch = async (input, init) => {
 For a single link the `sections` parameter is baked into the `href`. When the value comes from the customer, say a sort `<select>`, facet checkboxes or a search field, put a `<form method="get">` around the inputs and let `Fetch` build the URL from the form data. Add the sections as a hidden input:
 
 ```liquid
-<form action="{{ collection.url }}" method="get" data-component="Fetch">
+<form id="collection-sort" action="{{ collection.url }}" method="get" data-component="Fetch">
   <input type="hidden" name="sections" value="main-collection-product-grid,collection-results-count">
-  <select name="sort_by" data-component="Action" data-on:change="Fetch -> target.$el.requestSubmit()">
+  <select name="sort_by" data-component="Action" data-on:change="Fetch(#collection-sort) -> target.$el.requestSubmit()">
     <option value="manual">Featured</option>
     <option value="price-ascending">Price, low to high</option>
   </select>

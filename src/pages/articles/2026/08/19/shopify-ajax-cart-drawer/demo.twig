@@ -2,7 +2,7 @@
   data-component="Action"
   data-on:fetch-before="Transition(#cart-loader) -> target.enter()"
   data-on:fetch-after="Transition(#cart-loader) -> target.leave()"
-  data-on:fetch-update="Panel -> target.open()"
+  data-on:fetch-update="Panel(#cart-panel) -> target.open()"
   class="space-y-6">
   <header class="flex items-center justify-between gap-4">
     <span class="font-bold">My shop</span>
@@ -19,7 +19,7 @@
     <!-- The Panel JS component enhances this markup; it needs the modal, overlay,
          container, content, open[] and close[] refs. On a Twig stack you can render
          it from @ui/Panel/Panel.twig; Shopify is Liquid, so we write it out. -->
-    <div data-component="Panel" data-option-position="right" class="z-10">
+    <div id="cart-panel" data-component="Panel" data-option-position="right" class="z-10">
       <button data-ref="open[]" class="border-b border-current">
         Cart (<span id="cart-count">0</span>)
       </button>

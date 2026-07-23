@@ -86,12 +86,12 @@ The last piece connects the two components. `Fetch` emits a bubbling `fetch-upda
   data-component="Action"
   data-on:fetch-before="Transition(#cart-loader) -> target.enter()"
   data-on:fetch-after="Transition(#cart-loader) -> target.leave()"
-  data-on:fetch-update="Panel -> target.open()">
+  data-on:fetch-update="Panel(#cart-panel) -> target.open()">
   <!-- header with the Panel, and the product grid with add-to-cart forms -->
 </div>
 ```
 
-Because `Fetch`'s events bubble, one `Action` on the wrapper handles every add-to-cart form on the page. `Panel -> target.open()` calls the drawer's `open()` method, and `open()` is a no-op if it is already open, so adding a second item just refreshes the contents.
+Because `Fetch`'s events bubble, one `Action` on the wrapper handles every add-to-cart form on the page. `Panel(#cart-panel) -> target.open()` calls the drawer's `open()` method — the `(#cart-panel)` selector scopes it to the drawer, so no other `Panel` on the page opens — and `open()` is a no-op if it is already open, so adding a second item just refreshes the contents.
 
 Register the four components this drawer uses once, in your theme's main script:
 

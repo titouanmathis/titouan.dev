@@ -38,9 +38,9 @@ The [Predictive Search API](https://shopify.dev/docs/api/ajax/reference/predicti
 `Fetch` fires on link clicks and form submits, not on keystrokes. So the trigger is an [`Action`](https://ui.studiometa.dev/components/Action/) listening for `input`, with a `debounce` modifier, that submits the search form:
 
 ```html
-<form action="{{ routes.search_url }}" method="get"
+<form id="predictive-search-form" action="{{ routes.search_url }}" method="get"
   data-component="PredictiveSearchFetch Action"
-  data-on:input.debounce300="PredictiveSearchFetch -> target.$el.requestSubmit()">
+  data-on:input.debounce300="PredictiveSearchFetch(#predictive-search-form) -> target.$el.requestSubmit()">
   <input type="hidden" name="resources[type]" value="product">
   <input type="search" name="q" autocomplete="off" role="combobox"
     aria-controls="shopify-section-predictive-search" aria-autocomplete="list">

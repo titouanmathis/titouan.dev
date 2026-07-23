@@ -1,10 +1,11 @@
 <div class="max-w-md space-y-3">
   <form
+    id="predictive-search-form"
     action="/search/suggest"
     method="get"
     role="search"
     data-component="Fetch Action"
-    data-on:input.debounce300="Fetch -> target.$el.requestSubmit()"
+    data-on:input.debounce300="Fetch(#predictive-search-form) -> target.$el.requestSubmit()"
     data-on:fetch-before="Transition(#search-loader) -> target.enter()"
     data-on:fetch-after="Transition(#search-loader) -> target.leave()">
     <!-- These match the Predictive Search API's query parameters. -->

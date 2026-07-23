@@ -1,9 +1,10 @@
 <form
+  id="collection-filters"
   action="/collections/all"
   method="get"
   data-component="Fetch Action"
   data-option-response="response.json().then((data) => Object.values(data).join('\n'))"
-  data-on:change="Fetch -> target.$el.requestSubmit()"
+  data-on:change="Fetch(#collection-filters) -> target.$el.requestSubmit()"
   data-on:fetch-before="Transition(#loader) -> target.enter()"
   data-on:fetch-after="Transition(#loader) -> target.leave()"
   class="max-w-2xl space-y-4">

@@ -72,7 +72,7 @@ From there, everything is declared in markup. Three attributes carry the whole m
 - `data-option-*` sets that component's options, for example `data-option-history` to update the URL.
 - `data-ref="…"` marks a child element the component reads or writes.
 
-Two small components do most of the wiring across the series. [`Action`](https://ui.studiometa.dev/components/Action/) connects an event on one element to a method call on another, declaratively: `data-on:fetch-before="Transition(#loader) -> target.enter()"` reads as "when a `fetch-before` event bubbles up here, call `enter()` on the `Transition` component at `#loader`". [`Transition`](https://ui.studiometa.dev/components/Transition/) runs enter/leave class transitions, which is how the loader above appears and disappears. You write the behaviour in Liquid; the classes stay in your control.
+Two small components do most of the wiring across the series. [`Action`](https://ui.studiometa.dev/components/Action/) connects an event on one element to a method call on another, declaratively: `data-on:fetch-before="Transition(#loader) -> target.enter()"` reads as "when a `fetch-before` event bubbles up here, call `enter()` on the `Transition` component at `#loader`". The `(#loader)` selector scopes the target to that one element; a bare `Transition` would match every instance on the page. [`Transition`](https://ui.studiometa.dev/components/Transition/) runs enter/leave class transitions, which is how the loader above appears and disappears. You write the behaviour in Liquid; the classes stay in your control.
 
 ## How the demo works
 
