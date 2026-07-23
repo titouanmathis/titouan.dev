@@ -36,7 +36,8 @@ details.callout > summary.callout-title {
 }
 
 .callout.info {
-  --callout-accent: oklch(0.62 0.03 260);
+  /* The link blue, dimmed and desaturated toward gray. */
+  --callout-accent: oklch(from var(--color-accent) l calc(c * 0.5) h);
 }
 
 .callout.warning {
