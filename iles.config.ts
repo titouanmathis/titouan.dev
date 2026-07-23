@@ -150,6 +150,12 @@ export default defineConfig({
             dark: 'github-dark',
           },
           defaultColor: false,
+          // Style fenced blocks that declare no language, or a language Shiki
+          // doesn't bundle, as plaintext (they'd otherwise be skipped and render
+          // unstyled). `apacheconf` isn't bundled, so alias it to `apache`.
+          defaultLanguage: 'text',
+          fallbackLanguage: 'text',
+          langAlias: { apacheconf: 'apache' },
           transformers: [
             // Twoslash overlays are opt-in per block via the `twoslash` meta
             // flag, e.g. ```ts twoslash. Rich renderer = pure-CSS hover popups,
