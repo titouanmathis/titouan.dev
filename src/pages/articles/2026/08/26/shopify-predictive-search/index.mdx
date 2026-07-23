@@ -1,0 +1,108 @@
+---
+title: Shopify predictive search
+description: Build Shopify predictive search with @studiometa/ui. A debounced suggestions dropdown over the Predictive Search API with progressive enhancement.
+tags: shopify, predictive-search, ajax-search, progressive-enhancement, studiometa-ui
+---
+
+# Shopify predictive search
+
+<MetaInfo class="block">26/08/2026 in #shopify #predictive-search #progressive-enhancement</MetaInfo>
+
+> **Part 6 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+
+Predictive search shows product suggestions as the customer types, in a dropdown under the search field. It needs debouncing so you are not firing a request per keystroke, and it needs to stay accessible from the keyboard. Both stay small with [`@studiometa/ui`](https://ui.studiometa.dev) and [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), because the search results are another server-rendered section.
+
+Type in the field below. Suggestions are fetched, debounced, and swapped in:
+
+import demoTwig from './demo.twig?raw';
+import demoTs from './demo.ts?raw';
+
+<UiPlayground
+  client:visible
+  html={demoTwig}
+  script={demoTs}
+  height="320px"></UiPlayground>
+
+Without JavaScript the form performs a full search; the dropdown is the enhancement layered on top. [Open it in the playground](https://ui.studiometa.dev/play/#html=eNqNVDGO2zAQ7POKhZLCV9AyzkCKwDaQJh9wuiAIaHElEaFIHkn5rM4PSdo8zC%2FJkqLPss%2FAnRqKy9XszO5QKyH3UCnu%2Fbro%2BIE9s06At7xCNrBlsfkAsKqN62gF4FWQRq%2BL0iN3VVv6vmnQhyIddhhaI9ZFgzngjMJ1MaaOEcEDZ5XprNGow7r4hqFq4WtCnWQY%2FUVq24e5wJ3pdYXLxeKczDYQuKMa80%2Bo5g6feiKw7XedDLOHa4w6fsB2SPSJx3fHtZex0uzjyIkpwwW6hwkmsUJ3H4fXdPROGIV8jwSzSTirJAbCYIlGK4VAXYDmHe0cetO7Cv2PePqzgD1XPcWtM6KvQgHlmxAeU%2Ft%2BSTH5GoWk6B5Z7n7EGYEm464VHkAG7DyrknBouGWPmfW5aN5ALj4dZ3xGEk%2BXgFXkndYoEbu1TdmQ5fjT8d8lkffBRC8oDIRg6npy5GT0iQ5kIX9Pz3XmNZKSZ0fGJ2t9ZnWvFOyMI17kzF4LFGAPbAl2YI%2Bwa1iIk7XcUSte%2Bk5NoJB%2BQZPi3IE89UuhW29fjHKTY2wMstRxVjvTkXi6bzIMbHE%2FNdmJBfPOxN%2BI9lZ%2FwENgvoO0Vr2LKsvPC7gAbmg4qzKqzZYrySrp%2Bpfx%2Fif%2FJPekHrTGynpg2Xzs9YQyiH2DQLHZ0p1Jzpa6gWDAI0L%2BrxCyh1lwA5yOfyp%2BOv4F4%2BJ7MAFp9zBflXakmLiOy39QWotm&script=eNqNVcGO2zYQvfsrpsYCkgBL2qZID2vL23aBnrZFkGyRQxHAtDSymFCklhzZaxgC8iHJz%2BVLOqKs9TrOoSdJj5yZxzePI1k3xhIcwOJGOkJ7ZxjRqAk6KK2pIfjNUVtIUyOJ9KOLyRj1SVIwn8gx9vecpNEz%2BBMpr2bwYIV2sod%2BmKOVHDvJjXYEjTVFm5ODDP6dAKciSQpvILgTeisc3IkmmEEldOHR3KNxzih0s7OA90wL%2FkChJb6M2DEcrwf4%2B5B7FFShhQdDZzFqwPmkdBl0h1bUMoe%2F2s0ZswGOa4YvQgwRa%2FGAZ1Vyj8aEQ40P80nZai8kOPTPUGqNNoIDZ7NIrdWwWhRyC7LIpq4yjSz38XFv3FgsJL9ukSFh82q6vDr4BN0i5aDlaj7pTiUsulaRCx9btPuhxNCRR26FBxOysg6jhMy92bEvhMMwmvM%2BWUL402M0UhrJBosGciWcy6aETxS7Gvwzb61lO6W%2FXk%2BX70iwYWjfSL0BMhyL4NrNBl2fwiWLtFkGvshAphZsKOzdMRolKaVil4ZhE0G2hCbxIp%2BTTKTOVVsgny46MT7mShTqDVUX9Ff%2Fg%2F7fZtQNSmPh2%2BcvVwevVfft81dPfvWCvCSse%2BrHwowDJLVoRu6rhZJgjcJsapqew3S5EFBZLLNpOp43vTo0yeCZbjoSXCuTf4LmKf4Fmn38CiqzRXuz3jyT%2Ffm67%2F5RHO6%2FWC5SJZndQOKjkdyvQegLGVp1JKV4HqzN06mqsQXfFmtaXWAB7ClZYLwfX85r%2B8Nz5VZ5TbrjfbcolJ8SrMtO6sLskrL%2FTNb8EQ4Ib3%2B5xDuF2%2Bsc%2BDo0Lc1AaklewJNpW6t4m8Yd%2FPP2PmR%2FoSnBb4csyyBw7GXNF%2FP2CN4Mz4TjZsBiiv7sSS%2F9s194KWl4DmhRY4K6cO8lVWGQDpcrPbo2iIa7AyB2QpKn8IYnnmQfhuwVo7bouTqkB1mjaWmEZ%2FDq9fXgz%2Bcu9OFv0fEA5vjxivZMhqpvBA8Zl2yQwuAxiOD2FriLMx41FQrujbvhVx4smrgRcS9DwIOmt3FaUa14zkDnC3anxj935Exe7hjP6It%2FQjhMel6%2BXPJJfrhy%2Bh9E8%2F8ANEQt5g%3D%3D&theme=light) to edit it.
+
+<TableOfContent open />
+
+## Fetch on input, debounced
+
+The [Predictive Search API](https://shopify.dev/docs/api/ajax/reference/predictive-search) has two endpoints. `GET /search/suggest.json` returns JSON, and `GET /search/suggest` returns rendered section HTML when you pass a `section_id`. Use the HTML endpoint here, so [`Fetch`](https://ui.studiometa.dev/components/Fetch/) can swap the results section by `id` with no parsing.
+
+`Fetch` fires on link clicks and form submits, not on keystrokes. So the trigger is an [`Action`](https://ui.studiometa.dev/components/Action/) listening for `input`, with a `debounce` modifier, that submits the search form:
+
+```html
+<form action="/search/suggest" method="get"
+  data-component="Fetch Action"
+  data-on:input.debounce300="Fetch -> target.$el.requestSubmit()">
+  <input type="hidden" name="resources[type]" value="product">
+  <input type="hidden" name="section_id" value="predictive-search">
+  <input type="search" name="q" autocomplete="off" aria-controls="predictive-search" aria-autocomplete="list">
+</form>
+
+<div id="shopify-section-predictive-search"><!-- results land here --></div>
+```
+
+`data-on:input.debounce300` waits 300ms after the last keystroke before submitting, the same interval Dawn uses. `requestSubmit()` triggers the form's submit, `Fetch` builds the URL from the form fields (`q`, `resources[type]`, `section_id`), fetches `/search/suggest`, and swaps the `#shopify-section-predictive-search` section it gets back. The debounce lives entirely in an attribute, and the request logic is the same `Fetch` used throughout the series.
+
+The `debounce` modifier accepts a delay in milliseconds (`debounce300`); js-toolkit also exports a standalone [`debounce`](https://js-toolkit.studiometa.dev/utils/debounce.html) utility if you need it outside `Action`.
+
+## How the demo simulates it
+
+The playground has no store, so the demo mocks `GET /search/suggest`: it filters an in-memory product list by the `q` parameter and returns the results wrapped in a `#shopify-section-predictive-search` element, the same shape Shopify's section response has.
+
+```js
+window.fetch = async (input, init) => {
+  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  if (url.pathname.endsWith('/search/suggest')) {
+    return new Response(results(url.searchParams.get('q') ?? ''), {
+      headers: { 'content-type': 'text/html' },
+    });
+  }
+  return realFetch(input, init);
+};
+```
+
+**Swap the mock for your store:** delete the `window.fetch` block, and render a `predictive-search` section in your theme using the [`predictive_search`](https://shopify.dev/docs/api/liquid/objects/predictive_search) Liquid object. The same form then queries the real endpoint. Use locale-aware URLs on a live theme (`{{ routes.search_url }}` for the form action, `window.Shopify.routes.root` in JavaScript), and keep the `name="q"` search input inside a real search form so a full search still works without JavaScript.
+
+## Keyboard navigation with Indexable
+
+A suggestions dropdown should be operable with the arrow keys and Enter. [`Indexable`](https://ui.studiometa.dev/components/Indexable/) manages exactly that: it tracks a `currentIndex` within a range, exposes `goNext()`, `goPrev()` and `goTo()`, and emits an `index` event when the active item changes. It manages the index; you decide what the keys do and how the active item looks. A small component built on it:
+
+```js
+import { Indexable } from '@studiometa/ui';
+
+class PredictiveSearch extends Indexable {
+  static config = {
+    ...Indexable.config,
+    name: 'PredictiveSearch',
+    refs: ['option[]'],
+  };
+
+  // Derive the range from the current results instead of a fixed total.
+  get length() {
+    return this.$refs.option?.length ?? 0;
+  }
+
+  onKeydown({ event }) {
+    if (event.key === 'ArrowDown') { event.preventDefault(); this.goNext(); }
+    if (event.key === 'ArrowUp') { event.preventDefault(); this.goPrev(); }
+  }
+
+  // Fires on the `index` event; move the highlight and the ARIA active descendant.
+  onIndex() {
+    this.$refs.option.forEach((el, i) => {
+      el.classList.toggle('is-active', i === this.currentIndex);
+      el.setAttribute('aria-selected', String(i === this.currentIndex));
+    });
+  }
+}
+```
+
+Set `data-option-boundary="loop"` so arrowing past the last suggestion returns to the first. Because the results section is re-rendered on each search, re-resolve the options after a swap by listening for the bubbling `fetch-update-after` event and refreshing the index bounds. Pair this with the ARIA (Accessible Rich Internet Applications) `combobox`/`listbox` roles from Shopify's [predictive search guide](https://shopify.dev/docs/storefronts/themes/navigation-search/search/predictive-search) so screen readers announce the active suggestion.
+
+## Where this goes next
+
+The field above debounces input and swaps in a keyboard-navigable suggestions dropdown, from one attribute plus a small `Indexable` subclass. Like [collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/), it is a control whose state drives a server-rendered section through [`Fetch`](/articles/2026/07/29/shopify-section-rendering-api-example/). Last in the series, [product recommendations](/articles/2026/09/02/shopify-product-recommendations/) loads a section lazily after the page.

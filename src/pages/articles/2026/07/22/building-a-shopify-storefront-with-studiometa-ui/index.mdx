@@ -1,0 +1,117 @@
+---
+title: Building a Shopify storefront with @studiometa/ui
+description: "A progressive-enhancement approach to Shopify theme interactivity: build interactive storefront features on top of your server-rendered Liquid with @studiometa/ui and @studiometa/js-toolkit."
+tags: shopify, progressive-enhancement, liquid, studiometa-ui, storefront
+---
+
+# Building a Shopify storefront with @studiometa/ui
+
+<MetaInfo class="block">22/07/2026 in #shopify #progressive-enhancement #liquid</MetaInfo>
+
+> **A 7-part series** on building a Shopify storefront by progressively enhancing server-rendered Liquid with `@studiometa/ui`:
+>
+> 1. Building a Shopify storefront with `@studiometa/ui` (this page)
+> 2. [Shopify Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/)
+> 3. [Shopify AJAX collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/)
+> 4. [Shopify variant selector](/articles/2026/08/12/shopify-variant-selector/)
+> 5. [Shopify AJAX cart drawer](/articles/2026/08/19/shopify-ajax-cart-drawer/)
+> 6. [Shopify predictive search](/articles/2026/08/26/shopify-predictive-search/)
+> 7. [Shopify product recommendations](/articles/2026/09/02/shopify-product-recommendations/)
+
+Shopify themes render on the server. Liquid produces HTML, the browser gets a page that works, and Google gets something to index. Adding richer interactions like AJAX collection filtering, a cart drawer or predictive search usually means writing and wiring a fair amount of JavaScript by hand.
+
+[`@studiometa/ui`](https://ui.studiometa.dev) is a library of unstyled, accessible components built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), a lightweight progressive-enhancement framework. Both are open-source packages we build and maintain at [ikko](https://ikko.fr). You declare behaviour with `data-` attributes on the HTML your theme already renders, and the components do the wiring. This first article sets up the component model; across the series I build the storefront's interactive pieces one at a time, each on the Liquid your theme already renders.
+
+Here is the whole idea in one demo. It is a storefront navigation that swaps the page's main region without a full reload, with a loader during the request:
+
+import pillarTwig from './demo.twig?raw';
+import pillarTs from './demo.ts?raw';
+
+<UiPlayground
+  client:visible
+  html={pillarTwig}
+  script={pillarTs}></UiPlayground>
+
+The links are ordinary `<a href>` elements. Without JavaScript they navigate like any link. With JavaScript, `@studiometa/ui` intercepts the click, fetches the target, and swaps the matching region in place. That is progressive enhancement: the server-rendered version is the baseline, and the enhancement is a layer on top that can fail without breaking the page.
+
+<TableOfContent open />
+
+## Progressive enhancement on a Shopify theme
+
+With progressive enhancement, Liquid stays the source of truth for markup. The server renders a complete, indexable page. JavaScript then attaches behaviour to elements that are already there, using `data-` attributes, and talks to the endpoints Shopify already exposes: the [Section Rendering API](https://shopify.dev/docs/api/ajax/section-rendering), the [Ajax Cart API](https://shopify.dev/docs/api/ajax/reference/cart), the predictive search endpoint.
+
+`@studiometa/js-toolkit` is a framework for exactly this: it binds component classes to DOM elements through data attributes, so the behaviour is declared in your Liquid and the logic lives in small, testable classes. The rendering stays with your theme; the toolkit only adds behaviour.
+
+## The setup
+
+Install the two packages:
+
+```sh
+npm install @studiometa/ui @studiometa/js-toolkit
+```
+
+Register the components you use once, in your theme's main script. `registerComponent` mounts every element carrying the matching `data-component` attribute:
+
+```js
+import { registerComponent } from '@studiometa/js-toolkit';
+import { Action, Fetch, Transition } from '@studiometa/ui';
+
+registerComponent(Action);
+registerComponent(Fetch);
+registerComponent(Transition);
+```
+
+From there, everything is declared in markup. Three attributes carry the whole model:
+
+- `data-component="Fetch"` attaches a component (here [`Fetch`](https://ui.studiometa.dev/components/Fetch/)) to an element.
+- `data-option-*` sets that component's options, for example `data-option-history` to update the URL.
+- `data-ref="…"` marks a child element the component reads or writes.
+
+Two small components do most of the wiring across the series. [`Action`](https://ui.studiometa.dev/components/Action/) connects an event on one element to a method call on another, declaratively: `data-on:fetch-before="Transition(#loader) -> target.enter()"` reads as "when a `fetch-before` event bubbles up here, call `enter()` on the `Transition` component at `#loader`". [`Transition`](https://ui.studiometa.dev/components/Transition/) runs enter/leave class transitions, which is how the loader above appears and disappears. You write the behaviour in Liquid; the classes stay in your control.
+
+## How the demo works
+
+The navigation above is a `Fetch` component on each link plus one `Action`/`Transition` pair for the loader. When you click a link, `Fetch` intercepts the click (it leaves modifier-clicks and `target="_blank"` alone), fetches the URL, and replaces the element in the response whose `id` matches an element on the page, here `#main-content`. With `data-option-history` it also pushes the new URL so the back button works.
+
+The demo runs in a playground with no backend, so its script mocks `window.fetch` to return the HTML each route would render:
+
+```js
+// Simulated storefront: the playground iframe has no backend.
+// `data-option-history` calls history.pushState, which the sandbox blocks, so stub it.
+history.pushState = () => {};
+history.replaceState = () => {};
+
+const realFetch = window.fetch.bind(window);
+const pages = {
+  '/': `<main id="main-content">…</main>`,
+  '/pages/shipping': `<main id="main-content">…</main>`,
+};
+window.fetch = async (input, init) => {
+  // Fetch calls window.fetch with a URL instance, so read input.href.
+  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  const page = pages[url.pathname];
+  if (page) return new Response(page, { headers: { 'content-type': 'text/html' } });
+  return realFetch(input, init);
+};
+```
+
+**Swap the mock for your store:** delete the simulation block (the `history` stub and the `window.fetch` override). The links already point at real Liquid pages (`/`, `/pages/shipping`), and `Fetch` will swap the region whose `id` matches. To target a single, server-defined region precisely rather than "any matching id", scope it with `data-option-selector`, or fetch a named section with the Section Rendering API, which is exactly where the next article starts. You can also [open this demo in the playground](https://ui.studiometa.dev/play/#html=eNq1U7Fu3DAM3e8rCHVJBp0TtMhQ2AbaociQrQU682z6LNQWBYl3udv6Nf2wfklpW07RS4Bk6WRCfOR7j6TL1h03AC0K2obHwJ68VOZTI469WTPsP3YkTW931HGkynyL6JObMFfvBsaW4jXYGgTjnmSrLSheXT8vx04Tr1UPhEdaqpsBU6rMiCf7aE8DpIAN2bO9M7VmS4%2FHFdINdAInNCbbzPSwx2A%2FzDhFIvSRusoU5pnVL5Oy%2FMxhEmV7l4Tjee2946gS7Q5y0Bxi1NLcG%2BCeR1poCrzkC7inVKTeheD8%2Fn%2Bwf829LxToqHxGuLYyy5hNfrlU8Xch%2FyCyoHmetos8VoZ1A07O9uYl4Lw5K%2Fwm2A%2BikJPZ6VMRCJ3EpnH5ZsPF3c2T5wd1o5Z%2F%2F%2FyVXU9u55Mo9CbqzRSN6PxsfQrUrJrQqa1c6yW9Xy%2Bkv11TM6keW6cldsdDa%2Bppw2XR32ZsqL%2FToOMjEAbpCVLPYQufIz8mAj5EGFAoCYTI7aGRtC2LsMibxNSbstDfrv4D4%2BUcXQ%3D%3D&script=eNqtU01v2zAMvedXELnYAfzRbuglibMvYNhhh6HrsMMwoIpN19pkyRDpuUGR%2F15KSbqP5riTZfK9xyeS0v3gPMMDeLzTxOjfOYlYtAx7aL3rIXlNPDba9ciq%2FEE5O2d%2Bak5WM33ivqlZO5vBe%2BS6y%2BDGK0s6hM5qjFq4s9pZYqmqTGRBBZO2jZuKNvwWW%2FlJD5HF6gge1B2SAB9mAEmZLOF23SttQTfVPBxygbE4n0NtFFE1p0HVmO%2Fyl%2FONUADW3eUpxXjP%2Bb2BVij51plmvvkg9tZld3nEDpuvaGqJATvgDoE6NxTw1ruJENzowSjGYMu7ZqyZinU5BO66DGY2t1m0GU2X1Olh0Pbuv5v%2BfBT%2BxziEgjA5b5pJNwhS8EW4xxVsR9IWiaBRuzOW96vZn3OQbiva2RpSbYeRMxHSvIBqE4dwGMvojcAsTvDl%2BmPKuwFdCxEOVVVBQuzDzeHVMbg8fAvhZWBcrcKmFJ3HViZ9Eg1tE9XYvW%2BCLAbFnVU9fg8Y3UIaUotoA0BNSnO08EnWTROmqUdy5hdGr4R8o3t0I5%2FCGVxdXCxiPZAl5NHbSL9Gku0XflDPZLU7VA16WsoxOU4qD1eUQSZhHGXHvUlkz%2FdRbD97knta7b9atwodnj17bOnhCUn6eSqKnM38fmiL1SM6Z0M2&theme=light) to edit it live.
+
+Every demo in this series works the same way: the component markup is exactly what you ship, and only the mocked endpoint is demo scaffolding.
+
+## The building blocks
+
+Each interactive piece of a storefront gets its own article, its own primary technique, and its own working demo. Start anywhere; they all build on the setup above.
+
+- **[Shopify Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/)**. Fetch and swap server-rendered theme sections, the foundation for everything below (plus the July '26 `{% partial %}` preview).
+- **[Shopify AJAX collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/)**. Filter and sort a collection with a `<form method="get">`, updating the grid and the URL without a reload.
+- **[Shopify variant selector](/articles/2026/08/12/shopify-variant-selector/)**. Reflect variant choices into price, availability and the buy button with the reactive `Data` components.
+- **[Shopify AJAX cart drawer](/articles/2026/08/19/shopify-ajax-cart-drawer/)**. Add to cart and open an accessible slide-in drawer with focus trapping and scroll lock.
+- **[Shopify predictive search](/articles/2026/08/26/shopify-predictive-search/)**. A debounced, keyboard-navigable suggestions dropdown over the predictive search endpoint.
+- **[Shopify product recommendations](/articles/2026/09/02/shopify-product-recommendations/)**. Lazy-load recommendations and finishing touches like prefetching and analytics.
+
+## A note on the demos
+
+The playground runs Twig, HTML, JavaScript and CSS, not Liquid against a real Shopify store. So every demo is a simulation: the component markup is production-accurate, but the network responses are mocked with a small `window.fetch` shim, and Twig stands in for Liquid. Each article shows the real Shopify wiring next to the demo and tells you exactly what to delete to go live. This keeps each demo runnable without shipping a companion theme to clone.
+
+The navigation above swaps a region, shows a loader and keeps the back button working, from a few attributes and no custom fetch code. Next: [the Section Rendering API](/articles/2026/07/29/shopify-section-rendering-api-example/), the technique the rest of the series leans on.

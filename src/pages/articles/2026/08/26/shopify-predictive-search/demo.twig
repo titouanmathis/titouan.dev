@@ -1,0 +1,39 @@
+<div class="max-w-md space-y-3">
+  <form
+    action="/search/suggest"
+    method="get"
+    role="search"
+    data-component="Fetch Action"
+    data-on:input.debounce300="Fetch -> target.$el.requestSubmit()"
+    data-on:fetch-before="Transition(#search-loader) -> target.enter()"
+    data-on:fetch-after="Transition(#search-loader) -> target.leave()">
+    <!-- These match the Predictive Search API's query parameters. -->
+    <input type="hidden" name="resources[type]" value="product" />
+    <input type="hidden" name="section_id" value="predictive-search" />
+
+    <div class="flex items-center gap-2">
+      <input
+        type="search"
+        name="q"
+        placeholder="Search products…"
+        autocomplete="off"
+        aria-controls="predictive-search"
+        aria-autocomplete="list"
+        class="w-full border rounded px-3 py-2 bg-transparent" />
+      <span
+        id="search-loader"
+        data-component="Transition"
+        data-option-enter-from="opacity-0"
+        data-option-leave-to="opacity-0"
+        data-option-leave-keep
+        class="text-sm text-current/60 opacity-0">
+        …
+      </span>
+    </div>
+  </form>
+
+  <!-- Fetch swaps this section by id when the search results come back. -->
+  <div id="shopify-section-predictive-search">
+    <p class="text-sm text-current/60">Start typing to see suggestions (try “ca” or “tote”).</p>
+  </div>
+</div>

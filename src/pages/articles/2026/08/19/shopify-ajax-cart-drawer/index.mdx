@@ -1,0 +1,115 @@
+---
+title: Shopify AJAX cart drawer
+description: Build a Shopify AJAX cart drawer with @studiometa/ui. Add to cart and open an accessible slide-in drawer with the Cart AJAX API and progressive enhancement.
+tags: shopify, cart-drawer, ajax-cart, progressive-enhancement, studiometa-ui
+---
+
+# Shopify AJAX cart drawer
+
+<MetaInfo class="block">19/08/2026 in #shopify #cart-drawer #progressive-enhancement</MetaInfo>
+
+> **Part 5 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+
+A cart drawer confirms an add-to-cart in a panel that slides in, without leaving the page. It also has the most moving parts: an accessible overlay, a focus trap, a scroll lock, and a cart that stays in sync. [`@studiometa/ui`](https://ui.studiometa.dev) gives you the drawer and the AJAX wiring as components, on top of [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev).
+
+Add a product below. The item posts to the cart, the drawer refreshes and slides in, and the count updates:
+
+import demoTwig from './demo.twig?raw';
+import demoTs from './demo.ts?raw';
+
+<UiPlayground
+  client:visible
+  html={demoTwig}
+  script={demoTs}
+  height="380px"></UiPlayground>
+
+The drawer traps focus, closes on <kbd>Escape</kbd> and locks the background scroll; all three come from `Panel`. [Open it in the playground](https://ui.studiometa.dev/play/#html=eNqNVc1u4zYQvucpBioWjoHQsr1psDBsodsAvS3aw16KxaKgpLHFhCJZkorjNQwUfZieeu%2B9j7JP0qF%2BLNleoM7BETkfv%2FmfWebi5QYg556zTJdGK1R%2BFb3PvNAq6iRaLdbos4KluNYWV9FHy5UTAXP7XcatZ1LzHO0YWAKe2w36CfGgvR1fcvA1Ca6ikMhf8FsUlaEzmfELVygHD7RB1eAzyZ1bRc7wDNmOPUQJXS4LDCo64VriKwiPpWNZbS08Vc6L9Y7c9FtEBRtu2H39lB4Tlzo%2B1cqzVMs8Sj7swBXaLOMgH0DrLwCRr6KBe1F7fR7wPhonCG3CFautY2ury1WkySXhd2z6LWAdMeb1VbBnRNMKW7dKyXjlNXh89cyVzf%2BsspYMiB%2Bm0JMm7%2FNcqM3XP%2F4aOr5%2FA1immMPoh0rEdXaa34nfis0ItsIXsG91Gt04vICRFZvCj%2B5aAffeLmDfGEXSL2w2HcGhE%2BsXtJLvfjuHsYADnjotK48glEPPppBuWCp59hzfD0kySiAXCu0FDeG3BVUFBcw%2BL%2Bj0RaiMvZtOoWAus6EsUm0plUx2H12EZuca6PKC37AH2HZMJX9ldCjpXf3sAFrJHbw5tCQU0FTq7BlCZffXVGJp5b1WTVYtrkPCUX36HHWpbE1Lz2xsi7n5e6S6hNumsI91mukqwKZtXse9yrjRmfS2ocob8y4NzqR2eGIxTZqTzuuajUggBMWkoa4G5l36WJNe4%2BRjAJ4bHFwgI660v0nfiQfF%2FNgoKbuHwRD4VVc0Vih8y7iYJ6c%2BHyObW76lCXDioukYz1ptQAnCUVcZv5ssY3O9L81V0471FZlWj7%2FkJhxKqv5O98aKHMIPJV869vZk7hEPzXwwVudVRsYo%2BNQpJdcWMJvO7sALL5GK%2B5Gb0R1hRUan%2Bfd9N3TYeY%2F9qD324Nm7S%2FDbHvyh2gyw87ZdPvfpWVKkRCax84kcaKsCLFV0TlHolsF8kIKlSfb7zrlJrQ0OB%2Fj3H%2Fj6598DSa2ZJKcpoMCUg2zyemuuojikLeZ5Pnly0UBeoi80VQNNPj%2B8P18GP4UldwFoZ7dFRzhH26%2F7Ii20RMcTX9D2uw3YMawS%2BDl9QrL8hcsKXX09cVhb6MaTtZBhPf%2BoNe0CNZ48aaFuR6Px%2BLQ8hTKVB78zpK4QeY4qAsVLOok8gpp6FQ3CRHV0OEQQX0nye8UVxXx3pJpd%2F7bz5fh20GN3g0l2RtjOlIbRVWkp%2FP%2BPE1p2QGuxafDLoRLKoDsv47YQk0EXhgZqezD0XXLTNO9%2FMwfjHw%3D%3D&script=eNp1VV2O2zYQfvcppkYRSY0sezdpUdiW0yJFHormB9kNgiIIsFxpZHNLkSpJxTEMveQSuURukZvkJBmS0tpONg%2BGTM7HmW8%2Bzgx53ShtYQ8a19xY1I8V7UiUFjqotKoh%2BsPYtuSqRsumN2ZilRL%2FcRstRnw4%2B2dhuZIpPEFbbFJ4wSSKFC41k4Y7y52uWk4uRoWSxkLBLBNqDTnsRwDR2ewsmpNfy63AOUSPWROl0Ghe0Or8V%2BjSgDo%2FQV0qiwfY2e%2B3sAcnsKft%2Bgh17lDd4pYH5ZPDm7fErGqlTwtKzbaoL9Cv4sRT5BXEPzl0JlCu7SbsAqloWy0hWpb8HfAyHzvMJHgYr5YNFIIZk48tvreTotWahJ7%2BNhuv%2FlWtDuG5Aawbu8uW02a1nJKjFQkF0NEvsOQWa0M0HdxHzWrWxLFIIF%2FB1VLwIUol8D3ctMbyaje5RrtFlLBmzeQhcTENk6uf9yLzwnTw%2BSO41f921y2n3hggXz58cvteMPgFThFTwVdXSSBxo7iMoyhxZHsdrn6gQysGiuSmwMlucj4mLj4x8t2KPvGrxag7XEShWmlP7yEIInsxMo1lW2Acm7ZOIehBf%2BF%2BYJ3C7JScy%2BHAzrt3NOSQng%2Ffl4ZGJnx9U6wtl6XaZpVbZte0iMMOeT82EZKZnSwg5rJpbQpccutJHai3WhBM4hZevfwntrsGVQUeDnmeQ2Ss5nIdwaN%2Bcx6%2BGZ2jDBU1DomRbTRWPjVXl2TKGmY3ktWYoSzNa243cTR1SU5ZWWY3JkqGgg0srlW5IxqOH9y755%2BZ21scYXhJCA%2FktGSycEyfKF3%2FRc1L%2FC4809ghsjXaOOKlCzMP7XzsqdGKrsn6S%2FN9%2F4aXb48BgkscrrRy8va1LTJHgmThZRLwLl%2BHTvwZd8lwP4ezYERh0CP6gEnw2LRmE%2B%2FJRzrMhN4eOuF2Ngy7fpkC%2BaZ5AV0fmW0ZieUu7gWNNm6o6jQaJd5hKDu0l7xG1dphO4WHs1mSnAjBdkIxp%2Bs%2BNPXcM0zptC9y4%2BZWdNQ6NMi%2BmUZpb%2FfFS%2BZveqSDbnE8mBzfl2howhPhvy%2BeP8tCgdGAiHs25HIPG2Ql6j6%2BkpbG1MQVJ0WIWNMIHgqP3gMlIxclGUZUH%2Bi2XU5qf%2BFG7ei7pyYODwiZvzd5J3da%2FDNzp%2BXw8iSLr0ajQIY%3D&theme=light) to edit it.
+
+<TableOfContent open />
+
+## The drawer is a Panel
+
+[`Panel`](https://ui.studiometa.dev/components/Panel/) is a slide-in panel that extends the library's `Modal`, so it inherits the accessibility work: a focus trap while open, close on <kbd>Escape</kbd>, an overlay click to dismiss, and a background scroll lock. It is a JavaScript component: it enhances whatever markup carries the right refs, so you render that markup in Liquid. `@studiometa/ui` also ships a `Panel.twig` template for Twig-based stacks, but a Shopify theme is Liquid, so you write the structure out (once, in a snippet).
+
+`Panel` needs six refs: `open[]` (triggers), `close[]` (dismiss controls), `modal` (the dialog root, hidden until open), `overlay`, `container` (the sliding panel), and `content`. The `data-option-position` attribute drives which edge it slides from.
+
+```html
+<div data-component="Panel" data-option-position="right">
+  <button data-ref="open[]">Cart (<span id="cart-count">0</span>)</button>
+
+  <div data-ref="modal" role="dialog" aria-modal="true" aria-hidden="true"
+    class="z-50 fixed inset-0" style="opacity:0;pointer-events:none;visibility:hidden">
+    <div data-ref="overlay" class="-z-10 absolute inset-0 bg-black/40 transition duration-500 opacity-0"></div>
+    <div class="z-10 absolute inset-y-0 right-0 flex items-center pointer-events-none">
+      <div data-ref="container" class="h-full transform transition duration-500 translate-x-full pointer-events-auto">
+        <button data-ref="close[]">Close</button>
+        <div data-ref="content">
+          <div id="cart-drawer">Your cart is empty.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+The `open[]` and `close[]` buttons are wired to open and close automatically, so the trigger works on its own. `data-option-position="right"` makes it a right-edge drawer, and the component animates the `container` in from that edge. The `scrollLock` option is on by default; set `data-option-scroll-lock="false"` on the panel if you ever need to opt out. (The full demo markup fills in the Tailwind classes; this is the load-bearing structure.)
+
+## Add to cart with the Cart AJAX API
+
+Shopify's [Cart AJAX API](https://shopify.dev/docs/api/ajax/reference/cart) adds items with `POST /cart/add.js`. A drawer relies on **bundled section rendering**: pass a `sections` parameter and the JSON response includes a `sections` key with the rendered HTML of each section you asked for, in one round trip. So a single add-to-cart request can return both the added line and the re-rendered drawer.
+
+The add-to-cart form is a `Fetch` component. It posts the variant `id` and `quantity`, plus the sections to refresh, and its `response` option pulls the section HTML out of the JSON:
+
+```liquid
+<form action="{{ routes.cart_add_url }}" method="post"
+  data-component="Fetch"
+  data-option-response="response.json().then((data) => Object.values(data.sections).filter(Boolean).join(''))">
+  <input type="hidden" name="id" value="{{ variant.id }}">
+  <input type="hidden" name="quantity" value="1">
+  <input type="hidden" name="sections" value="cart-drawer,cart-count">
+  <button type="submit">Add to cart</button>
+</form>
+```
+
+`Fetch` swaps the returned `#cart-drawer` and `#cart-count` by `id`, exactly as in the [Section Rendering article](/articles/2026/07/29/shopify-section-rendering-api-example/). The `id` for the added variant comes from the [variant selector](/articles/2026/08/12/shopify-variant-selector/): its job is to keep that hidden input pointed at the right variant.
+
+## Opening the drawer on add
+
+The last piece connects the two components. `Fetch` emits a bubbling `fetch-update` event once the DOM is swapped, so an [`Action`](https://ui.studiometa.dev/components/Action/) on a shared parent opens the `Panel` and drives the loader:
+
+```html
+<div
+  data-component="Action"
+  data-on:fetch-before="Transition(#cart-loader) -> target.enter()"
+  data-on:fetch-after="Transition(#cart-loader) -> target.leave()"
+  data-on:fetch-update="Panel -> target.open()">
+  <!-- header with the Panel, and the product grid with add-to-cart forms -->
+</div>
+```
+
+Because `Fetch`'s events bubble, one `Action` on the wrapper handles every add-to-cart form on the page. `Panel -> target.open()` calls the drawer's `open()` method, and `open()` is a no-op if it is already open, so adding a second item just refreshes the contents.
+
+## How the demo simulates it
+
+The playground has no cart, so the demo mocks `POST /cart/add.js`: it keeps an in-memory cart, and returns the same JSON shape Shopify does, a `sections` object with the rendered `cart-drawer` and `cart-count` HTML.
+
+```js
+window.fetch = async (input, init) => {
+  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  if (url.pathname.endsWith('/cart/add.js')) {
+    const id = init.body instanceof FormData ? String(init.body.get('id')) : '101';
+    /* update the in-memory cart */
+    return new Response(
+      JSON.stringify({ items: cart, sections: { 'cart-drawer': drawerSection(), 'cart-count': countSection() } }),
+      { headers: { 'content-type': 'application/json' } },
+    );
+  }
+  return realFetch(input, init);
+};
+```
+
+**Swap the mock for your store:** delete the `window.fetch` block. The form already posts to `/cart/add.js` with the `sections` parameter, which Shopify answers with real bundled sections, so the same markup drives the real cart. Use locale-aware URLs on a live theme: `{{ routes.cart_add_url }}` in Liquid, or `window.Shopify.routes.root + 'cart/add.js'` in JavaScript. You can point the section rendering at a specific page with a `sections_url` parameter (for example `/cart`) if the drawer markup only exists there.
+
+## Where this goes next
+
+Submitting the add-to-cart form now adds the selected variant, refreshes the drawer and count from one bundled request, and opens an accessible panel. The last article, [Shopify product recommendations](/articles/2026/09/02/shopify-product-recommendations/), lazy-loads recommendations that pair well inside the cart. The section-swapping underneath it all is the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).

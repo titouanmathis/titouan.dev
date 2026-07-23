@@ -1,0 +1,138 @@
+---
+title: Shopify AJAX collection filtering
+description: Build Shopify AJAX collection filtering with @studiometa/ui. Filter and sort a collection in place with a form and the Section Rendering API, keep the URL shareable.
+tags: shopify, collection-filtering, section-rendering-api, progressive-enhancement, studiometa-ui
+---
+
+# Shopify AJAX collection filtering
+
+<MetaInfo class="block">05/08/2026 in #shopify #collection-filtering #progressive-enhancement</MetaInfo>
+
+> **Part 3 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+
+Collection filtering is a common AJAX feature on a storefront. A customer ticks a facet or changes the sort order, and the product grid updates in place, without a full reload and without losing their scroll position. Shopify already filters and sorts collections server-side from URL parameters, so with [`@studiometa/ui`](https://ui.studiometa.dev), built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), you only enhance the form.
+
+Tick a facet or change the sort below. The grid and the count update in place, and the URL stays in sync:
+
+import demoTwig from './demo.twig?raw';
+import demoTs from './demo.ts?raw';
+
+<UiPlayground
+  client:visible
+  html={demoTwig}
+  script={demoTs}></UiPlayground>
+
+The form submits its state to the server, which does the filtering and returns the rendered sections; the browser only swaps them in. This builds directly on the [Section Rendering API](/articles/2026/07/29/shopify-section-rendering-api-example/), so read that first if the `?sections=` pattern is new to you.
+
+<TableOfContent open />
+
+## A form drives the request
+
+Shopify already filters and sorts collections from URL parameters. Storefront filtering reflects every applied facet in the URL, and `sort_by` controls the order. So the browser's job is small: gather the customer's choices into those parameters and ask the server to re-render.
+
+A `<form method="get">` is exactly that. Put [`Fetch`](https://ui.studiometa.dev/components/Fetch/) on the form and it intercepts the submit, builds the URL from the form data (this is what a GET form does natively), fetches it, and swaps the sections back in. Add the sections you want as a hidden input:
+
+```html
+<form action="/collections/all" method="get"
+  data-component="Fetch"
+  data-option-history
+  data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))">
+  <input type="hidden" name="sections" value="product-grid,results-count">
+  <!-- facet inputs and a sort <select> -->
+</form>
+```
+
+Four things carry the behaviour. `data-component="Fetch"` enhances the form. `data-option-history` keeps the URL in sync so the result is shareable and the back button works. The hidden `sections` input tells Shopify which sections to render. And `data-option-response` parses the JSON the Section Rendering API returns (a `?sections=` request answers with JSON, whether it comes from a link or a form), so `Fetch` swaps each section by `id`, exactly as in the Section Rendering article.
+
+## Submitting on change
+
+Customers expect the grid to react as soon as they tick a box, so submit the form on `change`. [`Action`](https://ui.studiometa.dev/components/Action/) wires that up declaratively: listen for `change` on the form and submit it.
+
+```html
+<form
+  action="/collections/all"
+  method="get"
+  data-component="Fetch Action"
+  data-option-history
+  data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))"
+  data-on:change="Fetch -> target.$el.requestSubmit()"
+  data-on:fetch-before="Transition(#loader) -> target.enter()"
+  data-on:fetch-after="Transition(#loader) -> target.leave()">
+  …
+</form>
+```
+
+`requestSubmit()` fires the form's submit event, which `Fetch` intercepts. The same element carries the loader wiring: [`Transition`](https://ui.studiometa.dev/components/Transition/) shows a spinner between `fetch-before` and `fetch-after`. Keep a `<noscript>` submit button inside the form so filtering still works when JavaScript does not run. The form works fully server-side; the enhancement only removes the reload.
+
+## How the demo simulates it
+
+The playground has no Shopify backend, so the demo mocks `window.fetch`: it reads the `tag` and `sort_by` parameters off the request URL, filters and sorts an in-memory product list, and returns the `product-grid` and `results-count` sections as JSON, wrapped in their `shopify-section-*` elements.
+
+```js
+window.fetch = async (input, init) => {
+  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  if (url.searchParams.has('sections')) {
+    const tags = url.searchParams.getAll('tag');
+    const sort = url.searchParams.get('sort_by');
+    const items = /* filter + sort the list from the query string */;
+    return new Response(
+      JSON.stringify({ 'product-grid': grid(items), 'results-count': count(items) }),
+      { headers: { 'content-type': 'application/json' } },
+    );
+  }
+  return realFetch(input, init);
+};
+```
+
+The demo uses a simple `tag` parameter to keep the mock readable. [Open it in the playground](https://ui.studiometa.dev/play/#html=eNq1Vclu2zAQvecrCLaHBAijxEkXBLKAoEBOLVCguReUNJaIUCJLDhPrVvRjeuq9935KvqRDLd7itr70YnvIeW8WzhunC%2BOaI8Zkgcq0c54URmvoDZ9IrTndNYC1Kee8AoxmKVGKwjTWtNDinN8CFjW76TGre2OjKWrl0bhuddpeF7VsK5hQImMoHRGfvQR95uBLAI%2BfQt4oPD7hG7BFdBc5ULoEvnOy9SpGOH6hjSzBnWxQUVbg9sHlgi7%2BhdYgH2BAF1p6P%2BeNXIpHMVtq5q0sQHTiimd0narWBmTYWUqpVmUJLWetbMjyYws5e5A60IF1pgwFisqp8tSBDxo9NTG0yFmSHUW2Uj1MERcalix%2BiEcnLVMIDXn3dbFK2jE%2BYbTMQW%2BhnvnORt%2BdfIsaivvcLKeMUVarZKW10oGOmbGb4fcQLunj%2Fd%2FYRQHeG6fAD%2FHX9p4cPMRhnZpuHH7OOz7llBtHb8scdbmEktmlmDHbiQuWVwLjDMTK6AFWOQ5DO2XSyDZIzbNbkBgclGky3P%2FB3TpFsyE9lV%2BqtuLZx3hwyrR5ZGhYrar6IIYSnlFEbOQgqm2KNBkaMHXDynakVqTXYbb5eLIr27UKtjxG4fZvKBbONHNuaOoVduJ8n2MvF4HmILd7ADtejm%2B0AjGEJQrfDN9FcPFpktfnPHtPZVA3nr5%2Bp3KpwrHY1vjCKYtZmgdE6uIwW75fHn%2BZgct%2BBnhGg627NBnAWZqs%2BKIWExLjWpWxmb42Vi06MSpb7Gh4DLe3iDdUxBUbN4Df4A56L%2FXmrlgxR4PFD4qoPU1yvweYb67Xh%2Bu1oCZY9NnuAc%2Fe0Ur59ZM9ffsxe0VyUgeB7gBG0OX54SCDE%2Bri7cGoD6GaQLMJlCaBNJ8m8e8q%2Bw1EPDcI&script=eNqNVc2O2zYQvvspBkYBSoCkdTabtrDXboMAOQRtEqTbU7Do0tLYZkqRAofK1lj40ufJPfc8Sp6kQ0ryT739uaxXM%2Fy%2B%2BWY4M1R1Y52HB3C4VuTRvbBsMWg87GDlbA3iR%2FJtpWyNXl58oNxbq39XXsxGasA%2BL72yJoOX6MtNBjdOGlLB9ChHqxg7Kq0hD42zVVt6gjm8HwFTeeU1TkG8kI3I2K1K%2Frp8loGXa5rCeyGbRjrU4hZ22QniBvGAeDr5PwjrjyBPvj%2BClCUSWaeQzmE%2Ft%2Bsj1OW%2FoG5nfZprpypOMVEea0phvmDCu%2BtWg6rmY9rYRq22OWEsY97XJA%2BgMZRaEs3HkSH8yUurKb%2BEtWzyK6B6ejBejRffPDAzQIxTaDRrv4kGgB96Yy2bJGmCBlag1cAfyJbWVejA2dZUWAWypohJ7%2BDLZ%2Fj656dgiHnvri%2B0WtylxQerTCJE2gfh6vyN0%2BMfPi9b57ijLr6djBev7eHSa8n9An6DhLBSmruPisgsmI9jtHpxN5SwZFX%2BvIaV%2BvhoER1Sqz3lEbavYlRD9amq7yYh1eOS7fYSry84QBDRq3AodexyVnKvTGXvi1X4LJb8kXSWdDY6dvFJSVtTsnLTtD4DZZSP9Q931dG2TvMxg%2Ffw67ufEr9t0K4gHof5fA6CvFNmLcIlRuO0%2By0Yl4G2pQw5FxuHKw7O17%2BChF0FoXTl5q10klPbSEpEXx4SaQpdq3QCQguzgjPQGv1zrRPBfhGpBwCFyX8cwFHY%2BdtyOyA0%2Bq75GBAC9VXmbIYyF93tD40ZDxFviyTpKsV9GEzKlLqtkNjK%2BnnkiqIYKG67WCH1TluoW2zWXFKJpgoFTPshCCeSRGawjPSy62rIYdn9l%2F4zGYf%2FD7blnk2esMl7qXy85Le8ExVxdtylVn%2FECCP0N6pG2%2FrBnMHVZJKelH1pqy1X8dUvb14XXVNw0ycPQdxhaYhp3BT9pGQgToaBvfF3GKRdH8Chb52J%2Bt4h8RvAAkO4jFffBiVvBl5yHImFeB6bPHQpc4X1qlXXgfw8WCN46Xecu9GedT83J0MwG%2B14ss5enqR7T9h97ookj3oOr046%2BwtklEHs&theme=light) to edit it.
+
+**Swap the mock for your store:** delete the `window.fetch` block. The form already sends its state as query parameters, and Shopify already filters and sorts from them, so the same form now drives the real collection.
+
+## The real wiring: Shopify storefront filtering
+
+On a real store you do not invent facet inputs. Merchants configure filters in the admin, and your theme renders them from the [`collection.filters`](https://shopify.dev/docs/api/liquid/objects/filter) object. Each filter value carries the exact URL parameter name Shopify expects, so you output them as-is. The [filter URL parameter](https://shopify.dev/docs/storefronts/themes/navigation-search/filtering/storefront-filtering) format is `filter.{p|v}.{attribute}=value` (`p` for product scope, `v` for variant scope), for example `filter.p.product_type=shoes` or `filter.v.availability=1`.
+
+```liquid
+<form action="{{ collection.url }}" method="get"
+  data-component="Fetch Action"
+  data-option-history
+  data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))"
+  data-on:change="Fetch -> target.$el.requestSubmit()"
+  data-on:fetch-before="Transition(#loader) -> target.enter()"
+  data-on:fetch-after="Transition(#loader) -> target.leave()">
+  <input type="hidden" name="sections" value="main-collection-product-grid,collection-results-count">
+
+  {%- comment -%} Keep the current sort selected when a filter changes {%- endcomment -%}
+  <select name="sort_by">
+    {% for option in collection.sort_options %}
+      <option value="{{ option.value }}" {% if option.value == collection.sort_by %}selected{% endif %}>
+        {{ option.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  {%- comment -%} Render the merchant-configured filters {%- endcomment -%}
+  {% for filter in collection.filters %}
+    <fieldset>
+      <legend>{{ filter.label }}</legend>
+      {% for value in filter.values %}
+        <label>
+          <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"
+            {% if value.active %}checked{% endif %}>
+          {{ value.label }} ({{ value.count }})
+        </label>
+      {% endfor %}
+    </fieldset>
+  {% endfor %}
+
+  <noscript><button type="submit">Apply</button></noscript>
+</form>
+```
+
+`value.param_name` and `value.value` come straight from Shopify and already encode the `filter.*` structure, so you never hand-write parameter names. Wrap the product grid and the results count in their own sections (`main-collection-product-grid`, `collection-results-count` in Dawn) so they can be requested with `?sections=` and swapped independently.
+
+One thing to keep: filters and the sort must both survive a refresh. `data-option-history` handles the URL, and because the checkboxes are rendered `checked` from `value.active` and the sort `<option>` from `collection.sort_by`, a reload rebuilds the exact same form state server-side.
+
+## Where this goes next
+
+Changing a facet now submits a GET form, swaps the grid and the count, and records the selected state in a shareable URL, with the `<noscript>` button as the fallback. The same shape covers a [variant selector](/articles/2026/08/12/shopify-variant-selector/) and [predictive search](/articles/2026/08/26/shopify-predictive-search/): a control whose state drives a server-rendered section. For the mechanics, see the [Section Rendering API example](/articles/2026/07/29/shopify-section-rendering-api-example/).

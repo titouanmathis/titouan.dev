@@ -1,0 +1,89 @@
+<div
+  data-component="Action"
+  data-on:fetch-before="Transition(#cart-loader) -> target.enter()"
+  data-on:fetch-after="Transition(#cart-loader) -> target.leave()"
+  data-on:fetch-update="Panel -> target.open()"
+  class="space-y-6">
+  <header class="flex items-center justify-between gap-4">
+    <span class="font-bold">My shop</span>
+    <span
+      id="cart-loader"
+      data-component="Transition"
+      data-option-enter-from="opacity-0"
+      data-option-leave-to="opacity-0"
+      data-option-leave-keep
+      class="ml-auto text-sm text-current/60 opacity-0">
+      Adding…
+    </span>
+
+    <!-- The Panel JS component enhances this markup; it needs the modal, overlay,
+         container, content, open[] and close[] refs. On a Twig stack you can render
+         it from @ui/Panel/Panel.twig; Shopify is Liquid, so we write it out. -->
+    <div data-component="Panel" data-option-position="right" class="z-10">
+      <button data-ref="open[]" class="border-b border-current">
+        Cart (<span id="cart-count">0</span>)
+      </button>
+
+      <div
+        data-ref="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-hidden="true"
+        class="z-50 fixed inset-0"
+        style="opacity: 0; pointer-events: none; visibility: hidden;">
+        <div data-ref="overlay" tabindex="-1" class="-z-10 absolute inset-0 bg-black/40 transition duration-500 opacity-0"></div>
+        <div class="z-10 absolute top-0 right-0 flex items-center justify-end w-full h-full pointer-events-none">
+          <div
+            data-ref="container"
+            class="h-full max-w-sm overflow-y-auto transform transition duration-500 translate-x-full bg-white dark:bg-zinc-800 border-l border-current/10 pointer-events-auto">
+            <div class="flex justify-end p-6 pb-0">
+              <button data-ref="close[]" class="border-b border-current">Close</button>
+            </div>
+            <div data-ref="content" class="p-6 w-screen max-w-sm">
+              <h2 class="mb-4 font-bold">Your cart</h2>
+              <div id="cart-drawer">
+                <p class="text-current/60">Your cart is empty.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="grid grid-cols-3 gap-4">
+    <article class="p-4 border rounded space-y-2">
+      <p>Cap · €25</p>
+      <form action="/cart/add.js" method="post"
+        data-component="Fetch"
+        data-option-response="response.json().then((data) => Object.values(data.sections).filter(Boolean).join(''))">
+        <input type="hidden" name="id" value="101" />
+        <input type="hidden" name="quantity" value="1" />
+        <input type="hidden" name="sections" value="cart-drawer,cart-count" />
+        <button type="submit" class="border-b border-current">Add to cart</button>
+      </form>
+    </article>
+    <article class="p-4 border rounded space-y-2">
+      <p>Tote · €18</p>
+      <form action="/cart/add.js" method="post"
+        data-component="Fetch"
+        data-option-response="response.json().then((data) => Object.values(data.sections).filter(Boolean).join(''))">
+        <input type="hidden" name="id" value="102" />
+        <input type="hidden" name="quantity" value="1" />
+        <input type="hidden" name="sections" value="cart-drawer,cart-count" />
+        <button type="submit" class="border-b border-current">Add to cart</button>
+      </form>
+    </article>
+    <article class="p-4 border rounded space-y-2">
+      <p>Mug · €12</p>
+      <form action="/cart/add.js" method="post"
+        data-component="Fetch"
+        data-option-response="response.json().then((data) => Object.values(data.sections).filter(Boolean).join(''))">
+        <input type="hidden" name="id" value="103" />
+        <input type="hidden" name="quantity" value="1" />
+        <input type="hidden" name="sections" value="cart-drawer,cart-count" />
+        <button type="submit" class="border-b border-current">Add to cart</button>
+      </form>
+    </article>
+  </main>
+</div>

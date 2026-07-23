@@ -1,0 +1,27 @@
+<div class="max-w-lg space-y-6">
+  <div class="flex items-center justify-between p-4 border rounded">
+    <span>Canvas Cap · €25</span>
+    <!-- TrackShopify publishes an analytics event on click. -->
+    <button
+      data-component="TrackShopify"
+      data-track:click='{"event": "add_to_cart", "product": "canvas-cap"}'
+      class="border-b border-current">
+      Add to cart
+    </button>
+  </div>
+
+  <p class="text-xs text-current/60">
+    Analytics events published: <span id="analytics-log">none yet</span>
+  </p>
+
+  <section>
+    <h2 class="mb-3 font-bold">You may also like</h2>
+    <!-- LazyInclude fetches the recommendations section after mount. -->
+    <div
+      data-component="LazyInclude"
+      data-option-src="/recommendations/products?product_id=42&limit=4&section_id=product-recommendations&intent=related">
+      <span data-ref="loading" class="text-sm text-current/60">Loading recommendations…</span>
+      <span data-ref="error" class="hidden text-sm text-red-500">Could not load recommendations.</span>
+    </div>
+  </section>
+</div>
