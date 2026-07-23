@@ -1,12 +1,12 @@
 ---
-title: Shopify product recommendations
-description: Load Shopify product recommendations with @studiometa/ui. Lazy-load the recommendations section, prefetch links and track events with progressive enhancement.
-tags: shopify, product-recommendations, lazy-loading, progressive-enhancement, studiometa-ui
+title: Shopify recommendations, tracking and prefetching
+description: "Finish a Shopify storefront with @studiometa/ui: lazy-load product recommendations, track analytics events and prefetch links, all with progressive enhancement."
+tags: shopify, product-recommendations, tracking, prefetching, progressive-enhancement, studiometa-ui
 ---
 
-# Shopify product recommendations
+# Shopify recommendations, tracking and prefetching
 
-<MetaInfo class="block">02/09/2026 in #shopify #product-recommendations #progressive-enhancement</MetaInfo>
+<MetaInfo class="block">02/09/2026 in #shopify #recommendations #tracking #prefetching</MetaInfo>
 
 :::info[The series]
 
@@ -14,7 +14,7 @@ tags: shopify, product-recommendations, lazy-loading, progressive-enhancement, s
 
 :::
 
-Product recommendations are computed per product and returned by their own API, so they are meant to load after the page, not block it. That makes them a good closing example for this series: a section fetched lazily, plus two finishing touches, prefetching and analytics. All of it with [`@studiometa/ui`](https://ui.studiometa.dev) on top of [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev).
+This closing article covers three finishing touches for a Shopify storefront: lazy-loading a product-recommendations section, tracking analytics events, and prefetching links, all with [`@studiometa/ui`](https://ui.studiometa.dev) on top of [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev). Recommendations lead the way: they are computed per product and returned by their own API, so they are meant to load after the page, not block it, which makes them a natural fit for lazy-loading.
 
 The demo below tracks an add-to-cart click and fetches a recommendations block after mount:
 
@@ -108,4 +108,4 @@ One nice consequence: `registerComponents` adds each component to a global regis
 
 ## The end of the series
 
-That completes the storefront: [AJAX navigation and section rendering](/articles/2026/07/29/shopify-section-rendering-api-example/), [collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/), a [variant selector](/articles/2026/08/12/shopify-variant-selector/), an [AJAX cart drawer](/articles/2026/08/19/shopify-ajax-cart-drawer/), [predictive search](/articles/2026/08/26/shopify-predictive-search/), and now recommendations. Every piece enhances the HTML your theme already renders. The through-line, and the setup, live in the [pillar](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
+That completes the storefront: [AJAX navigation and section rendering](/articles/2026/07/29/shopify-section-rendering-api-example/), [collection filtering](/articles/2026/08/05/shopify-ajax-collection-filtering/), a [variant selector](/articles/2026/08/12/shopify-variant-selector/), an [AJAX cart drawer](/articles/2026/08/19/shopify-ajax-cart-drawer/), [predictive search](/articles/2026/08/26/shopify-predictive-search/), and now recommendations, tracking and prefetching. Every piece enhances the HTML your theme already renders. The through-line, and the setup, live in the [pillar](/articles/2026/07/22/building-a-shopify-storefront-with-studiometa-ui/).
