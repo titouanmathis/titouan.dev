@@ -1,0 +1,141 @@
+---
+date: 2026-07-16
+title: Flattening the ESM import waterfall without a build step
+description: How importing modules from an ESM CDN without a build step turns your dependency depth into a chain of requests, and how to avoid it.
+tags: esm, no-build, performance
+---
+
+# Flattening the ESM import waterfall without a build step
+
+<MetaInfo class="block">16/07/2026 in #esm #no-build #performance</MetaInfo>
+
+I have been shipping a few buildless front-ends lately, with no bundler and no dev server, only native ES modules and a couple of imports from [esm.sh](https://esm.sh). It's a nice way to work: there is no configuration and the feedback is instant. The first time I opened the network panel on one of these pages, I found a long chain of requests where each one waits for the previous one to finish.
+
+This is called the [module graph discovery waterfall](https://blacksheepcode.com/posts/loading_optimisations_part_4), and it comes with skipping the build step. In this article, I am sharing what it looks like on a real page and the techniques I use to avoid it.
+
+<TableOfContent open />
+
+## What the waterfall is
+
+When the browser loads an ES module, it doesn't know that module's dependencies until it has downloaded and parsed it. Only then does it discover the next `import`, request it, parse it, discover the next one, and so on. A module doesn't execute until its entire static import graph has loaded, and a child can't start loading before its parent has been downloaded and parsed.
+
+On a bundled app this isn't an issue: the bundler already walked the graph and flattened it into a handful of files. When you go buildless against a CDN, every sub-module becomes its own HTTP request, so the depth of your dependency tree translates into round trips.
+
+## A real capture
+
+Here is one of our own pages: [ui.studiometa.dev](https://ui.studiometa.dev), which loads `@studiometa/js-toolkit` and a `modern-monaco` editor straight from esm.sh. That handful of `import` statements fans out into 176 requests to esm.sh over roughly 1.45 seconds. A single import, `@studiometa/js-toolkit@3.6.0?bundle=false`, accounts for 148 of them, one file per decorator, helper and util.
+
+![Waterfall of 176 esm.sh requests, colored by package](/2026/07/16/esm-waterfall.svg)
+
+Each bar is one request, sorted by start time, and the color is the package it belongs to: blue for `@studiometa/js-toolkit`, teal for `modern-monaco`, purple for TypeScript and pink for the remaining dependencies. You can see that requests don't start together: each cluster only begins once the previous one has arrived and been parsed.
+
+The same thing shows up as the number of requests known to the browser over time. It doesn't grow smoothly, it climbs in about twelve steps, and each step is one round trip worth of newly discovered modules:
+
+![Cumulative discovered requests over time, climbing in discrete steps](/2026/07/16/esm-discovery-waves.svg)
+
+## Multiplexing is not enough
+
+I had assumed that HTTP/2 or HTTP/3 multiplexing made many small files fine. The timings on this capture proved me wrong. All 176 requests went over HTTP/3, on a single connection, with zero queueing, so the transport was never the bottleneck.
+
+The staircase is still there. Multiplexing removes the connection overhead, but it can't remove the discovery latency: the browser can only parallelize requests it already knows about, and it doesn't know about a deep module until its parent has arrived. The flat steps in the second chart are the browser waiting to discover what to fetch next. The bottleneck is latency, not throughput.
+
+So the goal isn't to have fewer connections, but to flatten the graph, by making the browser aware of deep modules earlier or by collapsing the depth entirely.
+
+## Flattening the waterfall
+
+### Check your esm.sh bundling flags
+
+The first thing I check is esm.sh's bundling mode. `?bundle=false` serves the package's sub-modules separately, which produced the 148-file fan-out above. The default bundles some sub-modules, while `?bundle` bundles the dependency graph more aggressively.
+
+```js
+// Without bundling, the browser loads the package's sub-modules separately
+import { Base } from 'https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle=false';
+
+// With bundling, esm.sh reduces the graph to fewer requests
+import { Base } from 'https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle';
+```
+
+A few flags from the [esm.sh documentation](https://github.com/esm-dev/esm.sh) are useful to know:
+
+- `?bundle` bundles the module's dependencies into one file, which reduces the number of requests.
+- `?standalone` goes further and inlines external dependencies too, except `peerDependencies`.
+- `?deps=react@18.3.1` pins a shared dependency so you don't end up with duplicated sub-trees across imports.
+
+Bundling reduces the number of requests, but it can also duplicate shared modules across bundled entries. If the code relies on class identity to share a singleton, those copies create separate instances.
+
+That is why the page above serves `@studiometa/js-toolkit` with `?bundle=false`. With the default bundling, the page ended up with two copies of the js-toolkit service classes. A component wrote to one `ScrollService`, while a decorator read from the other, so scroll-driven components stopped updating. The fix is visible in [studiometa/playground@a5e5e83](https://github.com/studiometa/playground/commit/a5e5e836ae841a3bf58dce1d88174a2438fc2dbe) and [studiometa/ui@0add627e](https://github.com/studiometa/ui/commit/0add627ef2f84379bd6f559d5a0f2c37ed3dd197), following [playground#68](https://github.com/studiometa/playground/issues/68).
+
+Serving the unbundled files ensures that every importer uses the same module, at the cost of the waterfall shown above. I keep bundling enabled for speed and disable it only when correctness depends on a single shared instance. In that case, I preload the deep modules to reduce the waterfall.
+
+### Preloading the deep modules
+
+When I need to keep modules granular, the native solution is [`<link rel="modulepreload">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/modulepreload). It tells the browser to fetch a module early, in parallel, before it is discovered through the import chain. If I preload the deep dependencies, they load together instead of one level at a time. Vite generates these links automatically; without a build step, I write them by hand.
+
+```html
+<!-- Don't: import the entry and let the browser discover the rest one level at a time -->
+<script type="module">
+  import { Base } from 'https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle=false';
+</script>
+
+<!-- Do: declare the deep modules up front so they load in parallel -->
+<link
+  rel="modulepreload"
+  href="https://esm.sh/@studiometa/js-toolkit@3.6.0/es2022/Base/Base.nobundle.mjs" />
+<link
+  rel="modulepreload"
+  href="https://esm.sh/@studiometa/js-toolkit@3.6.0/es2022/utils/dom/index.nobundle.mjs" />
+<script type="module">
+  import { Base } from 'https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle=false';
+</script>
+```
+
+`modulepreload` has shipped in every major browser since September 2023, and it is currently the only mechanism that lets you attach an `integrity` hash to the whole graph, as [Guy Bedford explains in detail](https://guybedford.com/es-module-preloading-integrity). The catch is maintenance: you have to keep the list of preloads in sync with the real dependency tree, which is the work a bundler was doing for you.
+
+### Import maps solve versioning, not discovery
+
+I use import maps as well, but they solve a different problem. They decouple the specifier from the versioned URL, which solves versioning and cache-invalidation cascades: when a deep dependency changes, you update one entry instead of rewriting every `import` and busting the cache down the chain.
+
+```html
+<!-- Don't: expect the import map alone to fix load performance -->
+<script type="importmap">
+  {
+    "imports": {
+      "@studiometa/js-toolkit": "https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle=false"
+    }
+  }
+</script>
+
+<!-- Do: pair it with modulepreload so the graph is both mapped and preloaded -->
+<script type="importmap">
+  {
+    "imports": {
+      "@studiometa/js-toolkit": "https://esm.sh/@studiometa/js-toolkit@3.6.0?bundle=false"
+    }
+  }
+</script>
+<link
+  rel="modulepreload"
+  href="https://esm.sh/@studiometa/js-toolkit@3.6.0/es2022/Base/Base.nobundle.mjs" />
+```
+
+An [import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap) doesn't flatten the waterfall. It rewrites specifiers, but the browser still discovers deep modules at the same time. Import maps help with maintainability, preloading or bundling help with speed.
+
+### A direct import changes discovery time
+
+I also tried adding a bare `import 'package';` directly to the entry module before the package was discovered deeper in the graph. This does not prevent a duplicate request, because there would not be one: ES modules are keyed by their resolved URL in the module map, so a module is fetched and evaluated once no matter how many times you import it.
+
+The direct import only changes when the module is discovered. It pulls the module into an earlier request wave instead of leaving it to be found deep in the graph. I measured it on a local server with 120 ms of latency per module:
+
+- discovered only through a deep chain: fetched at ~518 ms
+- direct import from the entry module: fetched at ~170 ms
+- `<link rel="modulepreload">`: fetched at ~15 ms
+
+It is the same single request in the three cases, only the timing changes. `modulepreload` is the earliest because the HTML preload scanner sees it before the entry module runs, while the direct import is only discovered one level in. The direct import is useful when I control the entry but not the `<head>`; otherwise, I preload the module.
+
+### Dynamic imports defer loading
+
+Using dynamic `import()` can keep a dependency out of the initial module graph and let unrelated code continue while it loads. It does not remove the dependency's waterfall; it only moves it later in the timeline. If that chain is on the critical path, deferring it only changes when the user waits.
+
+## What I do in practice
+
+I start with the esm.sh bundling flags, since they cost nothing and remove most of the depth, then add `modulepreload` for the modules that still need to stay granular. Import maps come on top for versioning, not for speed, and I keep dynamic imports for what is genuinely off the critical path.

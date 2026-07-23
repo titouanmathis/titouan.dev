@@ -1,0 +1,151 @@
+---
+date: 2026-08-19
+title: Shopify AJAX cart drawer
+description: Build a Shopify AJAX cart drawer with @studiometa/ui. Add to cart and open an accessible slide-in drawer with the Cart AJAX API and progressive enhancement.
+tags: shopify, cart-drawer, ajax-cart, progressive-enhancement, studiometa-ui
+---
+
+# Shopify AJAX cart drawer
+
+<MetaInfo class="block">19/08/2026 in #shopify #cart-drawer #progressive-enhancement</MetaInfo>
+
+:::info[The series]
+
+**Part 5 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/building-a-shopify-storefront-with-studiometa-ui/).
+
+:::
+
+A cart drawer confirms an add-to-cart in a panel that slides in, without leaving the page. It also has the most moving parts: an accessible overlay, a focus trap, a scroll lock, and a cart that stays in sync. [`@studiometa/ui`](https://ui.studiometa.dev) gives you the drawer and the AJAX wiring as components, on top of [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev).
+
+Add a product below. The item posts to the cart, the drawer refreshes and slides in, and the count updates:
+
+import demoTwig from './demo.twig?raw';
+import demoTs from './demo.ts?raw';
+
+<UiPlayground
+  client:visible
+  html={demoTwig}
+  script={demoTs}
+  height="380px"></UiPlayground>
+
+The drawer traps focus, closes on <kbd>Escape</kbd> and locks the background scroll; all three come from the native `<dialog>` element that `Dialog` enhances. [Open it in the playground](https://ui.studiometa.dev/play/#html=eNrtWM2O2zYQvucppm6b2MFS9jppEDhro0mK3oJcgqI9UhJtc5cSVZGy1w0KFH2YnnrvvY%2BSJ%2BnHH9my4911kuN2Aa8pcWY4883H4dAXuVw9IMq55SzTRaVLUdpp72VmpS577YwuJ3NhsyVLxVzXYtp7V%2FPSSCfT%2FzrjtWVK81zUA2IzsrxeCJvAjqj7g49t8DkmTjKhBF%2BJYyaaCs9w4wfJlV5E%2Fdw%2FdPV1JcqgniluzLRnKp4JtmHPejO8vFgKt2I7OVfimqQVhWGZd54uG2PlfIOo7VqIkha8Yk%2B9KpRhq9yq6tKyVKu8N3uzIbPU1cXQzXdE%2FYhI5tNeJ1rnm%2Fs7xH8Hzp6Ertwr5r1j81oX055GSNJu2OiYoAeQWX2S2JUQVZyMYRWK8cZqsuLaMlOE76ypazgwfDaindEQKNHLPJfl4sMff4XAIwjh4SvG6C0yQraWi4WoJwQAA9HILrmljCtlMBQU8vrIYAWXwYQYi1CmjbW6BdNuKpAgvLoJyR2Td1GXk0zJ7OoT%2BNMBJdU1EsdSioOIxxaC17BF%2FUCPbbYz3TiRUURkEOEJrnsuDgMZPVgeqnfAIa%2F5GjyUhjiV3MqVIGxY5%2BYsiSBF1MC59Rudc9UfnJFByqCd1nptRB39Auy8MjTXWWPOqOBXImBdC2NJz%2F244gtBshSIgJe5n8J2j0qEPGVKG5G0Fp2LKc%2Bu8lpXXgGxCUW8FvSTFOsdiSlbSpUDpjPIYwOLHKuAWMhRayvTgFMiSMzB06j4wrtllMzFcA58SDkMpCMMoDB2o8SMUqH0uuVIxMeb3cIf3oVEHidIRLMj4ljCy0yopKrFyosGmcSD0PLigFFeMgn8oel0St8AkIcPo%2Fl91bZ4yGuPhxGWjajAp8JnzeaNUrQMXwW%2FZmtWwmU%2FXIZhumAeqgqIbxkYK%2Fotoe7n5vO2xl4g%2B9VkBfPBL2%2BflbzALvV2WrJ8Yq06ChSCTxXsDZ%2FuFaKLIeJvS87NUNyGwZ1heJrfHoNXVGAzu%2FYZPAiFp0arxjoqu2jgOaEoLl1ca2ay2p02Iecou3ol6jkoDjFfjiv2zEW%2FXuKwwvL11QRPv8kyY89HI1QCnkN2fK3CPuo60dYoB8zpx16Rbk89r7wcHzn3ftENTlKgg0o27gjvFeybivbdhfuLGfoJFdxXcae9i6JTqcOzJ1kHzF2p8SW7C1fVrntwfHYwcxVeFJXdJBfD6sgi26Eb%2BPLvj4mCoxJG44ta5uT%2BAUNl2JP9ZgVryEyJVhgzMXiqcTLl2FZtazTekaSaveYV%2FfsPffjz7%2FF3Xc%2FQBBbEfYKmvaGLYMjzPLk0PSqEXWqAUWljd9gfJvdH18YdTMc9hPMGUgYcaUewiyZxkKDml%2F2%2Bkx3QdEZv00uR2WTFVSOMf50YvIANM0jmUrn285XW2JPlILnUsuw%2FejQYdDMjy6qxkZBLmeei7OGYddtc5j3yhqe989F5j4Ynaf3a8NKiDu10T9VsHd9qdrh01ukg9swFTkZ7pkkLCYG7OI4OjVBDwk49ZLXLa8u4SJkvI9A7jRIVGHT%2B%2FP4yaPw%2Fgz6XQW%2BaRUug8f0l0JP7TqCLoTvsZg%2Fa9i72%2FpgZPvb3kHg9mky2FxJ076W2uB0Ehzq9nMhf4LoiC3RG5I5gvS4Tejx0PzP407Vj5L2%2F4Cw8RSehoQrd9gv63Z3BcfVw8fH3FOOuJ%2B5uTkMYB9bhMubbOxL5QsSlvr8Sm3kN6I1HgnllBl2s6dXfh%2BUcIHFl18r93D8fjb4dYHk4cJMVty7UNVA8ycpk8lG3K9b9Xa87gJkAGOYm9GQ0KtCwcBNWSrVd7sfgwDlmFZ3iSVaBwqFRLLSD%2FFWbHncn9IB7rG9A1gntAxvvCxMa3YSj19mD8WOdW1Br%2BXMqcNHFO3G72%2B4edG0Uzi5%2Beghb5j%2FjRlgC&script=eNqtVv9u2zYQ%2Ft9PcQsGSF5lOcm6YUhsd0GLYivatWiydUNRILREW0wkUhWpukZgYNhL7A32195ib9In2XekZDttN6zADAQRyePdd7%2B%2Bo6pq0zi6oUYulXWyuW%2Bwo6V2lja0aExF0bfWtbkylXRifGVHzpjyWrnodLC9fJY5ZXRCD6XLioQeKFGaZUI%2FKbm6aIS2Khzvvj%2Bqu1XQORiPaTQa0bmq2lI4mdN9ARtnj85%2BprNn3%2FPZJ%2F1Y33lharVYR5aePT2%2FoHEGjWOR5%2BmVhd%2BubbQlV0jCFuyVSktSTlYUqzyha7lO6HUrtFNunbA6fJQyoXe%2F%2FjFMSOicVoXUJOjSSh8He0m1aAR8kg0pSxbRhEISpTWkdFa2ubQkWNXeFdihlXKFR9JIncsGYL67ePKYFqYhKbIC269biSzl0OnvUTxvdV7KnJX1e%2BGy0sthSi9YV92YvM0kNAtHBfQGQ0IDzaiSlWnWxDFJ6YEsgdo7WQD5vDTZNTlDBeAHXKIkqK%2BN0i4duHUt6THHa4oqUPkJWceGT0OMdsu6URmWuq3msjml127dL2hzOsgQAAcEjsvmhJ7LzDT5JNxNoPjflNFmxsYHRNHR4VF0shOP7os6Snrp469okwSp41tSF8bJndjRN1uxL2%2BJPWmXe1LHLLWHvHEnPg4vXwHMy1co40WrQzbyRqxkcx5yEw89VLWg%2BDMf8VLqpSvCLnXFSNEkV28QzukBy4yChoPZpKasFNZOD5x860ZZ2yDTbvz14cHsF9M2HgbXm6xqt04n43o2GUPRDF1FtMFfQMulbQGTxb3VtBJ17L%2BI4nJI01m3ILqclKo3uijlW7pqrUMrjebSrSSqfinq0V1As7XQs89vytTHa0N%2F%2FU68QqI3k7E%2FDCLvfvuT930c6Qu6LTEu1eySo080DMiuUGdxFA3Zgy44l%2F8QnLbsgUJZJkfr0fEBEHlvYaEtu2hcng42e%2BnJTKvd7eyEMOkuRCnaEM0Tx7atEvLhIXzSnQA%2BocPb6NiVHTyvnnHo3stgP9jgdvKcCVsrpXOzShe8TOdYxGEH2vePICnsWmcgJ123LkELK%2BdB7aC3TQkxLVf04%2FPHMTepWUAO4jSdTikKjRTRvW7zpPuvcFnojKVxsT9Oi0YuepkUuhOKCufqk%2FEY9CDKwlgXMsRljfO0Fq7Q4L8UTGFfgGriaJ9zo2Ff7wHu3ORr4GVH7qW8YF3bas1x5CX20D00TfUAdAGI596XmCXSpXRxpHLWj45lOtjXFFgQIeiZ5qXK0aksANILtN%2BlfMHhD62ALDMEhE3l3sngJksP%2FR0uArozpaNwKEuL6QGJzlzvKozseDLpaaUTCl2zpZd%2B1y8xfJgtj5gogyIPsW5tEVCEbe5vIrESYGrO%2FDOMV2VRto20pnwDsFy30l2oSprW9dsJ3T08HA5PCZS%2FENeSeObqbO21Ye%2B%2FzkpgL1sMtf2JZuZX%2BKa5zERrZa%2BRL2OgVWEsfjg1tyPtY%2FNsP51iXRrB1dEHmOcPA7qHjAUWoe3g7k%2B4Y7ujLgVhPySgO%2BkRMf9HeyyDgfAem6MVdm2O4%2FfYxI8S5CakqKMIzs5zafHKQnoenT%2F9IQ39CFqNO6eg9waDWsDtDoTRSIsbcS%2FDTCTqulQoY5jBk8zoCA%2Bqja8EroPO0JZdblEF6Oe0e2T9X7%2FB4MPXY%2FzJb0Ig%2Bxs4F1wz&theme=light) to edit it.
+
+<TableOfContent open />
+
+## The drawer is a Dialog
+
+[`Dialog`](https://ui.studiometa.dev/components/Dialog/) enhances a native `<dialog>` element. It opens with [`showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal), so the platform does the accessibility work for you: it traps focus, makes the rest of the page `inert`, restores focus on close, and paints the dialog in the top layer. On top of that `Dialog` adds a scroll lock (on by default) and coordinates the enter/leave animations. It is a JavaScript component that enhances the markup you render in Liquid, so you write a `<dialog>` with your own children.
+
+There are no refs to wire. The component's element *is* the `<dialog>`; inside it you put whatever you want, here a fading backdrop and a right-anchored panel, each a [`ViewTransition`](https://ui.studiometa.dev/components/ViewTransition/) child so `Dialog` animates them together. The panel's edge and slide are yours to style (`absolute inset-y-0 right-0` plus a transform and keyframes); the library ships no drawer opinion.
+
+```html
+<button type="button" data-component="Action"
+  data-on:click="Dialog(#cart-dialog) -> target.open()">
+  Cart (<span id="cart-count">0</span>)
+</button>
+
+<dialog id="cart-dialog" data-component="Action Dialog"
+  data-on:cancel.prevent="Dialog.close()"
+  data-on:click="event.target === $el && Dialog.close()"
+  class="fixed inset-0 m-0 p-0 w-full h-full max-w-none max-h-none bg-transparent">
+  <!-- fading backdrop -->
+  <div data-component="Action ViewTransition"
+    data-on:click="Dialog(#cart-dialog) -> target.close()"
+    data-option-view-transition-name="cart-backdrop"
+    data-option-leave-to="opacity-0"
+    class="fixed inset-0 bg-black/40 opacity-0"></div>
+
+  <!-- right-anchored panel; translate-x-full is the hidden (offscreen) state -->
+  <div data-component="ViewTransition"
+    data-option-view-transition-name="cart-panel"
+    data-option-leave-to="translate-x-full"
+    class="absolute inset-y-0 right-0 w-screen max-w-sm overflow-y-auto p-6 bg-white translate-x-full">
+    <button type="button" data-component="Action" data-on:click="Dialog(#cart-dialog) -> target.close()">Close</button>
+    <div id="cart-drawer">Your cart is empty.</div>
+  </div>
+</dialog>
+```
+
+The open button is an `Action` calling the dialog's `open()`; the close button and a backdrop click call `close()`; and <kbd>Escape</kbd> fires the dialog's native `cancel` event, which `data-on:cancel.prevent` turns into a `close()`. The `scrollLock` option is on by default; add `data-option-no-scroll-lock` to the `<dialog>` to opt out. The two `ViewTransition` children give the backdrop a fade and the panel a slide, batched into one coordinated transition, with the keyframes in your CSS. (The full demo markup fills in the Tailwind classes and the view-transition keyframes; this is the load-bearing structure.)
+
+## Add to cart with the Cart AJAX API
+
+Shopify's [Cart AJAX API](https://shopify.dev/docs/api/ajax/reference/cart) adds items with `POST /cart/add.js`. A drawer relies on **bundled section rendering**: pass a `sections` parameter and the JSON response includes a `sections` key with the rendered HTML of each section you asked for, in one round trip. So a single add-to-cart request can return both the added line and the re-rendered drawer.
+
+The add-to-cart form is a `Fetch` component. It posts the variant `id` and `quantity`, plus the sections to refresh, and its `response` option pulls the section HTML out of the JSON:
+
+```liquid
+<form action="{{ routes.cart_add_url }}" method="post"
+  data-component="Fetch"
+  data-option-response="response.json().then((data) => Object.values(data.sections).filter(Boolean).join(''))">
+  <input type="hidden" name="id" value="{{ variant.id }}">
+  <input type="hidden" name="quantity" value="1">
+  <input type="hidden" name="sections" value="cart-drawer,cart-count">
+  <button type="submit">Add to cart</button>
+</form>
+```
+
+`Fetch` swaps the returned `#cart-drawer` and `#cart-count` by `id`, exactly as in the [Section Rendering article](/articles/shopify-section-rendering-api-example/). The `id` for the added variant comes from the [variant selector](/articles/shopify-variant-selector/): its job is to keep that hidden input pointed at the right variant.
+
+## Opening the drawer on add
+
+The last piece connects the two components. `Fetch` emits a bubbling `fetch-update` event once the DOM is swapped, so an [`Action`](https://ui.studiometa.dev/components/Action/) on a shared parent opens the `Dialog` and drives the loader:
+
+```html
+<div
+  data-component="Action"
+  data-on:fetch-before="Transition(#cart-loader) -> target.enter()"
+  data-on:fetch-after="Transition(#cart-loader) -> target.leave()"
+  data-on:fetch-update="Dialog(#cart-dialog) -> target.open()">
+  <!-- header with the open button and the <dialog>, plus the add-to-cart forms -->
+</div>
+```
+
+Because `Fetch`'s events bubble, one `Action` on the wrapper handles every add-to-cart form on the page. `Dialog(#cart-dialog) -> target.open()` calls the drawer's `open()` method — the `(#cart-dialog)` selector scopes it to the drawer, so no other `Dialog` on the page opens — and `open()` is a no-op if it is already open, so adding a second item just refreshes the contents.
+
+Register the five components this drawer uses once, in your theme's main script:
+
+```js twoslash
+// @noErrors
+import { registerComponents } from '@studiometa/js-toolkit';
+import { Action, Dialog, Fetch, Transition, ViewTransition } from '@studiometa/ui';
+
+registerComponents(Action, Dialog, Fetch, Transition, ViewTransition);
+```
+
+## How the demo simulates it
+
+The playground has no cart, so the demo mocks `POST /cart/add.js`: it keeps an in-memory cart, and returns what Shopify returns from that endpoint, the added line item plus a `sections` object holding the rendered `cart-drawer` and `cart-count` HTML. The added line is the item itself, with fields like `id`, `key`, `quantity` and `title`; a top-level `items` array is what `/cart.js` returns, not `/cart/add.js`.
+
+```js twoslash
+// @noErrors
+window.fetch = async (input, init) => {
+  const url = new URL(
+    typeof input === 'string' ? input : input instanceof URL ? input.href : input.url,
+    'http://localhost',
+  );
+  if (url.pathname.endsWith('/cart/add.js')) {
+    const id = init.body instanceof FormData ? String(init.body.get('id')) : '101';
+    /* update the in-memory cart, then return the added line item… */
+    return new Response(
+      JSON.stringify({
+        id, quantity: 1, title: 'Cap',
+        // …plus a `sections` object because the request carried a `sections` param.
+        sections: { 'cart-drawer': drawerSection(), 'cart-count': countSection() },
+      }),
+      { headers: { 'content-type': 'application/json' } },
+    );
+  }
+  return realFetch(input, init);
+};
+```
+
+**Swap the mock for your store:** delete the `window.fetch` block. The form already posts to `/cart/add.js` with the `sections` parameter, which Shopify answers with real bundled sections, so the same markup drives the real cart. Use locale-aware URLs on a live theme: `{{ routes.cart_add_url }}` in Liquid, or `window.Shopify.routes.root + 'cart/add.js'` in JavaScript. You can point the section rendering at a specific page with a `sections_url` parameter (for example `/cart`) if the drawer markup only exists there.
+
+## Where this goes next
+
+Submitting the add-to-cart form now adds the selected variant, refreshes the drawer and count from one bundled request, and opens an accessible panel. The section-swapping underneath it all is the [Section Rendering API example](/articles/shopify-section-rendering-api-example/).
+
+:::info[Next article]
+Next, [Shopify predictive search](/articles/shopify-predictive-search/) adds a debounced, keyboard-navigable suggestions dropdown over the search endpoint.
+:::
