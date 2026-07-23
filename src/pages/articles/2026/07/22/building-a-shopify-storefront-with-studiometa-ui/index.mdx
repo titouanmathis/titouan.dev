@@ -52,7 +52,8 @@ npm install @studiometa/ui @studiometa/js-toolkit
 
 Register the components you use once, in your theme's main script. `registerComponent` mounts every element carrying the matching `data-component` attribute:
 
-```js
+```js twoslash
+// @noErrors
 import { registerComponent } from '@studiometa/js-toolkit';
 import { Action, Fetch, Transition } from '@studiometa/ui';
 
@@ -75,7 +76,8 @@ The navigation above is a `Fetch` component on each link plus one `Action`/`Tran
 
 The demo runs in a playground with no backend, so its script mocks `window.fetch` to return the HTML each route would render:
 
-```js
+```js twoslash
+// @noErrors
 // Simulated storefront: the playground iframe has no backend.
 // `data-option-history` calls history.pushState, which the sandbox blocks, so stub it.
 history.pushState = () => {};
@@ -88,7 +90,10 @@ const pages = {
 };
 window.fetch = async (input, init) => {
   // Fetch calls window.fetch with a URL instance, so read input.href.
-  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  const url = new URL(
+    typeof input === 'string' ? input : input instanceof URL ? input.href : input.url,
+    'http://localhost',
+  );
   const page = pages[url.pathname];
   if (page) return new Response(page, { headers: { 'content-type': 'text/html' } });
   return realFetch(input, init);

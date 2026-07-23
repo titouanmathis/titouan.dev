@@ -65,7 +65,8 @@ In a collection template it looks like this:
 
 Register the components once:
 
-```js
+```js twoslash
+// @noErrors
 import { registerComponent } from '@studiometa/js-toolkit';
 import { Action, Fetch, Transition } from '@studiometa/ui';
 
@@ -82,9 +83,13 @@ The loader is the one bit of glue: [`Action`](https://ui.studiometa.dev/componen
 
 The playground has no Shopify backend, so the demo's script mocks `window.fetch`: when it sees a `sections` parameter it sorts an in-memory product list and returns the two sections as JSON, each wrapped in its `shopify-section-*` element, exactly as Shopify would.
 
-```js
+```js twoslash
+// @noErrors
 window.fetch = async (input, init) => {
-  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  const url = new URL(
+    typeof input === 'string' ? input : input instanceof URL ? input.href : input.url,
+    'http://localhost',
+  );
   if (url.searchParams.has('sections')) {
     const sorted = /* … sort products by ?sort_by … */ products;
     return new Response(
@@ -116,7 +121,7 @@ That is the entry point to [AJAX collection filtering](/articles/2026/08/05/shop
 
 ## The `{% partial %}` preview (Liquid July '26)
 
-::: warning Developer preview
+:::warning[Developer preview]
 The following uses Shopify's [partial rendering](https://shopify.dev/docs/storefronts/themes/getting-started/developer-preview/partial) API, part of the **Liquid July '26 developer preview**. It relies on the optional [`@shopify/partial-rendering`](https://www.npmjs.com/package/@shopify/partial-rendering) package. Treat it as forward-looking until it ships as stable.
 :::
 
@@ -140,7 +145,8 @@ The Section Rendering API is stable and works today. Shopify is also previewing 
 </a>
 ```
 
-```js
+```js twoslash
+// @noErrors
 import { registerComponent } from '@studiometa/js-toolkit';
 import { ShopifyPartialsFetch } from '@studiometa/ui';
 

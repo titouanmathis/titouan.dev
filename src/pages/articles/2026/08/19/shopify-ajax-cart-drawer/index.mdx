@@ -93,14 +93,21 @@ Because `Fetch`'s events bubble, one `Action` on the wrapper handles every add-t
 
 The playground has no cart, so the demo mocks `POST /cart/add.js`: it keeps an in-memory cart, and returns the same JSON shape Shopify does, a `sections` object with the rendered `cart-drawer` and `cart-count` HTML.
 
-```js
+```js twoslash
+// @noErrors
 window.fetch = async (input, init) => {
-  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  const url = new URL(
+    typeof input === 'string' ? input : input instanceof URL ? input.href : input.url,
+    'http://localhost',
+  );
   if (url.pathname.endsWith('/cart/add.js')) {
     const id = init.body instanceof FormData ? String(init.body.get('id')) : '101';
     /* update the in-memory cart */
     return new Response(
-      JSON.stringify({ items: cart, sections: { 'cart-drawer': drawerSection(), 'cart-count': countSection() } }),
+      JSON.stringify({
+        items: cart,
+        sections: { 'cart-drawer': drawerSection(), 'cart-count': countSection() },
+      }),
       { headers: { 'content-type': 'application/json' } },
     );
   }

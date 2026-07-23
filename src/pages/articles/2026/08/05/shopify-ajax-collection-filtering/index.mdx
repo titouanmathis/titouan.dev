@@ -68,9 +68,13 @@ Customers expect the grid to react as soon as they tick a box, so submit the for
 
 The playground has no Shopify backend, so the demo mocks `window.fetch`: it reads the `tag` and `sort_by` parameters off the request URL, filters and sorts an in-memory product list, and returns the `product-grid` and `results-count` sections as JSON, wrapped in their `shopify-section-*` elements.
 
-```js
+```js twoslash
+// @noErrors
 window.fetch = async (input, init) => {
-  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  const url = new URL(
+    typeof input === 'string' ? input : input instanceof URL ? input.href : input.url,
+    'http://localhost',
+  );
   if (url.searchParams.has('sections')) {
     const tags = url.searchParams.getAll('tag');
     const sort = url.searchParams.get('sort_by');

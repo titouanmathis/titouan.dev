@@ -42,7 +42,8 @@ The [Product Recommendations API](https://shopify.dev/docs/api/ajax/reference/pr
 </div>
 ```
 
-```js
+```js twoslash
+// @noErrors
 import { registerComponent } from '@studiometa/js-toolkit';
 import { LazyInclude } from '@studiometa/ui';
 
@@ -57,9 +58,13 @@ To defer the fetch until the section is near the viewport (as Dawn does with an 
 
 The playground has no store, so the demo mocks `GET /recommendations/products` to return a rendered product list, and stubs `window.Shopify.analytics` so the tracking has somewhere to publish:
 
-```js
+```js twoslash
+// @noErrors
 window.fetch = async (input, init) => {
-  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  const url = new URL(
+    typeof input === 'string' ? input : input instanceof URL ? input.href : input.url,
+    'http://localhost',
+  );
   if (url.pathname.endsWith('/recommendations/products')) {
     return new Response(recommendationsMarkup(), { headers: { 'content-type': 'text/html' } });
   }

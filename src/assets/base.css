@@ -42,6 +42,10 @@
 }
 
 html {
+  /* Twoslash hover popups are absolutely positioned and can extend past the
+   * viewport; `clip` on the x-axis prevents a page-wide horizontal scrollbar
+   * while leaving the y-axis visible so the popups still overflow downward. */
+  overflow-x: clip;
   font-size: max(16px, 1.05vw);
   line-height: 1.75;
   color: var(--color-primary);

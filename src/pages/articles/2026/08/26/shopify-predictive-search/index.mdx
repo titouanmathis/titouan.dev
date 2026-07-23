@@ -53,9 +53,13 @@ The `debounce` modifier accepts a delay in milliseconds (`debounce300`); js-tool
 
 The playground has no store, so the demo mocks `GET /search/suggest`: it filters an in-memory product list by the `q` parameter and returns the results wrapped in a `#shopify-section-predictive-search` element, the same shape Shopify's section response has.
 
-```js
+```js twoslash
+// @noErrors
 window.fetch = async (input, init) => {
-  const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, 'http://localhost');
+  const url = new URL(
+    typeof input === 'string' ? input : input instanceof URL ? input.href : input.url,
+    'http://localhost',
+  );
   if (url.pathname.endsWith('/search/suggest')) {
     return new Response(results(url.searchParams.get('q') ?? ''), {
       headers: { 'content-type': 'text/html' },
@@ -71,7 +75,8 @@ window.fetch = async (input, init) => {
 
 A suggestions dropdown should be operable with the arrow keys and Enter. [`Indexable`](https://ui.studiometa.dev/components/Indexable/) manages exactly that: it tracks a `currentIndex` within a range, exposes `goNext()`, `goPrev()` and `goTo()`, and emits an `index` event when the active item changes. It manages the index; you decide what the keys do and how the active item looks. A small component built on it:
 
-```js
+```js twoslash
+// @noErrors
 import { Indexable } from '@studiometa/ui';
 
 class PredictiveSearch extends Indexable {

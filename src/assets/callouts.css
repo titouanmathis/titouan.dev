@@ -1,0 +1,52 @@
+/* VitePress-inspired callouts (`:::warning[Title]` … `:::`), emitted by the
+ * remarkCallouts plugin in iles.config.ts as `<div class="callout TYPE">` (or
+ * `<details>` for `:::details`). */
+.callout {
+  --callout-accent: var(--color-primary);
+
+  padding: 1em 1.25em;
+  font-size: 0.875em;
+  background-color: oklch(from var(--callout-accent) l c h / 0.08);
+  border-radius: 0.25em;
+
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  code {
+    font-size: 0.9em;
+  }
+}
+
+.callout-title {
+  font-weight: bold;
+  color: var(--callout-accent);
+}
+
+details.callout > summary.callout-title {
+  cursor: pointer;
+}
+
+.callout.tip {
+  --callout-accent: oklch(0.68 0.15 155);
+}
+
+.callout.info {
+  --callout-accent: oklch(0.62 0.03 260);
+}
+
+.callout.warning {
+  --callout-accent: oklch(0.72 0.15 85);
+}
+
+.callout.danger {
+  --callout-accent: oklch(0.62 0.2 25);
+}
+
+.callout.details {
+  --callout-accent: oklch(0.62 0.03 260);
+}
