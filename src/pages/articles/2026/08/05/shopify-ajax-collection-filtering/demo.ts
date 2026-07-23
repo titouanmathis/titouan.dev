@@ -1,4 +1,4 @@
-import { registerComponent } from '@studiometa/js-toolkit';
+import { registerComponents } from '@studiometa/js-toolkit';
 import { Action, Fetch, Transition } from '@studiometa/ui';
 
 // --- Simulated collection endpoint ------------------------------------------
@@ -40,6 +40,4 @@ window.fetch = async (input, init) => {
 };
 // ---------------------------------------------------------------------------
 
-registerComponent(Action);
-registerComponent(Fetch);
-registerComponent(Transition);
+registerComponents(Action, Fetch, Transition);

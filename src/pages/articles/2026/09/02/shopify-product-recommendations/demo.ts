@@ -1,4 +1,4 @@
-import { registerComponent } from '@studiometa/js-toolkit';
+import { registerComponents } from '@studiometa/js-toolkit';
 import { LazyInclude, TrackShopify } from '@studiometa/ui';
 
 // --- Simulated Shopify environment ------------------------------------------
@@ -46,5 +46,4 @@ window.fetch = async (input, init) => {
 };
 // ---------------------------------------------------------------------------
 
-registerComponent(LazyInclude);
-registerComponent(TrackShopify);
+registerComponents(LazyInclude, TrackShopify);

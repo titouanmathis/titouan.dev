@@ -71,12 +71,10 @@ Register the components once:
 
 ```js twoslash
 // @noErrors
-import { registerComponent } from '@studiometa/js-toolkit';
+import { registerComponents } from '@studiometa/js-toolkit';
 import { Action, Fetch, Transition } from '@studiometa/ui';
 
-registerComponent(Action);
-registerComponent(Fetch);
-registerComponent(Transition);
+registerComponents(Action, Fetch, Transition);
 ```
 
 Two more options are worth knowing. View Transitions are on by default when the browser supports them; disable them with `data-option-no-view-transition`. Keep the default `replace` mode (or `morph`) so each section is swapped in place, because `append` and `prepend` would insert the new markup *inside* the existing wrapper and duplicate its content. One option is deliberately left off: `data-option-history`. A `?sections=…` URL returns raw section JSON, so pushing it would make a refresh or a shared link load that JSON instead of a page. The sort state that *is* shareable lives in the `sort_by` parameter, which Shopify applies server-side, so the canonical `?sort_by=…` URL bookmarks and refreshes fine on its own; the enhanced swap just leaves the address bar untouched.
@@ -105,7 +103,7 @@ window.fetch = async (input, init) => {
 };
 ```
 
-**Swap the mock for your store:** delete the `window.fetch` block. The link already carries `?sections=…`, and the `response` option already parses Shopify's JSON, so the same markup now hits the real endpoint. Use your theme's real section ids (for example `main-collection-product-grid`). You can [open the demo in the playground](https://ui.studiometa.dev/play/#html=eNrlVM2O0zAQvvcpLCOxjbROli5%2FWiVBgLQnEEjsHTnJJHFxPJHt9Oe24hl4Bk68VZ%2BESeu0WyiinLnYcWa%2B%2BfnGn5NSLiaMlcIJXmDboQbt0uB14STqYLSgvqnAFQ3PoUIDaXBnhLZy8Jk%2BUihKMCHjGXPC1OAiCgFmGv4OFxUZ%2FoZWIBawQxdKWJsGrVjxJZ%2BtFLOdKICv%2BdMgI3NCxY8%2BlYIVGxa%2BNKJj0kFrebGthNWi8wjCUAi9B6F2PEdVBtknNO4miQerdxTbjbHGQJUGcYFKwZYWGwulXlkCfM7XaSt0L9Rj621pZ7DsC8drI8tLA7ZXjgrBXrvAB%2FyV7NuBmyMjdkMsTmjyscT3%2BBXNLZEWRq4BPZ2OOUOWZuxDPqdjtBCqB3swRZVUwzTeIBKxOozmKPX04iIMT2VspHVo1t7iWcrR0Ih4zvxH0RtDhQfZLQjXGyiTWPwbZ52RNEZhaT6l1PV%2FSd7HgYNLpnDJHLJG1s2BxuEW%2BjCyTIOdRv7EwEFNp4raKoBXBts0QFKPdGt%2BdcpxKzvu8Cy3LwDdcZ97EHOwcty2u923Gz%2B%2FCrJ31AZNe3P%2F%2FaCzJCYNZ5NRzEO3tsFOVmvup8CPr8GY72SWF5TlmvlLZB%2FE7tXJ0A%2Bv2z7ycGDDQhmV5dfHz4eSox%2F99ENlhkorgV6Rt%2FT0bO6%2Fsc3XH7NnSazkWag7dDDCnrw8G%2Fa%2Br%2Feo2YhK4l5lk13rPwEdzfHo&script=eNptVMtu2zAQvPsrFkYBUoAkp4%2BghR27LQL0UPQRpOkpCBpaom2mNCmQq7iGoUu%2Fp%2Bfe%2Byn9ki4pyUkaX0Rplzs7Q45WrSvrEHbg5FJ5lO7UUsRIg9DAwtk1sDce61LZtUQxuvEZWqt%2FKGTjgepr3xaorEnhncRilcKFE8arEDqIUSuqHRTWeITK2bIu0MMELgdAUKhQyzGwU1GxlNKqoK9nx9CkD9IXFuVd%2Fumr%2F%2FMf6%2BW99LOQvpp0PZdOldSPK5Rrn8B0RpXXJ7UGVU6HfmUrtdhmXkZNWUcwC0VDKLTwfjqMCOGRFVb77DksRZW9GM6e7CIm4QHka1FxXgV8Qteqr6WNMLeulA6crU0py1BX5ZF5A39%2Bw9%2Bfv0Igkm9ORlrNrpMW8sYqwxlLKFrr2XUvqCAcfKyoVLcHJTnpa40%2Bi2V7TSh%2FYObXENeido4sMHp5tBeVa2mWuGr2V3YyogaBRMfCSaGjAYjJRpnSbvJF%2BMzn9MHbSDIZ3E%2FRTuG3piDmpqoxBWUUxhPbkYIWtnaathm5ga%2FnHzhuK2kXELfDdDoF5tEps2TwuguO2zWnuhS0LUTQnK%2BcXFBzALUATqncS%2BGK1ZlwgqSthOesOx7PkiS27wl48rgMhrnM87wXfzWJOw6iLSUSGlV9m29Z0rKMl5kJX0hTBrp9C%2Bjg87BwLlKYR%2F2ivX7IYN6%2BJW3DJj7FRiiMZ3JGf5fyknO6VKtvZSz2Ei%2FUWtoa%2B3AKx0dHSYfRyprbckui3n%2F5%2FClvz5A8wneB6p3j2TjanLckkxTYA%2FNQOq59HpquhZNYOxMZnktP84QohoYp%2FaIrKcj8fkyvjKgg%2BSwL10pgTFSVVu2V0aixhtEAaTGD8A51b7QHrpkMGrLioymG29lE6cepCHIwczfBksk%2FxjG1YA%3D%3D&theme=light) and edit it live.
+**Swap the mock for your store:** delete the `window.fetch` block. The link already carries `?sections=…`, and the `response` option already parses Shopify's JSON, so the same markup now hits the real endpoint. Use your theme's real section ids (for example `main-collection-product-grid`). You can [open the demo in the playground](https://ui.studiometa.dev/play/#html=eNrdVM1u1DAQvvcphiDRXalOSsufqk0QReoJBFJ7R04ySVwcO7Kd%2FRFCQjwMJ%2B7ceZQ%2BCeOss%2B2WRSxXckgcz3zj%2Bb6Z8awU8wOAkjvOCt12WqFyafSqcEKraLRodVahKxqWY6UNptGV4coK7zN5KDUv0UyBZeC4qdHFFALNZPo7nFdk%2BBtaIp%2FjGl1Ibm0atXzJFuxkKcF2vEC2Yk%2BijMw%2B%2BdGnkrgE%2F2ILwzsQDlvLiiETqHkXEIShEGoD0sqxXMsyyi61cWezxFuDIx8%2BAI3BKo2SQkuJgyw24VK%2BtAT4kK%2FSlquey0c22NLO6LIvHKuNKI8M2l46SkT3ynlG%2Frkv9oXXZsuoOx%2BLEZp8LOk9ruJrS6JNY9egmkzGM6eQZvAuv6bfeM5lj%2FbWFFdC%2Bmqca03Cqml8rYWaHB5OB4H9E7TItaFCsBzCouiNofSCbAAXyF1vsFyLk%2FB%2FU6kzggrHLVWkFKr%2B%2F%2BV67wkfgdQLcBoaUTf3hPOdFnxFmUbrOfgT59uJ2UV86HJWGd2mkaYJEW7Fjnc5DqPFnN7L7SNit815AwKHS8dsu%2F4G6smz4w37N8SGynzz5VtgPc7VLKGZzQ786gFjcK5dAwZrrz1wg%2BCHt8MScMkLJ1fALVw2uhPVajCRE4RanYWj1reAl9CuHVlwYJ9E%2BTnKYupcahiwCw%2BnTmghX0HLaY8yJGAMjG1uk11xtrtyFGOnBM9JglMIPW3vkO3lztB3u38T2f%2BAf9GJ0rLT7ftLitGPNkP3gaHUSqRr7DXdfT9%2FwM3X7ydPZ4kUe4GutMOAevxib9Tbvh5BJyNolvQyOwi8fwEoahPJ&script=eNqtVc2O40QQvucpShaSbcl2hoUVKH%2FLagUCxM9oMpwQIm27EvdO2211l8dEkS88D3fuPApPQnXbyWZgVtoDOdhxV9VX31dd1S3rVhuCExg8SEto3mheabAhCwPsja4h%2FMJSV0pdI4n5W5uS1upBUricXYJfFyR1k8BXSEWVwL0RjZVu6VmMTnLsbD6HNE1hK%2BtOCcIStuhR4A6bEo1sDvD69hvn80E%2Fh7etdCv3R%2BDsPRoLu1d2xLRrkeQ76CVV8O32xx8WzDkQwQKCVUW12gQJBPnVJwyZw%2FtSFBU8CtUhSAtUIUx40BvRtsxZNrAq5SPIch3YMXs6%2BaQnWQ7BJoG%2BkgwjrUPsK0FjlcD2orWQHzk2g6%2FRIPQIeSdVyZnYy%2FEE3RmL6hHtEkpUSMg2ppIrXTw4PNJQSfLUDAoFXLpWy4YgsogQbDmHN9bsD3tt4MiIYEkbDOJsVnBpCFqjy67gDV%2FDzzPg0pAkhQsI34g2TNgsC%2F568RKG5In5XhO%2Bs3%2F8%2Bb%2Ft33eHK%2FMLZ%2F6FN35MejCy5ISRJKztAujYot5fqMSw3jDWbtWpZ2s7%2BaUOJYBCCWvXgYd0j7TQyqafwEG06afB5qOTT8J4AFkt2ihqHT6jK3mOZUfIteHGA6M7bsDSxbWZ1zLAX3%2FC37%2F%2F4Ra8nGE1V3Kzi0fIt1zxKAxjXu3UZneRWDAQfYDG9zWQQdspsqyGcS4qCX%2Bj1Nbg30VnDM%2Fq%2FLObi8xMYXOgarjkWc05wRUt1yhjC655IppS99nefWY5f0TjSrycXZvYU9hjU7CUpu0o4b6X5Gt4YgUjbGcUuzXYw09330WTVu8O6%2FUaQktupkN4NS0uprfkYNEUzpsDz%2BasMrg%2F%2B2SMnUBYEbWL%2BZx7X6hKWwqZJYDcQ8T2zKIwRXUrjOAaVMJG4Xn4wzj2PM9MLR9aPLvc7VnG%2BzlWiTvTeTyLdkBiNI76NT%2BGLNvJ8X2QClvwyDld5xQwwWfuFUUigdwXSoydAynk4z9PHmDwT9ELHmNXvFs%2BLqXFKOLd1zz5Ptgi3csadUfn5QRe3tzE8RL4ENiLBwR3hjbF8Upmrssji3TnSDYWn5srOrNkAe9GKFz4uYlG6rEbY%2B%2FzpAPZyb%2Bfeg2TDoPUmcZLuEPLVwhrcAwSPhAqFDxYPAEnCJkbE6XUNQgjhnyOKlkIt1F8uegm5CtjxHSVmVAvLfuk%2F5azYTldI%2F%2FXbzb77z0Yvfd2Ywb%2FANMsUYk%3D&theme=light) and edit it live.
 
 ## When the parameters come from user input
 
@@ -151,10 +149,10 @@ The Section Rendering API is stable and works today. Shopify is also previewing 
 
 ```js twoslash
 // @noErrors
-import { registerComponent } from '@studiometa/js-toolkit';
+import { registerComponents } from '@studiometa/js-toolkit';
 import { ShopifyPartialsFetch } from '@studiometa/ui';
 
-registerComponent(ShopifyPartialsFetch);
+registerComponents(ShopifyPartialsFetch);
 ```
 
 `ShopifyPartialsFetch` **falls back to `Fetch`** automatically, which lowers the risk of adopting the preview early. It uses the partial rendering path only when the `partials` option lists at least one name and the preview package resolves and the request is a plain `GET`. Otherwise (no package installed, no partials configured, a `POST` form, custom headers) it behaves exactly like the base `Fetch` and does the id-based swap. So the same markup degrades cleanly on a store that is not on the preview.

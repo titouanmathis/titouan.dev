@@ -1,4 +1,4 @@
-import { registerComponent } from '@studiometa/js-toolkit';
+import { registerComponents } from '@studiometa/js-toolkit';
 import { Action, Fetch, Dialog, ViewTransition, Transition } from '@studiometa/ui';
 
 // --- Simulated Cart AJAX API ------------------------------------------------
@@ -61,8 +61,4 @@ window.fetch = async (input, init) => {
 };
 // ---------------------------------------------------------------------------
 
-registerComponent(Action);
-registerComponent(Fetch);
-registerComponent(Dialog);
-registerComponent(ViewTransition);
-registerComponent(Transition);
+registerComponents(Action, Fetch, Dialog, ViewTransition, Transition);

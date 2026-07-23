@@ -54,16 +54,14 @@ Install the two packages:
 npm install @studiometa/ui @studiometa/js-toolkit
 ```
 
-Register the components you use once, in your theme's main script. `registerComponent` mounts every element carrying the matching `data-component` attribute:
+Register the components you use once, in your theme's main script. `registerComponents` mounts every element carrying the matching `data-component` attribute:
 
 ```js twoslash
 // @noErrors
-import { registerComponent } from '@studiometa/js-toolkit';
+import { registerComponents } from '@studiometa/js-toolkit';
 import { Action, Fetch, Transition } from '@studiometa/ui';
 
-registerComponent(Action);
-registerComponent(Fetch);
-registerComponent(Transition);
+registerComponents(Action, Fetch, Transition);
 ```
 
 From there, everything is declared in markup. Three attributes carry the whole model:
@@ -104,7 +102,7 @@ window.fetch = async (input, init) => {
 };
 ```
 
-**Swap the mock for your store:** delete the simulation block (the `history` stub and the `window.fetch` override). The links already point at real Liquid pages (`/`, `/pages/shipping`), and `Fetch` will swap the region whose `id` matches. To target a single, server-defined region precisely rather than "any matching id", scope it with `data-option-selector`, or fetch a named section with the Section Rendering API, which is exactly where the next article starts. You can also [open this demo in the playground](https://ui.studiometa.dev/play/#html=eNq1U7Fu3DAM3e8rCHVJBp0TtMhQ2AbaociQrQU682z6LNQWBYl3udv6Nf2wfklpW07RS4Bk6WRCfOR7j6TL1h03AC0K2obHwJ68VOZTI469WTPsP3YkTW931HGkynyL6JObMFfvBsaW4jXYGgTjnmSrLSheXT8vx04Tr1UPhEdaqpsBU6rMiCf7aE8DpIAN2bO9M7VmS4%2FHFdINdAInNCbbzPSwx2A%2FzDhFIvSRusoU5pnVL5Oy%2FMxhEmV7l4Tjee2946gS7Q5y0Bxi1NLcG%2BCeR1poCrzkC7inVKTeheD8%2Fn%2Bwf829LxToqHxGuLYyy5hNfrlU8Xch%2FyCyoHmetos8VoZ1A07O9uYl4Lw5K%2Fwm2A%2BikJPZ6VMRCJ3EpnH5ZsPF3c2T5wd1o5Z%2F%2F%2FyVXU9u55Mo9CbqzRSN6PxsfQrUrJrQqa1c6yW9Xy%2Bkv11TM6keW6cldsdDa%2Bppw2XR32ZsqL%2FToOMjEAbpCVLPYQufIz8mAj5EGFAoCYTI7aGRtC2LsMibxNSbstDfrv4D4%2BUcXQ%3D%3D&script=eNqtU01v2zAMvedXELnYAfzRbuglibMvYNhhh6HrsMMwoIpN19pkyRDpuUGR%2F15KSbqP5riTZfK9xyeS0v3gPMMDeLzTxOjfOYlYtAx7aL3rIXlNPDba9ciq%2FEE5O2d%2Bak5WM33ivqlZO5vBe%2BS6y%2BDGK0s6hM5qjFq4s9pZYqmqTGRBBZO2jZuKNvwWW%2FlJD5HF6gge1B2SAB9mAEmZLOF23SttQTfVPBxygbE4n0NtFFE1p0HVmO%2Fyl%2FONUADW3eUpxXjP%2Bb2BVij51plmvvkg9tZld3nEDpuvaGqJATvgDoE6NxTw1ruJENzowSjGYMu7ZqyZinU5BO66DGY2t1m0GU2X1Olh0Pbuv5v%2BfBT%2BxziEgjA5b5pJNwhS8EW4xxVsR9IWiaBRuzOW96vZn3OQbiva2RpSbYeRMxHSvIBqE4dwGMvojcAsTvDl%2BmPKuwFdCxEOVVVBQuzDzeHVMbg8fAvhZWBcrcKmFJ3HViZ9Eg1tE9XYvW%2BCLAbFnVU9fg8Y3UIaUotoA0BNSnO08EnWTROmqUdy5hdGr4R8o3t0I5%2FCGVxdXCxiPZAl5NHbSL9Gku0XflDPZLU7VA16WsoxOU4qD1eUQSZhHGXHvUlkz%2FdRbD97knta7b9atwodnj17bOnhCUn6eSqKnM38fmiL1SM6Z0M2&theme=light) to edit it live.
+**Swap the mock for your store:** delete the simulation block (the `history` stub and the `window.fetch` override). The links already point at real Liquid pages (`/`, `/pages/shipping`), and `Fetch` will swap the region whose `id` matches. To target a single, server-defined region precisely rather than "any matching id", scope it with `data-option-selector`, or fetch a named section with the Section Rendering API, which is exactly where the next article starts. You can also [open this demo in the playground](https://ui.studiometa.dev/play/#html=eNq1U7FO5EAM7fcrrLkGitmA7kRxSiLdFacrrjsk6tnE2YxIxqMZ77Lb8TV8GF%2BCJ5mAWJCgIU2s%2BNl%2B79kpW7tfAbSGjW5o9OTQcaV%2BNWzJqSVD7meH3PR6gx0FrNR1MC7ahDn7NpBpMZyDroFN2CKvpQWGs%2FO35aaTxEfVA5o9ztXNYGKs1GgO%2Bk4fBojeNKiP%2BkrVki2d2S%2BQbsADWMYx6mYaD1vj9Y8JJ0gDfcCuUoV6I%2FVPYpY%2Fk0%2BkdG8jUzguvTcUhKLeQA6aXQhSmnsD%2FKUR5zGFOZ3nzRZjEXvrvXXbr5j%2BP%2Fc%2BYSBWuYywbaVmm5On6Tll8bKQV4hMaPJTd4HGSpFswPJRX7wHnDanmT4Fu0X0OZmVPhcB44F1HOd3FlxcXTxr%2FidqRPLj%2FUNWndROJ1HITdSrFI3Gukl6CkSsiBDXllnLJX1fLqS%2FXFLTUDm2Tkr0hoZW1WnDZdFfZqyvb3AQ%2BxCYgHuE2JNfw%2B9AdxGBdgEGwxgZfKB213Bcl4Wf6SUy9aos5LerV08AWxxn&script=eNqtVclu5DYQvfdXFPoiNaBlJsFc3Es2JJiDgwRuBzkEAcwWq1uMKVIhSyMLhv89VZTsLJ4cBpgGGpJYr54eqx5Lput9IHiEgBcTCcN3nlccOorwBOfgO8i%2BjjRo4zskVf8RS%2FLe3hvKtquX5G8aMt4V8ANS0xZwG5SLRpY%2ByjEYzl3VNZRlCUfTDVYRaojkAzLakQQ%2B9Sd8ty1Cb9V0CX5wGloVwXk4qeYenS4gehgROt%2FcAzGSRg8MJIygGB2QhuBS5P3tj9fCp%2BDa%2FDkYDb26IIx%2BsAJzGkMFPzkOB1R21i15EUHxnfOh42XJYWbLGD1thU6jRRKkiXCySYaHiwdrPiDkERHWx1H1SUJSefYBJj%2BE%2BRVrOKH146YSrjutSJW%2BlyKXTMiA6Q4aZW2E5bHqh9geiWtbwNiapk3Ekfd68g9c778rJYTmHFSHs64I%2BRGbIRiavg%2FBh00FRxpOYEhqKCy%2F3FxDnFwDvBXFO2YlYObiaex8tXqlAfaQb2B%2FgMen7Us0IIto8DVg1XgXKdU3eYqDo3Haj9VZHqsTP%2BTzyma7gFPBr%2BAGGx%2F0LlIw7sJNT9cDEzyuALI6u4K7XadYrNH7tdyUnE5s%2BDU0VsW4X8eeNZVT%2BeX6wCkAu%2Fbtc4jwgcoHy51xVJ681evDezb1rm7fLtj%2B8Cvahtekuangre8r%2BDb4kf0hzRS3i9zg9dBQrHZ1L7m7WsQc7ookM22mjq3pe5b%2F2UUfF%2BL%2FCGexpmejB6tHo1Fa%2BoXs4x2chmgcxghaTR%2BRzC37Z3%2B42irZIzeuH6hgIkNzczltbtcQLMMcjmKmnKYe%2FZlxDIf9fg%2FZ3LgMvloWr5ar4WTlGkGLC5dw1fLseMZUzF1A1hL1V3XNjla29ZEytsrz29OJ3s%2Be%2BY3hVa%2BodXwCfheMOUMuoU3SC6BGxd4XrT%2FzNDMR8zxg9PYDI3hTEenWdMiz5Hm5gHdv3mw2W%2BCTdVb3mJrumimxLZNG6G4w8rRlPnlbwZO05WmBgW38CNnS4lJqww7IpI91S53NeKw%2Bpc088X%2Bhezkr%2F6r5Vlozj9rP9VutXn8r8v%2F9ArCCvwB6yBBb&theme=light) to edit it live.
 
 Every demo in this series works the same way: the component markup is exactly what you ship, and only the mocked endpoint is demo scaffolding.
 
