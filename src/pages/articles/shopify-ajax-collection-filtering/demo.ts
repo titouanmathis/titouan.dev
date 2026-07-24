@@ -1,5 +1,5 @@
 import { registerComponents } from '@studiometa/js-toolkit';
-import { Action, Fetch, Transition } from '@studiometa/ui';
+import { Action, FetchShopifySection, Transition } from '@studiometa/ui';
 
 // --- Simulated collection endpoint ------------------------------------------
 // Filtering and sorting normally happen server-side: Shopify reads the query
@@ -40,4 +40,4 @@ window.fetch = async (input, init) => {
 };
 // ---------------------------------------------------------------------------
 
-registerComponents(Action, Fetch, Transition);
+registerComponents(Action, FetchShopifySection, Transition);

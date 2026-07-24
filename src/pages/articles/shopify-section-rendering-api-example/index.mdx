@@ -28,7 +28,7 @@ import demoTs from './demo.ts?raw';
   script={demoTs}
   height="220px"></UiPlayground>
 
-The [`Fetch`](https://ui.studiometa.dev/components/Fetch/) component consumes the Section Rendering API from attributes on the link, with no request code.
+The [`FetchShopifySection`](https://ui.studiometa.dev/components/FetchShopifySection/) component consumes the Section Rendering API from attributes on the link, with no request code.
 
 <TableOfContent open />
 
@@ -46,24 +46,25 @@ Add a comma-separated `sections` parameter (up to five) to any storefront URL, a
 
 Every section is wrapped in a `<div id="shopify-section-{id}">` element, both on the page and inside the API response, so the ids already line up between what you have and what you get back.
 
-## Wiring it with Fetch
+## Wiring it with FetchShopifySection
 
-`Fetch` intercepts a link click, fetches its `href`, and swaps elements from the response into the page by matching `id`. Two options adapt it to the JSON shape above:
+[`FetchShopifySection`](https://ui.studiometa.dev/components/FetchShopifySection/) is a thin wrapper around [`Fetch`](https://ui.studiometa.dev/components/Fetch/) built for exactly this API. It intercepts a link click, fetches its `href`, and swaps elements from the response into the page by matching `id`. Two things are handled for you:
 
-- `response` tells `Fetch` how to read the body. The default is `response.text()`; for the Section Rendering API you parse the JSON and join the section strings. `filter(Boolean)` drops any `null` section so the parser only sees valid HTML.
-- `selector` defaults to `[id]`: `Fetch` matches each `shopify-section-*` wrapper by its `id` and swaps it in place. The JSON keys are ignored, so there is never a key/id mismatch.
+- The section IDs go in the `sections` option, not the URL. The component appends them to the request as `?sections=…` when JavaScript runs, so the element's `href` stays a clean, fully rendered page for the no-JS fallback.
+- The Section Rendering JSON (`{ [id]: html }`) is unwrapped by its default `response` option, and each `shopify-section-*` wrapper is swapped by the inherited `[id]` selector. The JSON keys are ignored, so there is never a key/id mismatch, and there is no per-element `response` boilerplate.
 
 In a collection template it looks like this:
 
 ```liquid
 <a
-  href="{{ collection.url }}?sort_by=price-ascending&sections=main-collection-product-grid,collection-results-count"
-  data-component="Fetch"
-  data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))">
+  href="{{ collection.url }}?sort_by=price-ascending"
+  data-component="FetchShopifySection"
+  data-option-sections='["main-collection-product-grid", "collection-results-count"]'
+  data-option-history>
   Price, low to high
 </a>
 
-{% comment %} Shopify renders these wrappers; Fetch swaps them by id. {% endcomment %}
+{% comment %} Shopify renders these wrappers; FetchShopifySection swaps them by id. {% endcomment %}
 <div id="shopify-section-main-collection-product-grid">…</div>
 <div id="shopify-section-collection-results-count">…</div>
 ```
@@ -73,18 +74,18 @@ Register the components once:
 ```js twoslash
 // @noErrors
 import { registerComponents } from '@studiometa/js-toolkit';
-import { Action, Fetch, Transition } from '@studiometa/ui';
+import { Action, FetchShopifySection, Transition } from '@studiometa/ui';
 
-registerComponents(Action, Fetch, Transition);
+registerComponents(Action, FetchShopifySection, Transition);
 ```
 
-Two more options are worth knowing. View Transitions are on by default when the browser supports them; disable them with `data-option-no-view-transition`. Keep the default `replace` mode (or `morph`) so each section is swapped in place, because `append` and `prepend` would insert the new markup *inside* the existing wrapper and duplicate its content. One option is deliberately left off: `data-option-history`. A `?sections=…` URL returns raw section JSON, so pushing it would make a refresh or a shared link load that JSON instead of a page. The sort state that *is* shareable lives in the `sort_by` parameter, which Shopify applies server-side, so the canonical `?sort_by=…` URL bookmarks and refreshes fine on its own; the enhanced swap just leaves the address bar untouched.
+Because it extends `Fetch`, it inherits every option. Two are worth knowing. View Transitions are on by default when the browser supports them; disable them with `data-option-no-view-transition`. And `data-option-history` is safe to enable here: `FetchShopifySection` strips the `sections` parameter from the URL it pushes, so the address bar keeps the shareable `?sort_by=…` page while the raw section endpoint never appears in history. That means the sort survives a refresh and a shared link, from the enhanced path as well as the no-JS one.
 
 The loader is the one bit of glue: [`Action`](https://ui.studiometa.dev/components/Action/) listens for the bubbling `fetch-before` and `fetch-after` events and drives a [`Transition`](https://ui.studiometa.dev/components/Transition/) on the `#loader` element. Because `Fetch` events bubble, the `Action` can sit on any parent.
 
 ## How the demo simulates it
 
-The playground has no Shopify backend, so the demo's script mocks `window.fetch`: when it sees a `sections` parameter it sorts an in-memory product list and returns the two sections as JSON, each wrapped in its `shopify-section-*` element, exactly as Shopify would. The demo uses short section ids (`product-grid`, `results-count`) for brevity; on a real store these are your theme's section filenames (for example `main-collection-product-grid`). The names are free to differ because `Fetch` swaps by each `shopify-section-*` element's `id` and ignores the response's JSON keys entirely.
+The playground has no Shopify backend, so the demo's script mocks `window.fetch`: when it sees a `sections` parameter it sorts an in-memory product list and returns the two sections as JSON, each wrapped in its `shopify-section-*` element, exactly as Shopify would. The demo uses short section ids (`product-grid`, `results-count`) for brevity; on a real store these are your theme's section filenames (for example `main-collection-product-grid`). The names are free to differ because `FetchShopifySection` swaps by each `shopify-section-*` element's `id` and ignores the response's JSON keys entirely.
 
 ```js twoslash
 // @noErrors
@@ -104,16 +105,18 @@ window.fetch = async (input, init) => {
 };
 ```
 
-**Swap the mock for your store:** delete the `window.fetch` block. The link already carries `?sections=…`, and the `response` option already parses Shopify's JSON, so the same markup now hits the real endpoint. Use your theme's real section ids (for example `main-collection-product-grid`). You can [open the demo in the playground](https://ui.studiometa.dev/play/#html=eNrdVM1u1DAQvvcphiDRXalOSsufqk0QReoJBFJ7R04ySVwcO7Kd%2FRFCQjwMJ%2B7ceZQ%2BCeOss%2B2WRSxXckgcz3zj%2Bb6Z8awU8wOAkjvOCt12WqFyafSqcEKraLRodVahKxqWY6UNptGV4coK7zN5KDUv0UyBZeC4qdHFFALNZPo7nFdk%2BBtaIp%2FjGl1Ibm0atXzJFuxkKcF2vEC2Yk%2BijMw%2B%2BdGnkrgE%2F2ILwzsQDlvLiiETqHkXEIShEGoD0sqxXMsyyi61cWezxFuDIx8%2BAI3BKo2SQkuJgyw24VK%2BtAT4kK%2FSlquey0c22NLO6LIvHKuNKI8M2l46SkT3ynlG%2Frkv9oXXZsuoOx%2BLEZp8LOk9ruJrS6JNY9egmkzGM6eQZvAuv6bfeM5lj%2FbWFFdC%2Bmqca03Cqml8rYWaHB5OB4H9E7TItaFCsBzCouiNofSCbAAXyF1vsFyLk%2FB%2FU6kzggrHLVWkFKr%2B%2F%2BV67wkfgdQLcBoaUTf3hPOdFnxFmUbrOfgT59uJ2UV86HJWGd2mkaYJEW7Fjnc5DqPFnN7L7SNit815AwKHS8dsu%2F4G6smz4w37N8SGynzz5VtgPc7VLKGZzQ786gFjcK5dAwZrrz1wg%2BCHt8MScMkLJ1fALVw2uhPVajCRE4RanYWj1reAl9CuHVlwYJ9E%2BTnKYupcahiwCw%2BnTmghX0HLaY8yJGAMjG1uk11xtrtyFGOnBM9JglMIPW3vkO3lztB3u38T2f%2BAf9GJ0rLT7ftLitGPNkP3gaHUSqRr7DXdfT9%2FwM3X7ydPZ4kUe4GutMOAevxib9Tbvh5BJyNolvQyOwi8fwEoahPJ&script=eNqtVc2O40QQvucpShaSbcl2hoUVKH%2FLagUCxM9oMpwQIm27EvdO2211l8dEkS88D3fuPApPQnXbyWZgVtoDOdhxV9VX31dd1S3rVhuCExg8SEto3mheabAhCwPsja4h%2FMJSV0pdI4n5W5uS1upBUricXYJfFyR1k8BXSEWVwL0RjZVu6VmMTnLsbD6HNE1hK%2BtOCcIStuhR4A6bEo1sDvD69hvn80E%2Fh7etdCv3R%2BDsPRoLu1d2xLRrkeQ76CVV8O32xx8WzDkQwQKCVUW12gQJBPnVJwyZw%2FtSFBU8CtUhSAtUIUx40BvRtsxZNrAq5SPIch3YMXs6%2BaQnWQ7BJoG%2BkgwjrUPsK0FjlcD2orWQHzk2g6%2FRIPQIeSdVyZnYy%2FEE3RmL6hHtEkpUSMg2ppIrXTw4PNJQSfLUDAoFXLpWy4YgsogQbDmHN9bsD3tt4MiIYEkbDOJsVnBpCFqjy67gDV%2FDzzPg0pAkhQsI34g2TNgsC%2F568RKG5In5XhO%2Bs3%2F8%2Bb%2Ft33eHK%2FMLZ%2F6FN35MejCy5ISRJKztAujYot5fqMSw3jDWbtWpZ2s7%2BaUOJYBCCWvXgYd0j7TQyqafwEG06afB5qOTT8J4AFkt2ihqHT6jK3mOZUfIteHGA6M7bsDSxbWZ1zLAX3%2FC37%2F%2F4Ra8nGE1V3Kzi0fIt1zxKAxjXu3UZneRWDAQfYDG9zWQQdspsqyGcS4qCX%2Bj1Nbg30VnDM%2Fq%2FLObi8xMYXOgarjkWc05wRUt1yhjC655IppS99nefWY5f0TjSrycXZvYU9hjU7CUpu0o4b6X5Gt4YgUjbGcUuzXYw09330WTVu8O6%2FUaQktupkN4NS0uprfkYNEUzpsDz%2BasMrg%2F%2B2SMnUBYEbWL%2BZx7X6hKWwqZJYDcQ8T2zKIwRXUrjOAaVMJG4Xn4wzj2PM9MLR9aPLvc7VnG%2BzlWiTvTeTyLdkBiNI76NT%2BGLNvJ8X2QClvwyDld5xQwwWfuFUUigdwXSoydAynk4z9PHmDwT9ELHmNXvFs%2BLqXFKOLd1zz5Ptgi3csadUfn5QRe3tzE8RL4ENiLBwR3hjbF8Upmrssji3TnSDYWn5srOrNkAe9GKFz4uYlG6rEbY%2B%2FzpAPZyb%2Bfeg2TDoPUmcZLuEPLVwhrcAwSPhAqFDxYPAEnCJkbE6XUNQgjhnyOKlkIt1F8uegm5CtjxHSVmVAvLfuk%2F5azYTldI%2F%2FXbzb77z0Yvfd2Ywb%2FANMsUYk%3D&theme=light) and edit it live.
+**Swap the mock for your store:** delete the `window.fetch` block. The links already declare their sections and `FetchShopifySection` parses the response, so the same markup now hits the real endpoint. Use your theme's real section ids (for example `main-collection-product-grid`). You can [open the demo in the playground](https://ui.studiometa.dev/play/#html=eNrNVM1u1DAQvvcpBnNoK9WbsuVPq00QIPUEEtL2hhBykkli4cSR7XQ3QkiIh%2BHEnTuP0idhnDgLWxax3LqHJOv5vvF8M5%2B9zOX1EUAunOCZrlvdYONi9jxzUjdsiuhmUaDLKp5ioQ3G7MqIxkqPObmvtMjRnAJPwAlToptRCjQnp3%2FSRUGBf7EVimsc2ZkS1sasFhu%2B5vONAtuKDHnPH7KEwr74CVMo3IB%2F8LURLUiHteXZUAmUog0M4lCKZkvSjeOpVjlLVtq4xTLy0QAUwwugMljELMq0Uji0xUZCqWeWCO%2FTPq5F0wnlq%2FW%2F24289LpXlW5l0a9G%2Bg5Ut36J25A5Pn7LWqPzLnO8NDJnZ8AM2k45EqO7xrF3x4EeJKTaUP94CuEj64yhnYNagEsUrjOYj5oi8X%2FiWiOp38JSI3PZlHdW5Rtf5xkovQanoZJldUuvn2vAyjxmo%2Bv%2BJueXP%2FepGDzFC6PrmGnyo3Q9P98HHIzMnT4I9gGx3dW8JYHDjeO2Ht9BevT4fKv%2BFamh6dx8%2FhpUTy5eRnRCkiP%2FdY9zeKFdBQZLPwMQBsEflRZzwI3InOpBWAhTHEIEgjCzRdhqPHO%2BhXYETkPlH2X%2BiSUzMhx5Aeza012FNaQ91ILWqEIizoDz7dndl2fXCFMz9rbgCbXgAoKT7G9iO7U39Y7npsz%2BD%2FgH7agsv9i9LZSccLQY3AeGSsuRLo2XdNP8%2BA43X77NHy0jJQ8iXWmHgfXg6cGs1105keYTaRl1KjkKun8C5jbfpA%3D%3D&script=eNqtVc2O40QQvucpShaSbcl2hoUVKJlkWa1AgPgZTYYTQqRtV%2BLeabut7vKYKPKF5%2BHOnUfhSahuO9kMOyvNYXOI7a6qr76vuqpb1q02BEcwuJeW0LzRvNJgQxYG2BldQ%2FiVpa6UukYS87c2Ja3VvaRwOTsHvy5I6iaBb5CKalPpVu4OG5wW74xorHTvTyJ2kpFm8zmkaQobWXdKEJYwhcMtNiUa2ezh9c13zudZP4c38QDO3qOxsH1lR0y7Ekm%2BhV5SBd9vfv5pwQoCESwguK6oVusggSC%2F%2BIQhc3hfi6KCB6E6BGmBKoQJD3oj2pY5ywauS%2FkAslwFdsyeTj7pUZZDsE6gryTDSOsQ%2B0rQWDOwvWgt5AeOzeBbNAg9Qt5JVXIm9nI8QXfGonpAu4QSFRKyjankShf3Do80VJI8NYNCAZeu1bIhiCwiBBvO4Y01%2B8NOGzgwIljSBoM4mxVcGoLW6LIrePtX8OsMuDQkSeECwjeiDRM2y4K%2FXryEIXlkvtOE7%2Byffvl%2F%2B4%2Fd%2FsL8wpl%2F440fk%2B6NLDlhJAlruwA6tKh3ZyoxrNaMtb3u1JO1nfxShxJAoYS1q8BDur%2B00Mqmn8FetOnnwfqTo0%2FCeABZLdooah0%2Boyt5imVHyLXhxgOjO27A0sW1mdcywD9%2Fw79%2F%2FuUWvJzheq7kehuPkG%2B54lEYxrzaqfX2LLFgIHqGxg81kEHbKbKshnHOKgn%2FoNTW4J9FZwxP7vyLq7PMTGGzp2o457mec4ILWq5RxhZc8UQ0pe6znfvMcv6IxpV4Obs0saewh6ZgKU3bUcJ9L8nX8MgKRtjOKHZrsIdfbn%2BIJq3eHVarFYSW3EyH8GpaXExPycGiKZw3B57MWWVwd%2FLJGDuBsCJqF%2FM5975QlbYUMksAuYOI7ZlFYYrqRhjBNaiEjcLT8Idx7HmemFo%2Bwnh2uduzjPdzrBJ3pvN4Em2PxGgc9Xt%2BCFm2k%2BP7IBW24JFzuk4pYILP3COKRAK5L5QYOwdSyMc3Tx5g8P%2BiFzzGrng3fFxKi1HEu6958n2wRbqTNeqOTssJvLy6iuMl8CGwE%2FcI7gxtisOFzFyXBxbpzpFsLD43V3RiyQLejVC48HMTjdRjN8be51EHspN%2FPvYaJh0GqTONl3CLli8U1uAYJHwgVCh4sHgCjhAyNyZKqWsQRgz5HFWyEG6j%2BKrRTchXxojpKjOhnlv2Uf8tZ8NyukY%2B1m82e%2F9WjJ551zGf%2FwBC%2FVz3&theme=light) and edit it live.
 
 ## When the parameters come from user input
 
-For a single link the `sections` parameter is baked into the `href`. When the value comes from the customer, say a sort `<select>`, facet checkboxes or a search field, put a `<form method="get">` around the inputs and let `Fetch` build the URL from the form data. Add the sections as a hidden input:
+A single link carries its own `sections` option. When the value comes from the customer, say a sort `<select>`, facet checkboxes or a search field, put a `<form method="get">` around the inputs and let `FetchShopifySection` build the URL from the form data — the same `sections` option applies, no hidden input needed:
 
 ```liquid
-<form id="collection-sort" action="{{ collection.url }}" method="get" data-component="Fetch">
-  <input type="hidden" name="sections" value="main-collection-product-grid,collection-results-count">
-  <select name="sort_by" data-component="Action" data-on:change="Fetch(#collection-sort) -> target.$el.requestSubmit()">
+<form id="collection-sort" action="{{ collection.url }}" method="get"
+  data-component="FetchShopifySection"
+  data-option-sections='["main-collection-product-grid", "collection-results-count"]'
+  data-option-history>
+  <select name="sort_by" data-component="Action" data-on:change="FetchShopifySection(#collection-sort) -> target.$el.requestSubmit()">
     <option value="manual">Featured</option>
     <option value="price-ascending">Price, low to high</option>
   </select>

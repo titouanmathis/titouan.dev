@@ -115,13 +115,13 @@ Shopify recommends rendering one selector per option from [`product.options_with
 </form>
 ```
 
-When a variant is deep-linked with the `?variant={id}` URL parameter, `product.selected_variant` reflects it, and `product.selected_or_first_available_variant` gives you a sensible default otherwise. `price` here is a genuine theme section (`sections/price.liquid`), because the Section Rendering API only re-renders real section files, not a snippet you wrap in a hand-written `<div id="shopify-section-price">`. To refresh that authoritative section on selection, fetch the product URL for the chosen variant and swap the section by `id`, the exact `Fetch` recipe from the [Section Rendering article](/articles/shopify-section-rendering-api-example):
+When a variant is deep-linked with the `?variant={id}` URL parameter, `product.selected_variant` reflects it, and `product.selected_or_first_available_variant` gives you a sensible default otherwise. `price` here is a genuine theme section (`sections/price.liquid`), because the Section Rendering API only re-renders real section files, not a snippet you wrap in a hand-written `<div id="shopify-section-price">`. To refresh that authoritative section on selection, fetch the product URL for the chosen variant and swap the section by `id`, the exact `FetchShopifySection` recipe from the [Section Rendering article](/articles/shopify-section-rendering-api-example):
 
 ```html
 <a
-  href="{{ product.url }}?variant={{ current_variant.id }}&sections=price"
-  data-component="Fetch"
-  data-option-response="response.json().then((s) => Object.values(s).filter(Boolean).join(''))">
+  href="{{ product.url }}?variant={{ current_variant.id }}"
+  data-component="FetchShopifySection"
+  data-option-sections='["price"]'>
   …
 </a>
 ```

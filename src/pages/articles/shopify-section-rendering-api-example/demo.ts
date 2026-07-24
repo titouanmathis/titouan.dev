@@ -1,5 +1,5 @@
 import { registerComponents } from '@studiometa/js-toolkit';
-import { Action, Fetch, Transition } from '@studiometa/ui';
+import { Action, FetchShopifySection, Transition } from '@studiometa/ui';
 
 // --- Simulated Section Rendering API ----------------------------------------
 // Shopify answers `?sections=a,b` with JSON: { "a": "<html>", "b": "<html>" }.
@@ -39,4 +39,4 @@ window.fetch = async (input, init) => {
 };
 // ---------------------------------------------------------------------------
 
-registerComponents(Action, Fetch, Transition);
+registerComponents(Action, FetchShopifySection, Transition);

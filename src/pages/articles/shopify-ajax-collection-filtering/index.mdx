@@ -36,18 +36,18 @@ The form submits its state to the server, which does the filtering and returns t
 
 Shopify already filters and sorts collections from URL parameters. Storefront filtering reflects every applied facet in the URL, and `sort_by` controls the order. So the browser's job is small: gather the customer's choices into those parameters and ask the server to re-render.
 
-A `<form method="get">` is exactly that. Put [`Fetch`](https://ui.studiometa.dev/components/Fetch/) on the form and it intercepts the submit, builds the URL from the form data (this is what a GET form does natively), fetches it, and swaps the sections back in. Add the sections you want as a hidden input:
+A `<form method="get">` is exactly that. Put [`FetchShopifySection`](https://ui.studiometa.dev/components/FetchShopifySection/) on the form and it intercepts the submit, builds the URL from the form data (this is what a GET form does natively), adds the sections to refresh, fetches it, and swaps them back in:
 
 ```html
 <form action="/collections/all" method="get"
-  data-component="Fetch"
-  data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))">
-  <input type="hidden" name="sections" value="product-grid,results-count">
+  data-component="FetchShopifySection"
+  data-option-sections='["product-grid", "results-count"]'
+  data-option-history>
   <!-- facet inputs and a sort <select> -->
 </form>
 ```
 
-Three things carry the behaviour. `data-component="Fetch"` enhances the form. The hidden `sections` input tells Shopify which sections to render. And `data-option-response` parses the JSON the Section Rendering API returns (a `?sections=` request answers with JSON, whether it comes from a link or a form), so `Fetch` swaps each section by `id`, exactly as in the Section Rendering article. One attribute is deliberately absent: `data-option-history`. A `?sections=` URL answers with raw section JSON, so pushing it would make a refresh or a shared link load that JSON instead of a page. Shareability comes from the no-JS baseline instead, as the next section explains.
+Two things carry the behaviour. `data-component="FetchShopifySection"` enhances the form, and the `sections` option lists the sections to render — the component appends them to the request as `?sections=…` and unwraps the JSON response, so it swaps each section by `id` with no `response` boilerplate, exactly as in the Section Rendering article. `data-option-history` is safe here: `FetchShopifySection` strips the `sections` parameter from the URL it pushes, so the address bar keeps the shareable, refresh-safe facet URL and a reload never loads raw section JSON.
 
 ## Submitting on change
 
@@ -58,16 +58,17 @@ Customers expect the grid to react as soon as they tick a box, so submit the for
   id="collection-filters"
   action="/collections/all"
   method="get"
-  data-component="Fetch Action"
-  data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))"
-  data-on:change="Fetch(#collection-filters) -> target.$el.requestSubmit()"
+  data-component="FetchShopifySection Action"
+  data-option-sections='["product-grid", "results-count"]'
+  data-option-history
+  data-on:change="FetchShopifySection(#collection-filters) -> target.$el.requestSubmit()"
   data-on:fetch-before="Transition(#loader) -> target.enter()"
   data-on:fetch-after="Transition(#loader) -> target.leave()">
   …
 </form>
 ```
 
-`requestSubmit()` fires the form's submit event, which `Fetch` intercepts. The same element carries the loader wiring: [`Transition`](https://ui.studiometa.dev/components/Transition/) shows a spinner between `fetch-before` and `fetch-after`. Keep a `<noscript>` submit button inside the form so filtering still works when JavaScript does not run. The form works fully server-side; the enhancement only removes the reload.
+`requestSubmit()` fires the form's submit event, which `FetchShopifySection` intercepts. The same element carries the loader wiring: [`Transition`](https://ui.studiometa.dev/components/Transition/) shows a spinner between `fetch-before` and `fetch-after`. Keep a `<noscript>` submit button inside the form so filtering still works when JavaScript does not run. The form works fully server-side; the enhancement only removes the reload while keeping the URL shareable.
 
 ## How the demo simulates it
 
@@ -93,7 +94,7 @@ window.fetch = async (input, init) => {
 };
 ```
 
-The demo uses a simple `tag` parameter to keep the mock readable. [Open it in the playground](https://ui.studiometa.dev/play/#html=eNq1VM2O00gQvs9T1DYrkUh0PAT2RyPHErsShxWrXfFzQ0Jtu2L30O5uutszyQ3xMJy4c%2BdReBKq23YyYQLkQg6O3VXfV3%2F9Vb42rjsDkPWKVUYprII0mq%2BlCug8I4tIJyuW7c0%2BE0pFW4ehNYRsMMTPWgTBK9NZo1GHFXuMoWrhUcLs7MamCA49uXlcseltcemNns0XoUU9m0XfOawK%2BK%2B8pKiLK6F69MPx4tJIPbv7Ut%2Bdz%2Fe8%2BqJqhW6IMcWd3bldzxx4AUE4ynfxK6qFwzdEGp71ZSfD7IBrHTl4idQfYnzuhPYyUs3uKCNqdDepqFh0x%2BBiTYYfoRWKKxzQlRLer1gnNvyaLzcKvBUV8i1%2FyAoy579wDkNTy16q2gP1CsYi4MXTJ7B2pkuHcawpGTAafKpvAZwnFqltHyBsLRXWyrpGzUCLjr78OF8Gqd0rZp2p%2Byrwxsn6Hg2qV8HThHsdGGTFWWSr5dWU91rhBuKDXzthQQbsyDt1BxphxyoIo0SJ6gB1y3c5%2Bn6Vb9Vi9bo0mynjIJpdssJa4VDFzODR8D6Ey1K8nxu7qtB74yRS82L8%2FfeRHDzGizk13bjwqtyyKafSOLoh4KjLNdZgN3wJdsvvQ9nwEG9SrIwGsMtxUNSUSSd0LxQrHqMIvcM6zwb7N9ytk3TDhKfya6kbVvwfD%2B6BMtcQDLSyaU9iqPEWRcRGDqI6pMizoQFTN6zQI3VcQ4NCohzi7%2BudstfSgce4VdIMeVTBihnSjgxbfn7MMYmOB3OS22tEOxrHGe1AEHATuCfRxf%2Bqd3E02e%2Fnu%2Bk8oWqoKZ%2Ffvp9Kp2rHwqOc%2FxLUC6mTYkEb%2Fs%2BzCxCkaUHiT7IFH6RSMG4w8OiuqEQva5wETUza%2BMpJG4q87EOg2Qw3dmD4zs16kG4WK0guaptnA7jIsx1fVHhGEt9rPY7It8bK9ZaP%2ByIu85ubYQx3tDV%2FUGsewrhX%2FA3uXh2lvrmBdszxA%2BKDIipP%2BkjbBXx3sT%2FcLxs5waLPYQ9Y8Tctqk8f4fO7D8vfSKTyJNBzxBH04Px0kAkT6v6fJ6P%2B7ZsJtJxAedbTJsmzuOSLsy80yo0R&script=eNqtVstu4zYU3fsrLoIBJAOSnKbpA3GcdjDFoCja6WCSroJBQ0vXFicUqZJUUiPwpt%2FTfff9lH5JDynJcZqknUUNJJbu4%2FDw8txLy6Y11tMdWV5L59m%2BMrBo1t7RllbWNJR87XxXSdOwF7MPLvfGqGvpk%2Flkl%2Fyy9NLojF6zL%2BuMLqzQTgbTkxidRO5kNqM8z%2BlcNp0SnisqjVIcgYh11RqpfYj4yE%2FAey0VdiD1moSuyIFbeNbGNkKpDdWibVmTY3vDNney4hM6r00rVxtsX1SOfM30S8d2E9CcD1AZXLpi2zvvOWZxDcu%2Bs7r3WUYqSoiV%2BxBX0LdsmW45wFUmRjnRMElNDTfGbgr6hhV7hks6WipTXpM3VEs%2FQAq1K0Yx8ZuW6a01VVd6WqDuXnqFTfRM59RaWeJVd82S7Zy8WLvRefmetvNJCVIeYREBvgELzgVdTugeMXkl2iQbAY8%2BywawywQ1FJZVArzsQcYF833Gp4cfk2H8XsonX%2B6llCU7nJ9k9zjth269l3X0L1nvIbN%2By2srK%2BwxlZ6b%2FX1PaXEG8KvTTpGsFgeul0M%2BnGA%2BlCoP%2BQdUKuHc4iCChX855ODyI1qLNj8m15zcG48Pzl7cAZkoLlko1mtfRwPRV4OxEW2atoEDGCg54gewpbEQHVnTQXxVAGuLWIAt%2FfkH%2FfXb78EQa7A9nSl5djUtPkAkaZJMh0VQqX9gev7V52VnIWg%2F%2B%2Fzw4OyN2WmBGoHWDaJzTKvYR66IyAnwsEanzq525SxBKyjw%2BXpW8ubJglp2nfIORQLCrqKRmWseMvwCDF%2Fc7Zdvu6N7OsMCe4RCo8ThA1K3UlfmtliF12KJl7S3TOeTfRcihdvoEpvQbeczNKX08SzCufWwnVUI03xLP737Pg3tZ1aIQzgtFgtK%2Bt5KwoFG48nwLZEsdBmikTi6i9ryaowpgJ1RUnvfnsxmaHyhauN8ApbQzIpS%2BAvHwpb1W2EFalALlybjaEmm08hzZBp6AFQfJa3Zv1QqTeDvoceEMB2fScAqcP683IwZmFC9YpEQFhqOA%2Fsaz6PoJTOqOQY5TPs07UsK8QaT1KXqKnawgj96tigg4h4CzRrbBVvvuYUCR4XnwpUYgqHS06FzQkSaioyWEV70rUA5LfungfhTYFj%2BP9AGDKANuAOauBWYy0EN0HsjHXYHORt1wzHNsb%2BQDZvOj%2BaMjg8Pp9M5YfyvxDVTuOh0udk7hqWpNqjqd%2Bc%2Fvil6NaFb0rtA9n7yJCdx3PTdNoVqHnQRvPF7cNN2oNvfTZHvO3a41EE4LJdhlta47tDhJ3hMQASsfB7kDawwr5UsRZAZrnujE1ziPeYWfwPqruEedM98gkumv9j%2Fr89k8viXSfrs7w0w%2BBuFOty5&theme=light) to edit it.
+The demo uses a simple `tag` parameter to keep the mock readable. [Open it in the playground](https://ui.studiometa.dev/play/#html=eNq1VMtuEzEU3fcrLgaJVqo7bVoeqiaDClIXqEiIlhVCyDNzM7HqsY3tSZMd4mNYsWfPp%2FRLuJ5H0tAA2ZBFZsa%2B59znuenEuHoHQJZjVhilsAjSaD6RKqDzjG5EezJmyeraJ0KpeFdjmBpCVhjiZymC4IWprdGow5idYyiml1Nj5WRx2UHhrH0srY1t%2FfmeePz4A7POlE0ReOVkyfaBOfSNCp6IGx3Yx8dLqD4tpkJXuNHR7sP76ewBzyAIR%2BEePEJ14PBzgz5cNnktw%2B7eKih9OomMPEcqD%2FFfOaG97GiVESW6u1SUK7pNcDGhi3%2BhFYoZduhCCe%2FHrBZzfsNHcwXeigL5gp%2BwjK7TB5zDpprmjVSlhzBF6FOC9%2B8uYOJM3R7GHrehgdAliJJsXywrDkTg2wocAOfZTnRUytkQzEThHOIfv3HCggxYUyvalKEStg%2BNMErkqNZQ92xHvS1ZS22bAGFhqbrFFIvr3MwZaFHTdxAVg5lQDb0La4VDxSDJ4Kx779wlrb%2F%2F67so0HvjJPrO%2F%2Bp7Qwwe47T1NGQVPuULNsSUG0dtB0cjXGIJds5HYBf8CPKKhzgeMTOa7mWMnS6GSGqhG6FYdo4iNA7LNOnu%2F2BunaSxEZ7SL6WuWPY2HuyDMjcQDExlNd2KocR7FBEbOYhqnSJNugIM1bBC99RxtXRjH2c8%2Fn7fEyuBrFn0u6HtIY%2FDPGaGBCHDgh9uMmyVxIPZyuwa0faXfY%2BWIAg4D9yTduKzaFxsTfL0cNmdC8qGinL75duQOmXbJx41%2BlJQLaRuhQfa8NeXpyBImoIU3SoNfJBKQb%2BWwKObUYpelthpsGXSxhdO2pCleRMC9aab2I7hL5N13E4Wy0guapEmHThLkyVfVHhCEl9pPbbIdztlWMV8fe0O7jaW5hmV5gT6ve3vcDdqI%2FXahh%2BY4wfEP%2FKoPOmj3S7g69PV4WrZyAEWbdZrwLJXtKh%2B%2FoDbr99HT0ikcivQFWIPOj7cHmTCgDp6vjXqTVMNoNEASpOGNkmaxF2d7fwCeTyBbw%3D%3D&script=eNqtVstu4zYU3fsrLoIBJAOWnKbpA3acdjDFoCja6WCSroJBQ0vXFieUqJJUUiPwpt%2FTfff9lH5JD0nJdppMm0UNJJbu4%2FDw8txLy7rVxtE9GV5L69i80rA03DhLW1oZXVPytXVdKXXNTkw%2F2MxprW6kS%2BajXfLLwkndTOg1u6K6qHQrV5sL7o2XRjRW%2BucnETsJpNF0SlmW0YWsOyUcl1RopSICcVO2WjbORzzz4%2FFeS4X9yGZNoinJgql%2FbrSphVIbqkTbckOWzS2bzMqSZ9RTRzFEaclVTL90bDYezToPNYGrKdlE557jJKxh2HWmiT7DSEVBsXIMsTl9y4bpjj1cqUOUFTWTbKjmWptNTt%2BwYsdwSUtLpYsbcpoq6XpIoXbFyEdu0zK9NbrsCkcLnIKTTmETkemcWiMLvDZdvWQzJyfWdnBevaftfFSAlENYQICvx4JzQVcj2iMmr0SbTAbAk88mPdhVghoKwyoB3uRBxiXzPuPT4%2BdkaHeQ8smXBylFwRbnJ9k%2BTvuhWx9knfxL1nvILG55bWSJPabScX247zEtzgF%2BfdYpkuXiyEY5ZP0JZn2pMp9%2FRIUS1i6OApj%2Fl0EONjuhtWizU7L1bG88PTp%2FcQ9korBkrrhZuyoYiL7qjbVo07T1HMBAyQHfgy21gejI6A7iKz1Ym4cCbOnPP%2Biv3373hlCD7dlUyfPrcf4BIkmTZNwvgkr9A9Pxry4rOgNBu%2Bnnx0fnb%2FROC1QLNLIXnWVahT6yeUBOgIc1OnV%2BvStnAVpegR%2BvZylvnyyoYdspZ1EkIOwqGpjZ%2BiHDL8Dwxf1h%2BbY7umdTLHBAyDdKGEUgdSebUt%2FlK%2F%2BaL%2FGSRst4Pjp0IVLYTVNgE03buQmaUrpwFv7cImxnFMIavqOf3n2f%2BvbTK8QhnBaLBSWxtxJ%2FoME4678lkkVT%2BGgkDu68MrwaYnJgTyipnGtn0ykaX6hKW5eAJTSzohT%2B3LIwRfVWGIEaVMKmyTBakvE48ByY%2Bh4A1UdJa3YvlUoT%2BCP0kOCn40cSsAqcPy83QwYmVFQsEvxC%2FXFgX8N55FEyg5pDkMW0T9NYUojXm2RTqK5kCyv4o2fzHCKOEGjW0C7YeuTmCxwUnglbYAj6So%2F7zvERaSomtAzwIrYCZbSMTz3xp8Cw%2FH%2Bg9RhA63F7NHEnMJe9GqD3WlrsDnLW6pZDmmV3KWvWnRvMEzo9Ph6P54TxvxI3TP6ia4rNwTEsdblBVb%2B7%2BPFNHtWEbknvPdn95ElmYdzEbhtDNQ%2B6CN7w3btp29ONd1Pg%2B44trngQ9stNMEsrXHfo8BkeExABK5d5eQPLz2slC%2BFlhstfNwku8Yi5xV%2BPumu4B90zH%2BGSiRf7%2F%2FUZjR7%2FTkmf%2BesDfP4Gi%2FnoJw%3D%3D&theme=light) to edit it.
 
 **Swap the mock for your store:** delete the `window.fetch` block. The form already sends its state as query parameters, and Shopify already filters and sorts from them, so the same form now drives the real collection.
 
@@ -103,12 +104,12 @@ On a real store you do not invent facet inputs. Merchants configure filters in t
 
 ```liquid
 <form id="collection-filters" action="{{ collection.url }}" method="get"
-  data-component="Fetch Action"
-  data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))"
-  data-on:change="Fetch(#collection-filters) -> target.$el.requestSubmit()"
+  data-component="FetchShopifySection Action"
+  data-option-sections='["main-collection-product-grid", "collection-results-count"]'
+  data-option-history
+  data-on:change="FetchShopifySection(#collection-filters) -> target.$el.requestSubmit()"
   data-on:fetch-before="Transition(#loader) -> target.enter()"
   data-on:fetch-after="Transition(#loader) -> target.leave()">
-  <input type="hidden" name="sections" value="main-collection-product-grid,collection-results-count">
 
   {%- comment -%} Keep the current sort selected when a filter changes {%- endcomment -%}
   <select name="sort_by">
@@ -139,11 +140,11 @@ On a real store you do not invent facet inputs. Merchants configure filters in t
 
 `value.param_name` and `value.value` come straight from Shopify and already encode the `filter.*` structure, so you never hand-write parameter names. Wrap the product grid and the results count in their own sections (`main-collection-product-grid`, `collection-results-count` in Dawn) so they can be requested with `?sections=` and swapped independently.
 
-One thing to keep: filters and the sort stay shareable and refresh-safe through the no-JS baseline, not through a pushed `?sections=` URL. Submitting the plain GET form (the `<noscript>` path) navigates to a clean `filter.*`/`sort_by` URL, and because the checkboxes are rendered `checked` from `value.active` and the sort `<option>` from `collection.sort_by`, Shopify rebuilds the exact same form state server-side on a reload. The enhanced path deliberately leaves that URL untouched, since a `?sections=` address would reload raw section JSON.
+One thing to keep: the form state survives a refresh either way. The `<noscript>` path navigates to a clean `filter.*`/`sort_by` URL, and because the checkboxes are rendered `checked` from `value.active` and the sort `<option>` from `collection.sort_by`, Shopify rebuilds the exact same state server-side on a reload. The enhanced path pushes that same clean URL through `data-option-history` — `FetchShopifySection` keeps the `?sections=` parameter out of it — so a shared or reloaded link lands on the filtered page, never on raw section JSON.
 
 ## Where this goes next
 
-Changing a facet now submits a GET form and swaps the grid and the count in place, with the `<noscript>` button as the fallback and the plain GET navigation as the shareable, refresh-safe baseline. For the mechanics, see the [Section Rendering API example](/articles/shopify-section-rendering-api-example).
+Changing a facet now submits a GET form and swaps the grid and the count in place, keeps the filter URL shareable through `data-option-history`, and falls back to a plain GET navigation without JavaScript. For the mechanics, see the [Section Rendering API example](/articles/shopify-section-rendering-api-example).
 
 :::info[Next article]
 The [variant selector](/articles/shopify-variant-selector) reuses the same shape: a control whose state drives a server-rendered section.

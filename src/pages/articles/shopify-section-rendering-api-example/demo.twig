@@ -6,16 +6,16 @@
   <div class="flex flex-wrap items-center gap-4">
     <span class="font-bold">Sort:</span>
     <a
-      href="/collections/all?sort_by=manual&sections=product-grid,results-count"
-      data-component="Fetch"
-      data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))"
+      href="/collections/all?sort_by=manual"
+      data-component="FetchShopifySection"
+      data-option-sections='["product-grid", "results-count"]'
       class="border-b border-current">
       Featured
     </a>
     <a
-      href="/collections/all?sort_by=price-ascending&sections=product-grid,results-count"
-      data-component="Fetch"
-      data-option-response="response.json().then((sections) => Object.values(sections).filter(Boolean).join(''))"
+      href="/collections/all?sort_by=price-ascending"
+      data-component="FetchShopifySection"
+      data-option-sections='["product-grid", "results-count"]'
       class="border-b border-current">
       Price, low to high
     </a>
