@@ -55,7 +55,14 @@ Register every component this article uses once, in your theme's main script (ea
 ```js twoslash
 // @noErrors
 import { registerComponents } from '@studiometa/js-toolkit';
-import { Action, Fetch, InViewOnce, PrefetchWhenOver, PrefetchWhenVisible, TrackShopify } from '@studiometa/ui';
+import {
+  Action,
+  Fetch,
+  InViewOnce,
+  PrefetchWhenOver,
+  PrefetchWhenVisible,
+  TrackShopify,
+} from '@studiometa/ui';
 
 registerComponents(Action, Fetch, InViewOnce, PrefetchWhenVisible, PrefetchWhenOver, TrackShopify);
 ```
