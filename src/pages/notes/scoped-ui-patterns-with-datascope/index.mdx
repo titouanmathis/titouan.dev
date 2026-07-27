@@ -17,6 +17,8 @@ import demoTabsUnscoped from './demo-tabs-unscoped.twig?raw';
 import demoTabs from './demo-tabs.twig?raw';
 import demoFormUnscoped from './demo-form-unscoped.twig?raw';
 import demoForm from './demo-form.twig?raw';
+import demoStepperUnscoped from './demo-stepper-unscoped.twig?raw';
+import demoStepper from './demo-stepper.twig?raw';
 import demoTs from './demo.ts?raw';
 
 ## Tabs without a Tabs component
@@ -43,7 +45,21 @@ Give each form its own `DataScope` and they are isolated. The scope also unlocks
 
 `$data` is read-only — its object and any array or `Date` values are frozen and cloned — so a snapshot can be passed around without a subscriber mutating shared state.
 
-Not every pattern needs shared state, though. A dropdown or popover menu is better left to the native [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), which handles opening, top-layer stacking and click-outside dismissal on its own. Reach for `DataScope` when several elements must stay in sync on one value — as the tabs and form do — and you want two of them to coexist on a page.
+## A quantity stepper and a line total
+
+A cart line reads one number — the quantity — from several places. The [`Action`](https://ui.studiometa.dev/components/Action/) stepper buttons call [`increment()`](https://ui.studiometa.dev/components/DataBind/) on the `qty` model, and a [`DataComputed`](https://ui.studiometa.dev/components/DataComputed/) line total multiplies that value by the unit price. Without a scope, two lines share the app-wide `line` group, so stepping one changes the other's quantity — and both line totals with it:
+
+<UiPlayground
+  client:visible
+  html={demoStepperUnscoped}
+  script={demoTs}
+  height="200px"></UiPlayground>
+
+Give each line its own `DataScope` and they add up independently:
+
+<UiPlayground client:visible html={demoStepper} script={demoTs} height="200px"></UiPlayground>
+
+Not every pattern needs shared state, though. A dropdown or popover menu is better left to the native [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), which handles opening, top-layer stacking and click-outside dismissal on its own. Reach for `DataScope` when several elements must stay in sync on one value — as the patterns above do — and you want two of them to coexist on a page.
 
 ## Register once, use everywhere
 

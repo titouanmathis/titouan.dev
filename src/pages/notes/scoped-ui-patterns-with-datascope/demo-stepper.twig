@@ -1,0 +1,85 @@
+<div class="flex flex-wrap gap-8">
+  {# Two cart lines, each in its own DataScope. The `qty` value and the line
+     total it feeds stay independent per line. #}
+  <div data-component="DataScope" data-option-group="line" class="space-y-2">
+    <p class="font-bold">
+      Canvas Cap — €25
+    </p>
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        data-component="Action"
+        data-on:click="DataModel(#qty-a) -> target.increment(-1)"
+        class="w-8 h-8 border rounded">
+        −
+      </button>
+      <input
+        id="qty-a"
+        type="number"
+        name="qty"
+        value="1"
+        min="0"
+        data-component="DataModel"
+        data-option-immediate
+        class="w-14 text-center border rounded px-2 py-1 bg-transparent" />
+      <button
+        type="button"
+        data-component="Action"
+        data-on:click="DataModel(#qty-a) -> target.increment()"
+        class="w-8 h-8 border rounded">
+        +
+      </button>
+    </div>
+    <p>
+      Line total:
+      <span
+        data-component="DataComputed"
+        data-option-key="qty"
+        data-option-compute="`€${(value * 25).toFixed(2)}`"
+        class="font-bold">
+        €25.00
+      </span>
+    </p>
+  </div>
+
+  <div data-component="DataScope" data-option-group="line" class="space-y-2">
+    <p class="font-bold">
+      Wool Tote — €18
+    </p>
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        data-component="Action"
+        data-on:click="DataModel(#qty-b) -> target.increment(-1)"
+        class="w-8 h-8 border rounded">
+        −
+      </button>
+      <input
+        id="qty-b"
+        type="number"
+        name="qty"
+        value="1"
+        min="0"
+        data-component="DataModel"
+        data-option-immediate
+        class="w-14 text-center border rounded px-2 py-1 bg-transparent" />
+      <button
+        type="button"
+        data-component="Action"
+        data-on:click="DataModel(#qty-b) -> target.increment()"
+        class="w-8 h-8 border rounded">
+        +
+      </button>
+    </div>
+    <p>
+      Line total:
+      <span
+        data-component="DataComputed"
+        data-option-key="qty"
+        data-option-compute="`€${(value * 18).toFixed(2)}`"
+        class="font-bold">
+        €18.00
+      </span>
+    </p>
+  </div>
+</div>
