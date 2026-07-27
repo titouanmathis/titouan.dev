@@ -33,6 +33,55 @@ Wrap each set in its own `DataScope` — same group name, same `active` key — 
 
 <UiPlayground client:visible html={demoTabs} script={demoTs} height="200px"></UiPlayground>
 
+Here is one set, condensed to the parts that matter:
+
+```html
+<div data-component="DataScope" data-option-group="tabs">
+  <div role="tablist">
+    <button
+      data-component="Action DataBind"
+      data-option-key="active"
+      data-on:click="DataModel(#tabs) -> target.set('overview')"
+      data-bind:attr.aria-selected="String(value === 'overview')">
+      Overview
+    </button>
+    <!-- …Specs, Reviews… -->
+  </div>
+
+  <input
+    id="tabs"
+    type="hidden"
+    name="active"
+    value="overview"
+    data-component="DataModel"
+    data-option-immediate />
+
+  <div
+    data-component="DataBind"
+    data-option-key="active"
+    data-bind:attr.hidden="value !== 'overview'">
+    A quick overview of the product.
+  </div>
+  <!-- …one panel per tab… -->
+</div>
+```
+
+Going from the colliding version to this one is two edits: wrap the set in a `DataScope`, and swap the app-wide `group` for a scoped `key`.
+
+```diff
+-<div>
++<div data-component="DataScope" data-option-group="tabs">
+   <button
+     data-component="Action DataBind"
+-    data-option-group="tabs"
++    data-option-key="active"
+     data-on:click="DataModel(#tabs) -> target.set('overview')">
+     Overview
+   </button>
+   <!-- …the hidden model and one DataBind panel per tab… -->
+ </div>
+```
+
 ## A scoped form and `$data`
 
 Forms have the same collision. These two share the app-wide `person` group with no scope, so typing in one field overwrites the other and both greetings track a single value:
@@ -42,6 +91,21 @@ Forms have the same collision. These two share the app-wide `person` group with 
 Give each form its own `DataScope` and they are isolated. The scope also unlocks the `$data` snapshot: every keyed value in the group is exposed to `DataComputed` (and `DataEffect`), so a greeting can read `first` and `last` together — even though both forms use the same keys:
 
 <UiPlayground client:visible html={demoForm} script={demoTs} height="160px"></UiPlayground>
+
+The scoped markup, one form — the two inputs take their `first` and `last` keys from their `name`, and the computed greeting reads both off `$data`:
+
+```html
+<div data-component="DataScope" data-option-group="person">
+  <input name="first" value="Donald" data-component="DataModel" data-option-immediate />
+  <input name="last" value="Duck" data-component="DataModel" data-option-immediate />
+
+  Hello,
+  <span data-component="DataComputed" data-option-compute="`${$data.first} ${$data.last}`.trim()">
+    Donald Duck
+  </span>
+  .
+</div>
+```
 
 `$data` is read-only — its object and any array or `Date` values are frozen and cloned — so a snapshot can be passed around without a subscriber mutating shared state.
 
@@ -59,7 +123,49 @@ Give each line its own `DataScope` and they add up independently:
 
 <UiPlayground client:visible html={demoStepper} script={demoTs} height="200px"></UiPlayground>
 
-Not every pattern needs shared state, though. A dropdown or popover menu is better left to the native [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), which handles opening, top-layer stacking and click-outside dismissal on its own. Reach for `DataScope` when several elements must stay in sync on one value — as the patterns above do — and you want two of them to coexist on a page.
+The scoped markup, one line:
+
+```html
+<div data-component="DataScope" data-option-group="line">
+  <button data-component="Action" data-on:click="DataModel(#qty) -> target.increment(-1)">−</button>
+  <input
+    id="qty"
+    type="number"
+    name="qty"
+    value="1"
+    data-component="DataModel"
+    data-option-immediate />
+  <button data-component="Action" data-on:click="DataModel(#qty) -> target.increment()">+</button>
+
+  Line total:
+  <span
+    data-component="DataComputed"
+    data-option-key="qty"
+    data-option-compute="`€${(value * 25).toFixed(2)}`">
+    €25.00
+  </span>
+</div>
+```
+
+Same story as the tabs: the scope is the whole difference. Wrap the line and swap the app-wide `group` for a scoped `key` (the `<input>` takes its key from its `name`):
+
+```diff
+-<div>
++<div data-component="DataScope" data-option-group="line">
+   <!-- − / + buttons and the qty <input name="qty"> -->
+   <span
+     data-component="DataComputed"
+-    data-option-group="line"
++    data-option-key="qty"
+     data-option-compute="`€${(value * 25).toFixed(2)}`">…</span>
+ </div>
+```
+
+:::info[When to skip DataScope]
+
+Not every pattern needs shared state. A dropdown or popover menu is better left to the native [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), which handles opening, top-layer stacking and click-outside dismissal on its own. Reach for `DataScope` when several elements must stay in sync on one value — as the patterns above do — and you want two of them to coexist on a page.
+
+:::
 
 ## Register once, use everywhere
 
