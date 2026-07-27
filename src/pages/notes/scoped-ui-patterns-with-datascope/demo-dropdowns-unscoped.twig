@@ -1,0 +1,55 @@
+<div class="flex flex-wrap gap-8">
+  {# No DataScope: both menus use the global "menu" group, so opening one opens
+     both. #}
+  <div class="relative">
+    <button
+      type="button"
+      value="closed"
+      data-component="Action DataModel"
+      data-option-group="menu"
+      data-option-prop="value"
+      data-option-immediate
+      data-on:click="DataModel.toggle('open', 'closed')"
+      data-bind:attr.aria-expanded="String(value === 'open')"
+      class="border rounded px-3 py-1"
+      aria-expanded="false">
+      File
+    </button>
+    <ul
+      data-component="DataBind"
+      data-option-group="menu"
+      data-bind:attr.hidden="value !== 'open'"
+      class="absolute left-0 z-10 mt-1 w-40 border rounded divide-y divide-current/10"
+      hidden>
+      <li class="px-3 py-1">New</li>
+      <li class="px-3 py-1">Open…</li>
+      <li class="px-3 py-1">Save</li>
+    </ul>
+  </div>
+
+  <div class="relative">
+    <button
+      type="button"
+      value="closed"
+      data-component="Action DataModel"
+      data-option-group="menu"
+      data-option-prop="value"
+      data-option-immediate
+      data-on:click="DataModel.toggle('open', 'closed')"
+      data-bind:attr.aria-expanded="String(value === 'open')"
+      class="border rounded px-3 py-1"
+      aria-expanded="false">
+      Edit
+    </button>
+    <ul
+      data-component="DataBind"
+      data-option-group="menu"
+      data-bind:attr.hidden="value !== 'open'"
+      class="absolute left-0 z-10 mt-1 w-40 border rounded divide-y divide-current/10"
+      hidden>
+      <li class="px-3 py-1">Undo</li>
+      <li class="px-3 py-1">Redo</li>
+      <li class="px-3 py-1">Cut</li>
+    </ul>
+  </div>
+</div>

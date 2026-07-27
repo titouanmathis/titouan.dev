@@ -13,6 +13,7 @@ The [Data components](https://ui.studiometa.dev/components/DataBind/) from [`@st
 
 [`DataScope`](https://ui.studiometa.dev/components/DataScope/) fixes that by using `withGroup`'s [scoping feature](https://js-toolkit.studiometa.dev/api/decorators/withGroup.html#scoping-groups-to-a-parent-component). Wrapping a subtree in a `DataScope` marks it as a scope, so descendant Data components resolve their group against that scope instead of app-wide: two scopes can reuse the same group name and never share values, and each scope's keyed values live in a frozen `$data` snapshot. The upshot is that you can assemble a reusable interactive UI pattern out of the primitives and drop two of them side by side without a collision.
 
+import demoDropdownsUnscoped from './demo-dropdowns-unscoped.twig?raw';
 import demoDropdowns from './demo-dropdowns.twig?raw';
 import demoTabsUnscoped from './demo-tabs-unscoped.twig?raw';
 import demoTabs from './demo-tabs.twig?raw';
@@ -22,11 +23,17 @@ import demoTs from './demo.ts?raw';
 
 ## Two menus, one group name
 
-Both dropdowns below use `data-option-group="menu"` and the same `open` key. Because each sits in its own `DataScope`, opening one leaves the other closed. The button is a [`DataModel`](https://ui.studiometa.dev/components/DataModel/) that toggles the value with `toggle()` and mirrors it onto `aria-expanded`; the list is a `DataBind` that hides itself while the value is not `open`.
+A dropdown is a [`DataModel`](https://ui.studiometa.dev/components/DataModel/) that toggles an `open` value with `toggle()` and mirrors it onto `aria-expanded`, plus a `DataBind` list that hides itself while the value is not `open`. Put two on a page with the same `menu` group and, without a scope, they share one value — opening one opens both:
+
+<UiPlayground
+  client:visible
+  html={demoDropdownsUnscoped}
+  script={demoTs}
+  height="220px"></UiPlayground>
+
+Wrap each menu in its own `DataScope` and the same markup runs independently — opening one leaves the other closed. That single wrapper is the whole difference between "a component" and "a reusable component":
 
 <UiPlayground client:visible html={demoDropdowns} script={demoTs} height="220px"></UiPlayground>
-
-Delete the two `DataScope` wrappers and the menus share one global `menu` group again — clicking either button opens both lists. That single wrapper is the whole difference between "a component" and "a reusable component".
 
 ## Tabs without a Tabs component
 
@@ -52,7 +59,7 @@ Give each form its own `DataScope` and they are isolated. The scope also unlocks
 
 `$data` is read-only — its object and any array or `Date` values are frozen and cloned — so a snapshot can be passed around without a subscriber mutating shared state.
 
-## Register once
+## Register once, use everywhere
 
 Every demo above shares the same registration; `DataScope` only needs to wrap the markup.
 
