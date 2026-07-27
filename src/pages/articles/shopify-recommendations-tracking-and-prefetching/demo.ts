@@ -1,5 +1,5 @@
 import { registerComponents } from '@studiometa/js-toolkit';
-import { LazyInclude, TrackShopify } from '@studiometa/ui';
+import { Action, Fetch, InViewOnce, TrackShopify } from '@studiometa/ui';
 
 // --- Simulated Shopify environment ------------------------------------------
 // TrackShopify publishes through window.Shopify.analytics.publish. The playground
@@ -16,8 +16,9 @@ w.Shopify.analytics = w.Shopify.analytics || {
   },
 };
 
-// Simulated Product Recommendations API: GET /recommendations/products returns
-// the rendered section HTML. LazyInclude injects it. Delete to hit the real one.
+// Simulated Product Recommendations API: GET /recommendations/products?section_id=…
+// returns the rendered section as HTML, wrapped in its <div id="shopify-section-…">
+// so Fetch can swap it by id. Delete this block to hit the real endpoint.
 const recommended = [
   { title: 'Wool Beanie', handle: 'wool-beanie', price: 22 },
   { title: 'Leather Tote', handle: 'leather-tote', price: 60 },
@@ -32,7 +33,7 @@ function recommendationsMarkup() {
         `<li><a href="/products/${p.handle}" class="block p-3 border rounded hover:bg-current/5">${p.title} · €${p.price}</a></li>`,
     )
     .join('');
-  return `<ul class="grid grid-cols-2 gap-3">${items}</ul>`;
+  return `<div id="shopify-section-product-recommendations"><ul class="grid grid-cols-2 gap-3">${items}</ul></div>`;
 }
 
 const realFetch = window.fetch.bind(window);
@@ -46,4 +47,4 @@ window.fetch = async (input, init) => {
 };
 // ---------------------------------------------------------------------------
 
-registerComponents(LazyInclude, TrackShopify);
+registerComponents(Action, Fetch, InViewOnce, TrackShopify);

@@ -17,7 +17,7 @@ tags: shopify, product-recommendations, tracking, prefetching, progressive-enhan
 
 This closing article covers three finishing touches for a Shopify storefront: lazy-loading a product-recommendations section, tracking analytics events, and prefetching links, all with [`@studiometa/ui`](https://ui.studiometa.dev) on top of [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev). Recommendations lead the way: they are computed per product and returned by their own API, so they are meant to load after the page, not block it, which makes them a natural fit for lazy-loading.
 
-The demo below tracks an add-to-cart click and fetches a recommendations block after mount:
+The demo below tracks an add-to-cart click and lazy-loads a recommendations block when it scrolls into view:
 
 import demoTwig from './demo.twig?raw';
 import demoTs from './demo.ts?raw';
@@ -28,42 +28,43 @@ import demoTs from './demo.ts?raw';
   script={demoTs}
   height="360px"></UiPlayground>
 
-Click "Add to cart" and the analytics line updates; the recommendations arrive a moment after load. [Open it in the playground](https://ui.studiometa.dev/play/#html=eNp1k7Fu2zAQhvc8xZWDs5RR4DoZDMtF4KlAtnbpZFDkyWJNkQRJOVaLAkUfplP37n2UPEkpiVUlBwUEiCIP33%2F6%2F%2BNGyBNwxbzPSc3O9ImqA3jLONKW3pPtFcC0pFR4Bhmw9pSjDujgU%2BODLFtaYHhC1GDpCgrjRDxyptECRQ%2BJmEjV2x3TJ%2BZhxyz8%2FgXP338u7zZZfzIUvaIUPjjGj%2B8rYyMXbFMo6Sv0wHR8mGqD5B7wFOXB6NiY5McboDQBiiYEo%2Fs1gGCBUW5qa3Qsz8mUTKY1oTtY96z8%2Bgvp6WQNhFm7ZkLsg9lz5gJ5DcQ6Ixren%2FL%2BZyhnlny9Trhk1GABLZIXlDfOdcyhS4AHISAY6KBD39nQeG94Fh3fXnUr%2B5cX8Bzo2UP%2FTrDs%2FjbxHua%2B%2BNE1sR58BylyMrpHlTmQrY6mQIvhn%2F%2BbzA6yHnmQQzPxq1qOE1LQN1AaHWhhVAz2o2mgZi0w5Q0oecRNVi0nST6yz%2B07zVUjEEoMvIsxVAgOYyg16uh9lPGQ9ICV3UjVcW7CJNLoxn%2FynPBncRrb4ah3PCfZhViWAvRv02IfvVktF0rWMuSrReql200F9IKwkHHyo7xDxcI432nChwYcljlRhgmpD2SWoa9fZvg4FF7a8vztx%2FRuvBRA54wb8ZUUIl7AmYpDQe9uo8TONEqANgG6ri6VbmZ3cBi%2FbjHOQdr7AzloYV0%3D&script=eNqtVs1u20YQvuspBoYBUoBIug7Sg2w5bdy0dWE3ga0ih6KAV%2BRKXGu5S%2BwupaiKLn2e3nvvo%2FRJ%2Bu2SouWkBnqIYFjc2Zlv%2Fr4ZSlS1No62ZPhCWMfNpYZEceUs7WhudEXRN9Y1hdAVdyx7sInTWi6Fi84GvfE1%2B31zpXLZFHxEU8Py5V2pazHf%2FCdGI2A7yDJKkoTuRNVI5nhBexOuVsJoVSEGr%2FE%2FPx7viee6mUlhS27JlUY3i5LWQhV6nXYKKVNMbpzIbdqppjQtOdWSbRYwUIWHLJklpfvY9OyB525EVtMaqkavRMGJkRNqQ0hxBmfMkdQLuNU4QIkteEpvFTGPZziTUNSGoy5I0JXC0rfvrohJXBXI%2FgPaYM%2Bo4JI7HhBaXE2N5SRcOsi1so7WNOkyIsTYqKXSazixtB3QPt5XYzSnzzOculzxHPMVSjwGvBFqMUKgG6lZMd5jDWlyQSstCjRxdzbAX18777p%2F%2FviRtoeXj4U9VDuQegPE2EWyD6QPIPj1CkRtpqgmkAqdN54T6YK7N5L7x9ebqyKOeuAEitHwLFiKOcU4Dr1x6vgHd4lqe0ZN6P54Gxzu6Hj7093bn9O2AIgx3kewu%2Fcou5FP2nftkaTvjC6a3NEtz3WFGArmBIL0LRzTD2%2BmlJmnNxlI4i0sWu8ao6zH8101UOEGkBaMgib9OL25Tg9HiYTybLO%2B6fRdxwdNpfC08QCgEkZ1T4jeMTAn9CsS2IKXTvIxRe8xs%2FSaMyV4NAKpVRHEa4iT2V5cG5FDenrqMz%2B0vuYMDg1NtXtiLls5NkKQd%2FZfn3xqf8kNq0RON83i0DxvxUkVxJ31V595v9TOoTxT%2FsR3HqSJC9LO9kXw%2FBt6Nm9UW9RPunHDzLKp42HgV1s24XjlmXpQvsCgtGJ1HJ6I4tqTsjsQ3Z9LcXHOqMQUT476DmfH2zptA9wdUS6ZtZOjmdT5kurkBc20QcMprBa0qNQrbsazRZI3Blxw2cujCw8Q0t7R33%2FRP3%2F86QUhud15xi7OM%2Fi999UhGrZBPmih4qhlfUswRNfIvfeFwfj6f0mupU1OacEQincU0gZqIy9A9t2gJxGT33OXl%2F12Sef%2BmM5wiFsJnB1eQZPZjcopFqpuMMdCCdcPcQvbGAk1xdf0y%2B117DY113PoQZ0mkwlF7QhG9KoTjrtvAWOmcq8Nw%2F116gu%2F10mBPaKodK4eZxmqzWSprWtL4tcA7tMaRFWs4in6a98LV8bRs4MaDVt6ELE1w6z5qDH2lbA8jg23Wq54SM9yNxUV143bi0f08uRkODwjzPicLTn5paHyTUDr2uPhbrnFSxZ4z9BzBPqXeB1wY%2F3OBtnD8kp84SKQ3y%2B0rHSVjPxuDpnuHgnQ9%2FBJQ8IGb1%2B6X%2BozGHz%2BqyF%2B9rcAIvgXPkTEoA%3D%3D&theme=light) to edit it.
+Click "Add to cart" and the analytics line updates; the recommendations arrive a moment after the block enters the viewport. [Open it in the playground](https://ui.studiometa.dev/play/#html=eNqNVE1rGzEQvedXTFVIWoiyxU1zcL0uIVAoFApNKfQUtJKcVa2VhKT1B6UQ%2BmN66r33%2FpT8ko60srsOBLoYe9CM3rx589YzoVbANQuhJh3b0DXVtxAc45Ju6QWZHwHMRiULLTegouwC5dJE6eFrH6JabGkj41pKA46eQ2O9wJS3vRFSZBCEQVQzv2JmxQJcMQd%2FfsP9j1%2BTV7MqZ4aiJ5TCJ8%2F48rq1DnHB9Y1WoZUBmMEP09uoeAC5wvZgDRJTfHkGlBaApo%2FRmhwDCBYZ5bZz1mB5TcbIZFwTU2KaseqTbySjkykQ5tyUCXET7Q1nPpJTIM5b0fOc5XkYypkj308KXBFqkIA2RQvKe%2B8T5ryUXQoB0UICHXhXA%2FEseIWKz49S5HZ4UW4i3QTIvwWsunhR8C4PdQl71cR00B2UqMlePartLZkbFAW2Mv7Tf1a5oW2QPCq720k72TukoS9hYU2kjdW42C%2B2h45tgelgQaulnFXtZLTJd%2BazkusPhktYKI87tClct%2BiT2KoAjbZ8CYF7q3UAZVCRFV54jVkJl5kDxN6bUFTDJ7YsDpUM3srIW9RQ67MShzVzAZ6GYcW0zEHLzqiXaIZOGtw5Ho9Qmy3OgQDK3KK9kYo4BblhPGocLmQ61wMWfMTr0qdCITtbOqY7pVkYmRH3%2BIgTy3AjgfIAB6a0LpMPntekekC9KiOFNyW4wQ2fT4616lSsz48LmXT6yPDHKGKi4qVmEd%2FSg85mqgxNq6hJ5nW2SN%2FPnu%2F9m%2F8Ukqn%2BU2pyYOTQPWLk9Ly3TCR5HyDc3%2F3c9R7ej4MQTbzz7HD2F8G%2BmC8%3D&script=eNqtVs1u20YQvuspBoIBUgBJuQ7Sg%2F7cxE0bF3Yd2GpzKIp6RY7EtZe7xO5SiqAIKPowPfXeex8lT9LZ5Y9lpwZyqGHY3Nn5%2BWbmmyF5USptYQcaV9xY1GeKJBKlNbCHpVYFBN8YW2VcFWjZ8M7EVilxz20w7vHW%2BFVquZIRfIc2zSM4lz9z3FzJFCOYa5be3%2BSq5Mvtf3qsOHnqDYcQxzHc8KISzGIGrQnKNddKFoTIaXzhj%2FP3KHJZLQQ3ORqwuVbVKocNl5naJI1CwiQTW8tTkzSqCcxzhFKw7YoMZOZc5syAVB02tbjD1EZgFGxIVas1zxAYWC63QCkuKBizINSKwio6kBJbYQJXEpjzp5EJUlQaqS6UoM25gVfvzoEJusoo%2Bw%2FUFDOGDAVa9B5qvwoqg8Bt0kuVNBY2MG0yAsJYyXupNtI97nrQ4j0dUau6PP2pyZWeQ1xTiUfkXnO5igjoViiWjVpfA5jOYK14Rk3cj3v029XOhe6eP36E3eHlQ2EP1Q6kzoAwNkhaIB0AH9cpANSZUjXJU6bSynEiWaF9I9A9vt6eZ2HQOY5JMRiMvSVfQkjHgTNOLH6wZ1Rtx6gp3B7tfMA9HO1%2BuLn6MakLQBjDFsH%2B1nnZRy5p17UHkr7TKqtSC9eYqoIwZMzNgW%2FhCL5%2FM4ehfnwzLGsLc2rQz8xvPJt%2B%2Bv3Pmgy20tL4JmuyQE0RGjXXybfzy4sINpqVJV1wSd03MMn4GshH39SFjRuDmJz2Z84tkdOPJaRMgtmwkuxgsSWjBL5taUW0WwiV3jti5dw2GIichKNUXHY86%2FIhCFP4heqyI7pbgSMI3tNigNfIJMcgolmRmRdvSBwvWnGpeUrSkxNX0EPrC2QUVcNc2UfmopbT2rEH9l8fP7U%2FQ80KnsJltTo0T2txXHhxY%2F3VZ9HPlLVU5jk%2Bip16aWzxIPILH%2FlXosKyknVznjT5kun7qgwHnrZ12bjFwg3AQfk8MZOClaF%2FAghLx%2FXmAHA7EXw2YZDTcpj2O%2BIMj3ZlUgPc9yEVzJhpv%2B5dGb%2BAhdJEHPAbi1qUqzXq0WIVp5UmTtnhy%2F7MOfBp7%2BGfv%2BHTH385gU9uPxmy2WRIcW8jj2NQg7wjBoRBPUw1Swndc8RrgMZPitKfTSrR4l1p2iPuT5wqYeITWDEC76D5QhGOShAQCjGj2dv3OvIxUXO5XXbJ0h2TBR3CWkIgD69Ik5mtTCHksqxorXDJbbdTareVFqQmcQM%2FXV%2BEdluiWoJXh%2Bl0CkG9EQI4bYSj5j8nY0YvOdImw%2FY6cQ1rdRLyHUGQW1uOhkPqEhO5MrYupdtKdJ%2BURHDJCkyoWOY9t3kYPLs3gsGg2YZsw2hQHWraQgU3GIYajRJr9OkZtHNeoKpsK47g5fHxYDAGWgpLdo%2FgdphMt95b01bn7hoNfQGQv2doHdHY5PR2Qm3cK4SGxO%2FS2BUuoKFx%2B3WY20IE7lXhM90%2FEKfr4aOG%2BBdK%2FQ3wf%2F30ep9%2F0oRf%2BKEyGP8LqesB9Q%3D%3D&theme=light) to edit it.
 
 <TableOfContent open />
 
 ## Lazy-loading the recommendations section
 
-The [Product Recommendations API](https://shopify.dev/docs/api/ajax/reference/product-recommendations) returns recommendations for a product at `GET /recommendations/products`. Pass a `section_id` and it renders one of your theme sections with the recommendations filled in, so the response is ready-to-inject HTML. The `recommendations` object is empty on the initial page render, which is exactly why this is a client-side fetch.
+The [Product Recommendations API](https://shopify.dev/docs/api/ajax/reference/product-recommendations) returns recommendations for a product at `GET /recommendations/products`. Pass a `section_id` and it renders one of your theme sections with the recommendations filled in, so the response is ready-to-inject HTML — plain text, not the JSON of the Section Rendering API used in the earlier articles. The `recommendations` object is empty on the initial page render, which is why this has to be a client-side fetch, and because it is computed per product and sits below the fold, it is a natural candidate for deferring until the section scrolls into view.
 
-[`LazyInclude`](https://ui.studiometa.dev/components/LazyInclude/) is built for this. Point its `src` at the endpoint and it fetches on mount, injects the HTML, and manages a loading and an error state through refs:
+That is two behaviours: _fetch when visible_, then _swap the result in_. [`Fetch`](https://ui.studiometa.dev/components/Fetch/) does the second — it reads the response as text (what this endpoint returns) and swaps elements into the page by matching `id`, the same swap as in the [Section Rendering article](/articles/shopify-section-rendering-api-example), except the URL comes from its `src` option instead of an `href`. To drive the first, [`InViewOnce`](https://ui.studiometa.dev/components/InViewOnce/) emits an `in-view` event the first time the element enters the viewport and never again, and an [`Action`](https://ui.studiometa.dev/components/Action/) turns that event into a `Fetch` call:
 
 ```liquid
 <div
-  data-component="LazyInclude"
-  data-option-src="{{ routes.product_recommendations_url }}?section_id=product-recommendations&product_id={{ product.id }}&limit=4&intent=related">
-  <span data-ref="loading">Loading recommendations…</span>
-  <span data-ref="error" hidden>Could not load recommendations.</span>
+  data-component="Action InViewOnce Fetch"
+  data-option-src="{{ routes.product_recommendations_url }}?section_id=product-recommendations&product_id={{ product.id }}&limit=4&intent=related"
+  data-on:in-view="Fetch.fetch()">
+  {% comment %} Rendered empty on load; Fetch swaps this wrapper by id once it enters the viewport. {% endcomment %}
+  {% section 'product-recommendations' %}
 </div>
 ```
+
+`{% section %}` renders the recommendations section empty on first load, wrapped by Shopify in `<div id="shopify-section-product-recommendations">`, which doubles as the loading placeholder. When the block scrolls into view, `InViewOnce` fires, the `Action` calls `Fetch.fetch()`, and the response's identically-wrapped section is swapped in by `id`. Use `intent=related` for "You may also like" and `intent=complementary` for "Pairs well with"; the API caps results at 10.
 
 Register every component this article uses once, in your theme's main script (each is covered in the sections below):
 
 ```js twoslash
 // @noErrors
 import { registerComponents } from '@studiometa/js-toolkit';
-import { LazyInclude, PrefetchWhenOver, PrefetchWhenVisible, TrackShopify } from '@studiometa/ui';
+import { Action, Fetch, InViewOnce, PrefetchWhenOver, PrefetchWhenVisible, TrackShopify } from '@studiometa/ui';
 
-registerComponents(LazyInclude, PrefetchWhenVisible, PrefetchWhenOver, TrackShopify);
+registerComponents(Action, Fetch, InViewOnce, PrefetchWhenVisible, PrefetchWhenOver, TrackShopify);
 ```
 
-`LazyInclude` hides the `loading` ref and injects the response into its own element when the content arrives, and reveals the `error` ref if the request fails. Use `intent=related` for "You may also like" and `intent=complementary` for "Pairs well with"; the API caps results at 10.
-
-`LazyInclude` fetches on mount, which is the simplest option and is fine when the block sits below the fold on a normal-length page. To defer the request until the section scrolls into view (as Dawn does with an `IntersectionObserver`), reach for [`InViewOnce`](https://ui.studiometa.dev/components/InViewOnce/): it emits an `in-view` event the first time the element enters the viewport and never again, which an [`Action`](https://ui.studiometa.dev/components/Action/) turns into a load with `Fetch`'s `src` option (`data-component="Action InViewOnce Fetch"`, `data-on:in-view="Fetch(#recommendations) -> target.fetch()"`).
+On an `<a>` or `<form>`, `Fetch` triggers itself; here it sits on a `<div>` and stays idle until the `Action` calls `Fetch.fetch()`, so the request is deferred until the section is in view — the same lazy behaviour Dawn hand-rolls with an `IntersectionObserver`, without the request code. For a loading and error state, `Fetch` emits bubbling `fetch-before`, `fetch-after` and `fetch-error` events; drive a [`Transition`](https://ui.studiometa.dev/components/Transition/) from an `Action` on a parent, exactly as the [Section Rendering demo](/articles/shopify-section-rendering-api-example) does for its `#loader`.
 
 ## How the demo simulates it
 
-The playground has no store, so the demo mocks `GET /recommendations/products` to return a rendered product list, and stubs `window.Shopify.analytics` so the tracking has somewhere to publish:
+The playground has no store, so the demo mocks `GET /recommendations/products` to return a rendered product list wrapped in `<div id="shopify-section-product-recommendations">` (so `Fetch` swaps it by id), and stubs `window.Shopify.analytics` so the tracking has somewhere to publish:
 
 ```js twoslash
 // @noErrors
@@ -105,7 +106,7 @@ The last touch cuts the delay when a customer follows a product link. [`Prefetch
 
 Its sibling `PrefetchWhenOver` prefetches on `mouseenter` instead. Both only prefetch same-origin URLs, skip the current page, and de-duplicate across the page, so they are safe to add to product links.
 
-One nice consequence: `registerComponents` adds each component to a global registry backed by a `MutationObserver`, so elements injected after startup are mounted automatically. The recommendation links the `LazyInclude` just loaded get `PrefetchWhenVisible` and `TrackShopify` with no extra step — you register once and both server-rendered and dynamically loaded markup are enhanced.
+One nice consequence: `registerComponents` adds each component to a global registry backed by a `MutationObserver`, so elements injected after startup are mounted automatically. The recommendation links `Fetch` just swapped in get `PrefetchWhenVisible` and `TrackShopify` with no extra step — you register once and both server-rendered and dynamically loaded markup are enhanced.
 
 ## The end of the series
 
