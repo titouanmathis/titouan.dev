@@ -1,0 +1,72 @@
+<div data-component="DataScope" data-option-group="tabs" class="max-w-md">
+  <div role="tablist" class="flex gap-1 border-b border-current/20">
+    {# Each button reads the shared `active` value (for its selected state) and
+       sets it on click. The panels below read the same key. #}
+    <button
+      type="button"
+      role="tab"
+      data-component="Action DataBind"
+      data-option-key="active"
+      data-on:click="DataModel(#tab-active) -> target.set('overview')"
+      data-bind:class.font-bold="value === 'overview'"
+      data-bind:attr.aria-selected="String(value === 'overview')"
+      class="px-3 py-2">
+      Overview
+    </button>
+    <button
+      type="button"
+      role="tab"
+      data-component="Action DataBind"
+      data-option-key="active"
+      data-on:click="DataModel(#tab-active) -> target.set('specs')"
+      data-bind:class.font-bold="value === 'specs'"
+      data-bind:attr.aria-selected="String(value === 'specs')"
+      class="px-3 py-2">
+      Specs
+    </button>
+    <button
+      type="button"
+      role="tab"
+      data-component="Action DataBind"
+      data-option-key="active"
+      data-on:click="DataModel(#tab-active) -> target.set('reviews')"
+      data-bind:class.font-bold="value === 'reviews'"
+      data-bind:attr.aria-selected="String(value === 'reviews')"
+      class="px-3 py-2">
+      Reviews
+    </button>
+  </div>
+
+  {# Single source of truth for the active tab, seeded to "overview" on mount. #}
+  <input
+    id="tab-active"
+    type="hidden"
+    name="active"
+    value="overview"
+    data-component="DataModel"
+    data-option-immediate />
+
+  <div
+    data-component="DataBind"
+    data-option-key="active"
+    data-bind:attr.hidden="value !== 'overview'"
+    class="py-3">
+    A quick overview of the product.
+  </div>
+  <div
+    data-component="DataBind"
+    data-option-key="active"
+    data-bind:attr.hidden="value !== 'specs'"
+    class="py-3"
+    hidden>
+    The technical specifications, size and materials.
+  </div>
+  <div
+    data-component="DataBind"
+    data-option-key="active"
+    data-bind:attr.hidden="value !== 'reviews'"
+    class="py-3"
+    hidden>
+    What customers are saying about it.
+  </div>
+</div>

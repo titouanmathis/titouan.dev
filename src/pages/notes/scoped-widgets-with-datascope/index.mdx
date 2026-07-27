@@ -1,0 +1,61 @@
+---
+date: 2026-07-27
+title: Scoped, reusable widgets with DataScope
+description: The new DataScope component from @studiometa/ui gives Data groups a local boundary, so you can build tabs, dropdowns and scoped forms from primitives and drop two of them on a page without them colliding.
+tags: studiometa-ui, data-components, progressive-enhancement, javascript
+---
+
+# Scoped, reusable widgets with DataScope
+
+<MetaInfo class="block">27/07/2026 in #studiometa-ui #data-components</MetaInfo>
+
+The [Data components](https://ui.studiometa.dev/components/DataBind/) from [`@studiometa/ui`](https://ui.studiometa.dev) — [`DataModel`](https://ui.studiometa.dev/components/DataModel/), [`DataBind`](https://ui.studiometa.dev/components/DataBind/) and [`DataComputed`](https://ui.studiometa.dev/components/DataComputed/) — keep a value in sync between elements that share a `group`. That group is global, though: two widgets that happen to use the same group name share the same value, so a second copy of a component on the page fights the first.
+
+[`DataScope`](https://ui.studiometa.dev/components/DataScope/) fixes that. It draws a local boundary: descendant Data components inherit the scope's group but stay isolated from every other scope, and their keyed values live in a frozen `$data` snapshot. The upshot is that you can assemble a reusable interactive widget out of the primitives — no bespoke component — and drop two of them side by side without a collision.
+
+import demoDropdowns from './demo-dropdowns.twig?raw';
+import demoTabs from './demo-tabs.twig?raw';
+import demoForm from './demo-form.twig?raw';
+import demoTs from './demo.ts?raw';
+
+## Two menus, one group name
+
+Both dropdowns below use `data-option-group="menu"` and the same `open` key. Because each sits in its own `DataScope`, opening one leaves the other closed. The button is a [`DataModel`](https://ui.studiometa.dev/components/DataModel/) that toggles the value with `toggle()` and mirrors it onto `aria-expanded`; the list is a `DataBind` that hides itself while the value is not `open`.
+
+<UiPlayground client:visible html={demoDropdowns} script={demoTs} height="220px"></UiPlayground>
+
+Delete the two `DataScope` wrappers and the menus share one global `menu` group again — clicking either button opens both lists. That single wrapper is the whole difference between "a component" and "a reusable component".
+
+## Tabs without a Tabs component
+
+The same primitives make a tab interface. A hidden `DataModel` holds the `active` tab as the single source of truth, seeded to `overview` with `data-option-immediate`. Each tab button sets it on click and reads it back to show its selected state, and every panel is a `DataBind` on the same key that hides itself unless it is the active one.
+
+<UiPlayground client:visible html={demoTabs} script={demoTs} height="200px"></UiPlayground>
+
+No `Tabs` class is registered — the behaviour is entirely declarative, and wrapping it in a `DataScope` means a second tab set on the page keeps its own `active` value.
+
+## A scoped form and `$data`
+
+Inside a scope, every keyed value is also exposed to `DataComputed` (and `DataEffect`) as a frozen `$data` snapshot. Here two inputs hydrate `first` and `last` on mount, and a computed greeting reads both from `$data`:
+
+<UiPlayground client:visible html={demoForm} script={demoTs} height="160px"></UiPlayground>
+
+`$data` is read-only — its object and any array or `Date` values are frozen and cloned — so a snapshot can be passed around without a subscriber mutating shared state.
+
+## Register once
+
+Every demo above shares the same registration; `DataScope` only needs to wrap the markup.
+
+```js twoslash
+// @noErrors
+import { registerComponents } from '@studiometa/js-toolkit';
+import { Action, DataBind, DataComputed, DataModel, DataScope } from '@studiometa/ui';
+
+registerComponents(DataScope, DataModel, DataBind, DataComputed, Action);
+```
+
+## Links
+
+- [`DataScope` documentation](https://ui.studiometa.dev/components/DataScope/)
+- [`DataModel`](https://ui.studiometa.dev/components/DataModel/), [`DataBind`](https://ui.studiometa.dev/components/DataBind/) and [`DataComputed`](https://ui.studiometa.dev/components/DataComputed/)
+- [`@studiometa/ui`](https://ui.studiometa.dev) and [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev)
