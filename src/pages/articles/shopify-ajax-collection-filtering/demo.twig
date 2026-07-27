@@ -3,7 +3,7 @@
   action="/collections/all"
   method="get"
   data-component="FetchShopifySection Action"
-  data-option-sections='["product-grid", "results-count"]'
+  data-option-sections="product-grid,results-count"
   data-on:change="FetchShopifySection(#collection-filters) -> target.$el.requestSubmit()"
   data-on:fetch-before="Transition(#loader) -> target.enter()"
   data-on:fetch-after="Transition(#loader) -> target.leave()"

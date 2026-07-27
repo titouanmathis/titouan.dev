@@ -59,7 +59,7 @@ In a collection template it looks like this:
 <a
   href="{{ collection.url }}?sort_by=price-ascending"
   data-component="FetchShopifySection"
-  data-option-sections='["main-collection-product-grid", "collection-results-count"]'
+  data-option-sections="main-collection-product-grid,collection-results-count"
   data-option-history>
   Price, low to high
 </a>
@@ -105,7 +105,7 @@ window.fetch = async (input, init) => {
 };
 ```
 
-**Swap the mock for your store:** delete the `window.fetch` block. The links already declare their sections and `FetchShopifySection` parses the response, so the same markup now hits the real endpoint. Use your theme's real section ids (for example `main-collection-product-grid`). You can [open the demo in the playground](https://ui.studiometa.dev/play/#html=eNrNVM1u1DAQvvcpBnNoK9WbsuVPq00QIPUEEtL2hhBykkli4cSR7XQ3QkiIh%2BHEnTuP0idhnDgLWxax3LqHJOv5vvF8M5%2B9zOX1EUAunOCZrlvdYONi9jxzUjdsiuhmUaDLKp5ioQ3G7MqIxkqPObmvtMjRnAJPwAlToptRCjQnp3%2FSRUGBf7EVimsc2ZkS1sasFhu%2B5vONAtuKDHnPH7KEwr74CVMo3IB%2F8LURLUiHteXZUAmUog0M4lCKZkvSjeOpVjlLVtq4xTLy0QAUwwugMljELMq0Uji0xUZCqWeWCO%2FTPq5F0wnlq%2FW%2F24289LpXlW5l0a9G%2Bg5Ut36J25A5Pn7LWqPzLnO8NDJnZ8AM2k45EqO7xrF3x4EeJKTaUP94CuEj64yhnYNagEsUrjOYj5oi8X%2FiWiOp38JSI3PZlHdW5Rtf5xkovQanoZJldUuvn2vAyjxmo%2Bv%2BJueXP%2FepGDzFC6PrmGnyo3Q9P98HHIzMnT4I9gGx3dW8JYHDjeO2Ht9BevT4fKv%2BFamh6dx8%2FhpUTy5eRnRCkiP%2FdY9zeKFdBQZLPwMQBsEflRZzwI3InOpBWAhTHEIEgjCzRdhqPHO%2BhXYETkPlH2X%2BiSUzMhx5Aeza012FNaQ91ILWqEIizoDz7dndl2fXCFMz9rbgCbXgAoKT7G9iO7U39Y7npsz%2BD%2FgH7agsv9i9LZSccLQY3AeGSsuRLo2XdNP8%2BA43X77NHy0jJQ8iXWmHgfXg6cGs1105keYTaRl1KjkKun8C5jbfpA%3D%3D&script=eNqtVc2O40QQvucpShaSbcl2hoUVKJlkWa1AgPgZTYYTQqRtV%2BLeabut7vKYKPKF5%2BHOnUfhSahuO9kMOyvNYXOI7a6qr76vuqpb1q02BEcwuJeW0LzRvNJgQxYG2BldQ%2FiVpa6UukYS87c2Ja3VvaRwOTsHvy5I6iaBb5CKalPpVu4OG5wW74xorHTvTyJ2kpFm8zmkaQobWXdKEJYwhcMtNiUa2ezh9c13zudZP4c38QDO3qOxsH1lR0y7Ekm%2BhV5SBd9vfv5pwQoCESwguK6oVusggSC%2F%2BIQhc3hfi6KCB6E6BGmBKoQJD3oj2pY5ywauS%2FkAslwFdsyeTj7pUZZDsE6gryTDSOsQ%2B0rQWDOwvWgt5AeOzeBbNAg9Qt5JVXIm9nI8QXfGonpAu4QSFRKyjankShf3Do80VJI8NYNCAZeu1bIhiCwiBBvO4Y01%2B8NOGzgwIljSBoM4mxVcGoLW6LIrePtX8OsMuDQkSeECwjeiDRM2y4K%2FXryEIXlkvtOE7%2Byffvl%2F%2B4%2Fd%2FsL8wpl%2F440fk%2B6NLDlhJAlruwA6tKh3ZyoxrNaMtb3u1JO1nfxShxJAoYS1q8BDur%2B00Mqmn8FetOnnwfqTo0%2FCeABZLdooah0%2Boyt5imVHyLXhxgOjO27A0sW1mdcywD9%2Fw79%2F%2FuUWvJzheq7kehuPkG%2B54lEYxrzaqfX2LLFgIHqGxg81kEHbKbKshnHOKgn%2FoNTW4J9FZwxP7vyLq7PMTGGzp2o457mec4ILWq5RxhZc8UQ0pe6znfvMcv6IxpV4Obs0saewh6ZgKU3bUcJ9L8nX8MgKRtjOKHZrsIdfbn%2BIJq3eHVarFYSW3EyH8GpaXExPycGiKZw3B57MWWVwd%2FLJGDuBsCJqF%2FM5975QlbYUMksAuYOI7ZlFYYrqRhjBNaiEjcLT8Idx7HmemFo%2Bwnh2uduzjPdzrBJ3pvN4Em2PxGgc9Xt%2BCFm2k%2BP7IBW24JFzuk4pYILP3COKRAK5L5QYOwdSyMc3Tx5g8P%2BiFzzGrng3fFxKi1HEu6958n2wRbqTNeqOTssJvLy6iuMl8CGwE%2FcI7gxtisOFzFyXBxbpzpFsLD43V3RiyQLejVC48HMTjdRjN8be51EHspN%2FPvYaJh0GqTONl3CLli8U1uAYJHwgVCh4sHgCjhAyNyZKqWsQRgz5HFWyEG6j%2BKrRTchXxojpKjOhnlv2Uf8tZ8NyukY%2B1m82e%2F9WjJ551zGf%2FwBC%2FVz3&theme=light) and edit it live.
+**Swap the mock for your store:** delete the `window.fetch` block. The links already declare their sections and `FetchShopifySection` parses the response, so the same markup now hits the real endpoint. Use your theme's real section ids (for example `main-collection-product-grid`). You can [open the demo in the playground](https://ui.studiometa.dev/play/#html=eNrNVMtu1DAU3fcrLmbTSvWkTHlplAwCpK5AQprukZPcJBZOHNlOZyKEhPgYVuzZ8yn9Eq4TJ3TKIIYdmzzsc67vOT52nMubE4BcOMEzXbe6wcYl7GXmpG7YNKObVYEuq3iKhTaYsGsjGis95vSh0iJHcwZ8DU6YEt2CSqA5PfudLgqa%2BBtbobjBkZ0pYW3CarHjW77cKbCtyJD3%2FDFb03RMzU%2BYQuEO%2FINvjWhBOqwtz4ZOoBRtYBCHSjQzSTeOp1rlbL3Rxq3iyM8GoBheAJXBImFRppXCwRYbCaVeWCK8T%2FukFk0nFAvg%2B0Zeed2bSrey6Dc4uzpDdeuHuA2VE9YanXeZ46WR%2BblB2ylHOnTXuIkXek%2B1IeN4CuEj64yhJYNMgCsUrjOYj2Ii8W%2BqWiPJaGHJwVw25f8n751v8ByU3oLTUMmyuifU72TAyjxhY87%2BpONXIg%2B1P6SIF0bXCdOUQOl6fnEIOESXO30U7ANiu695JoHDneO2Ht9BevT0Ylb%2FhtTQttx%2B%2FhpUT7mNIzoT6xP%2F9YBzeKVdBQZLbz4Ig%2BAPR4s54E5kTvUgLITtG6YIBGGzVmGp8ZR5C%2B0InHaTf5T5J7ZewBACsFtPdxXWkPZQCxqjDom4AM7n03qozn4MJjMOWvCMLLiEECJ7R2ynDpa%2BG7e5sv8B%2F6AVleWX%2B%2FeDkhOOBkP6wFBrOdI18Zrulh%2Ff4fbLt%2BWTOFLyKNK1dhhYj54fzXrblRNpOZHiqFPrk1H3TxeL3MY%3D&script=eNqtVc2O40QQvucpShaSbcl2hoUVKImzrFYgQLCMJsNptSJtuxL3TtttdZfHRCNf9nm4c%2BdReBKq%2FRMyMEhzwAfb3VX1VX3VVdWyarQheACDR2kJzRvNOzXWZKGHg9EV%2BF9ZagupKySx%2FGBj0lrdSfLXCzkbv85J6jqCb5DyclfqRh5OO5w2b42orXT%2FTyK2kpEWyyXEcQw7WbVKEBYwmcMN1gUaWR%2Fh9fV3TudZj8Ob4gD23qGxsH9lR0ybiijbQyephO93P71dMQNPeCvwNiVVautF4GUXS%2BgTh%2Fe1yEu4F6pFkBaoRJjwoDOiaThmWcOmkPcgi9Szo%2Fd40okfZNF72wi6UjKMtA6xKwWNOQPbicZCdmLbBL5Fg9AhZK1UBXtiLRcn6NZYVPdo11CgQkKWcSiZ0vmdwyMNpaQhNINCAaeu0bImCCwieDv2MQgr1oeDNnBiRLCkDXphssg5NQSN0UWb8%2FGn8G4BnBqSpHAF%2FhvR%2BBGLZc6rFy%2Bhjx6JbzXh3%2FJPv%2Fyn%2FMf2eCF%2B4cTv%2BeBHp0cjC3YYSMLKroBODerDOZQQ0i1j7TetejK3k17sUDzIlbA29QZI94pzrWz8GRxFE3%2FubT95GJwwHkBSiSYIGofP6ErOtqwImTZceGB0ywVYOLsmGbj08Mfv8OfH39zGQKffLJXc7sMR8gNnPPD9kHdbtd2fKeYMRM%2Fg%2BF8FZNC2imw84JxZEv5Ksa1g%2BOatMdy5yy%2BuzjQThfWRyv7sZ7NkBxdhuUIZSzDljqgL3SUHt0wyXgTjTrheXIpYU9hTnTOVumkp4rqXNOTwgRmMsK1RrFZjBz%2Ff%2FBBMXAd1SNMUfEuup314NW2upq9kY1HnTpsNZ3FSGjzMOgljR%2BCXRM1queTaF6rUlnyOEkAeIGB5YlGYvLwWRnAOSmEDf25%2BPwyHOOdILY8wdMX3LkmSOUvv14PGk2hHJEZjq1%2Bykx%2BOdIY6iIXNueUcr9kFTPCJ%2BwSBiCAbEiXGyoEYsvEvHB32w1t0gtvYJe%2Bax6W0GAR8%2Bpo7fzC2SLeyQt3SvB3By6urMFwDD4GDuENwM7TOTxc0M12cmKSbI8mYfC6uYI7Sv2whfzX0TTCGHkazzqMKZKXh%2B1irn3gYpNbUA4UbtHyhMAcXQcQDoUTBjWXd1PU5Ng6UYlcgjOjzHFUyF%2B6g%2BKrRtc9XxojpMjOhnkv2Uf2tF%2F16ukb%2Br2ex%2BPetGDzzrgvXfwHl91zt&theme=light) and edit it live.
 
 ## When the parameters come from user input
 
@@ -114,7 +114,7 @@ A single link carries its own `sections` option. When the value comes from the c
 ```liquid
 <form id="collection-sort" action="{{ collection.url }}" method="get"
   data-component="FetchShopifySection"
-  data-option-sections='["main-collection-product-grid", "collection-results-count"]'
+  data-option-sections="main-collection-product-grid,collection-results-count"
   data-option-history>
   <select name="sort_by" data-component="Action" data-on:change="FetchShopifySection(#collection-sort) -> target.$el.requestSubmit()">
     <option value="manual">Featured</option>
@@ -145,7 +145,7 @@ The Section Rendering API is stable and works today. Shopify is also previewing 
 <a
   href="{{ collection.url }}?sort_by=price-ascending"
   data-component="FetchShopifyPartial"
-  data-option-partials='["product-grid", "product-count"]'
+  data-option-partials="product-grid,product-count"
   data-option-history>
   Price, low to high
 </a>
