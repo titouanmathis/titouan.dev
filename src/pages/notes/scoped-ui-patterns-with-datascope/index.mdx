@@ -1,7 +1,7 @@
 ---
 date: 2026-07-27
 title: Scoped, reusable UI patterns with DataScope
-description: The new DataScope component from @studiometa/ui gives Data groups a local boundary, so you can build tabs, dropdowns and scoped forms from primitives and drop two of them on a page without them colliding.
+description: The new DataScope component from @studiometa/ui gives Data groups a local boundary, so you can build interactive patterns like tabs and scoped forms from primitives and drop two of them on a page without them colliding.
 tags: studiometa-ui, data-components, progressive-enhancement, javascript
 ---
 
@@ -13,31 +13,15 @@ The [Data components](https://ui.studiometa.dev/components/DataBind/) from [`@st
 
 [`DataScope`](https://ui.studiometa.dev/components/DataScope/) fixes that by using `withGroup`'s [scoping feature](https://js-toolkit.studiometa.dev/api/decorators/withGroup.html#scoping-groups-to-a-parent-component). Wrapping a subtree in a `DataScope` marks it as a scope, so descendant Data components resolve their group against that scope instead of app-wide: two scopes can reuse the same group name and never share values, and each scope's keyed values live in a frozen `$data` snapshot. The upshot is that you can assemble a reusable interactive UI pattern out of the primitives and drop two of them side by side without a collision.
 
-import demoDropdownsUnscoped from './demo-dropdowns-unscoped.twig?raw';
-import demoDropdowns from './demo-dropdowns.twig?raw';
 import demoTabsUnscoped from './demo-tabs-unscoped.twig?raw';
 import demoTabs from './demo-tabs.twig?raw';
 import demoFormUnscoped from './demo-form-unscoped.twig?raw';
 import demoForm from './demo-form.twig?raw';
 import demoTs from './demo.ts?raw';
 
-## Two menus, one group name
-
-A dropdown is a [`DataModel`](https://ui.studiometa.dev/components/DataModel/) that toggles an `open` value with `toggle()` and mirrors it onto `aria-expanded`, plus a `DataBind` list that hides itself while the value is not `open`. Put two on a page with the same `menu` group and, without a scope, they share one value — opening one opens both:
-
-<UiPlayground
-  client:visible
-  html={demoDropdownsUnscoped}
-  script={demoTs}
-  height="220px"></UiPlayground>
-
-Wrap each menu in its own `DataScope` and the same markup runs independently — opening one leaves the other closed. That single wrapper is the whole difference between "a component" and "a reusable component":
-
-<UiPlayground client:visible html={demoDropdowns} script={demoTs} height="220px"></UiPlayground>
-
 ## Tabs without a Tabs component
 
-The same primitives make a tab interface. A hidden `DataModel` holds the `active` tab as the single source of truth, seeded to `overview` with `data-option-immediate`; each tab button sets it on click and reads it back to show its selected state, and every panel is a `DataBind` that hides itself unless it is the active one. No `Tabs` class is registered — the behaviour is entirely declarative.
+A tab interface comes together from the primitives. A hidden `DataModel` holds the `active` tab as the single source of truth, seeded to `overview` with `data-option-immediate`; each tab button sets it on click and reads it back to show its selected state, and every panel is a `DataBind` that hides itself unless it is the active one. No `Tabs` class is registered — the behaviour is entirely declarative.
 
 But put two of these on a page and, without a scope, they share the app-wide `tabs` group: switch a tab in one set and the other jumps with it.
 
@@ -58,6 +42,8 @@ Give each form its own `DataScope` and they are isolated. The scope also unlocks
 <UiPlayground client:visible html={demoForm} script={demoTs} height="160px"></UiPlayground>
 
 `$data` is read-only — its object and any array or `Date` values are frozen and cloned — so a snapshot can be passed around without a subscriber mutating shared state.
+
+Not every pattern needs shared state, though. A dropdown or popover menu is better left to the native [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), which handles opening, top-layer stacking and click-outside dismissal on its own. Reach for `DataScope` when several elements must stay in sync on one value — as the tabs and form do — and you want two of them to coexist on a page.
 
 ## Register once, use everywhere
 
