@@ -1,7 +1,8 @@
 <div class="flex flex-wrap gap-8">
   {# Two menus with the SAME group name "menu". Each DataScope keeps its own
-     `open` value, so opening one leaves the other untouched. #}
-  <div data-component="DataScope" data-option-group="menu">
+     `open` value, so opening one leaves the other untouched. The list is
+     absolutely positioned so showing it does not shift the layout. #}
+  <div data-component="DataScope" data-option-group="menu" class="relative">
     <button
       type="button"
       value="closed"
@@ -19,7 +20,7 @@
       data-component="DataBind"
       data-option-key="open"
       data-bind:attr.hidden="value !== 'open'"
-      class="mt-2 border rounded divide-y divide-current/10"
+      class="absolute left-0 z-10 mt-1 w-40 border rounded divide-y divide-current/10"
       hidden>
       <li class="px-3 py-1">New</li>
       <li class="px-3 py-1">Open…</li>
@@ -27,7 +28,7 @@
     </ul>
   </div>
 
-  <div data-component="DataScope" data-option-group="menu">
+  <div data-component="DataScope" data-option-group="menu" class="relative">
     <button
       type="button"
       value="closed"
@@ -45,7 +46,7 @@
       data-component="DataBind"
       data-option-key="open"
       data-bind:attr.hidden="value !== 'open'"
-      class="mt-2 border rounded divide-y divide-current/10"
+      class="absolute left-0 z-10 mt-1 w-40 border rounded divide-y divide-current/10"
       hidden>
       <li class="px-3 py-1">Undo</li>
       <li class="px-3 py-1">Redo</li>

@@ -1,0 +1,31 @@
+<div class="flex flex-wrap gap-8">
+  {# No DataScope: both forms use the global "person" group, so they share one
+     value. Type in either field and the other — and both greetings — follow. #}
+  <div class="space-y-2">
+    <input
+      value="Donald Duck"
+      data-component="DataModel"
+      data-option-group="person"
+      class="w-56 border rounded px-2 py-1 bg-transparent" />
+    <p>
+      Hello,
+      <span data-component="DataBind" data-option-group="person" class="font-bold">
+        Donald Duck
+      </span>.
+    </p>
+  </div>
+
+  <div class="space-y-2">
+    <input
+      value="Daisy Duck"
+      data-component="DataModel"
+      data-option-group="person"
+      class="w-56 border rounded px-2 py-1 bg-transparent" />
+    <p>
+      Hello,
+      <span data-component="DataBind" data-option-group="person" class="font-bold">
+        Daisy Duck
+      </span>.
+    </p>
+  </div>
+</div>

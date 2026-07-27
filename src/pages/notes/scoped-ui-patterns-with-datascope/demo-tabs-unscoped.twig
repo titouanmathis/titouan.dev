@@ -1,16 +1,15 @@
 <div class="flex flex-wrap gap-10">
-  {# Two tab sets, each wrapped in its own DataScope. They reuse the same group
-     and `active` key but never share a value, so each keeps its own tab. #}
-  <div data-component="DataScope" data-option-group="tabs" class="min-w-[16rem]">
+  {# No DataScope: both tab sets use the global "tabs" group, so switching a tab
+     in one set switches the same tab in the other. #}
+  <div class="min-w-[16rem]">
     <div role="tablist" class="flex gap-1 border-b border-current/20">
       <button
         type="button"
         role="tab"
         data-component="Action DataBind"
-        data-option-key="active"
-        data-on:click="DataModel(#tabs-a) -> target.set('overview')"
+        data-option-group="tabs"
+        data-on:click="DataModel(#utabs-a) -> target.set('overview')"
         data-bind:class.font-bold="value === 'overview'"
-        data-bind:attr.aria-selected="String(value === 'overview')"
         class="px-3 py-2">
         Overview
       </button>
@@ -18,10 +17,9 @@
         type="button"
         role="tab"
         data-component="Action DataBind"
-        data-option-key="active"
-        data-on:click="DataModel(#tabs-a) -> target.set('specs')"
+        data-option-group="tabs"
+        data-on:click="DataModel(#utabs-a) -> target.set('specs')"
         data-bind:class.font-bold="value === 'specs'"
-        data-bind:attr.aria-selected="String(value === 'specs')"
         class="px-3 py-2">
         Specs
       </button>
@@ -29,31 +27,30 @@
         type="button"
         role="tab"
         data-component="Action DataBind"
-        data-option-key="active"
-        data-on:click="DataModel(#tabs-a) -> target.set('reviews')"
+        data-option-group="tabs"
+        data-on:click="DataModel(#utabs-a) -> target.set('reviews')"
         data-bind:class.font-bold="value === 'reviews'"
-        data-bind:attr.aria-selected="String(value === 'reviews')"
         class="px-3 py-2">
         Reviews
       </button>
     </div>
     <input
-      id="tabs-a"
+      id="utabs-a"
       type="hidden"
-      name="active"
       value="overview"
       data-component="DataModel"
+      data-option-group="tabs"
       data-option-immediate />
     <div
       data-component="DataBind"
-      data-option-key="active"
+      data-option-group="tabs"
       data-bind:attr.hidden="value !== 'overview'"
       class="py-3">
       A quick overview of the product.
     </div>
     <div
       data-component="DataBind"
-      data-option-key="active"
+      data-option-group="tabs"
       data-bind:attr.hidden="value !== 'specs'"
       class="py-3"
       hidden>
@@ -61,7 +58,7 @@
     </div>
     <div
       data-component="DataBind"
-      data-option-key="active"
+      data-option-group="tabs"
       data-bind:attr.hidden="value !== 'reviews'"
       class="py-3"
       hidden>
@@ -69,16 +66,15 @@
     </div>
   </div>
 
-  <div data-component="DataScope" data-option-group="tabs" class="min-w-[16rem]">
+  <div class="min-w-[16rem]">
     <div role="tablist" class="flex gap-1 border-b border-current/20">
       <button
         type="button"
         role="tab"
         data-component="Action DataBind"
-        data-option-key="active"
-        data-on:click="DataModel(#tabs-b) -> target.set('overview')"
+        data-option-group="tabs"
+        data-on:click="DataModel(#utabs-b) -> target.set('overview')"
         data-bind:class.font-bold="value === 'overview'"
-        data-bind:attr.aria-selected="String(value === 'overview')"
         class="px-3 py-2">
         Overview
       </button>
@@ -86,10 +82,9 @@
         type="button"
         role="tab"
         data-component="Action DataBind"
-        data-option-key="active"
-        data-on:click="DataModel(#tabs-b) -> target.set('specs')"
+        data-option-group="tabs"
+        data-on:click="DataModel(#utabs-b) -> target.set('specs')"
         data-bind:class.font-bold="value === 'specs'"
-        data-bind:attr.aria-selected="String(value === 'specs')"
         class="px-3 py-2">
         Specs
       </button>
@@ -97,31 +92,30 @@
         type="button"
         role="tab"
         data-component="Action DataBind"
-        data-option-key="active"
-        data-on:click="DataModel(#tabs-b) -> target.set('reviews')"
+        data-option-group="tabs"
+        data-on:click="DataModel(#utabs-b) -> target.set('reviews')"
         data-bind:class.font-bold="value === 'reviews'"
-        data-bind:attr.aria-selected="String(value === 'reviews')"
         class="px-3 py-2">
         Reviews
       </button>
     </div>
     <input
-      id="tabs-b"
+      id="utabs-b"
       type="hidden"
-      name="active"
       value="overview"
       data-component="DataModel"
+      data-option-group="tabs"
       data-option-immediate />
     <div
       data-component="DataBind"
-      data-option-key="active"
+      data-option-group="tabs"
       data-bind:attr.hidden="value !== 'overview'"
       class="py-3">
       A quick overview of the product.
     </div>
     <div
       data-component="DataBind"
-      data-option-key="active"
+      data-option-group="tabs"
       data-bind:attr.hidden="value !== 'specs'"
       class="py-3"
       hidden>
@@ -129,7 +123,7 @@
     </div>
     <div
       data-component="DataBind"
-      data-option-key="active"
+      data-option-group="tabs"
       data-bind:attr.hidden="value !== 'reviews'"
       class="py-3"
       hidden>

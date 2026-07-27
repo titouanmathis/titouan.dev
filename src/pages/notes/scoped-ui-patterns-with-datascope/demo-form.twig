@@ -1,33 +1,55 @@
-<div data-component="DataScope" data-option-group="person" class="max-w-md space-y-3">
-  <div class="flex gap-3">
-    <label class="flex-1">
-      <span class="block text-sm text-current/60">First name</span>
+<div class="flex flex-wrap gap-8">
+  {# Two profile forms, each in its own DataScope with the same "person" group.
+     Editing one never touches the other, and each scope has its own $data. #}
+  <div data-component="DataScope" data-option-group="person" class="space-y-2">
+    <div class="flex gap-2">
       <input
         name="first"
-        value="Ada"
+        value="Donald"
         data-component="DataModel"
         data-option-immediate
-        class="w-full border rounded px-2 py-1 bg-transparent" />
-    </label>
-    <label class="flex-1">
-      <span class="block text-sm text-current/60">Last name</span>
+        class="w-28 border rounded px-2 py-1 bg-transparent" />
       <input
         name="last"
-        value="Lovelace"
+        value="Duck"
         data-component="DataModel"
         data-option-immediate
-        class="w-full border rounded px-2 py-1 bg-transparent" />
-    </label>
+        class="w-28 border rounded px-2 py-1 bg-transparent" />
+    </div>
+    <p>
+      Hello,
+      <span
+        data-component="DataComputed"
+        data-option-compute="`${$data.first} ${$data.last}`.trim()"
+        class="font-bold">
+        Donald Duck
+      </span>.
+    </p>
   </div>
 
-  {# $data is a frozen snapshot of every keyed value in this scope's group. #}
-  <p>
-    Hello,
-    <span
-      data-component="DataComputed"
-      data-option-compute="`${$data.first} ${$data.last}`.trim()"
-      class="font-bold">
-      Ada Lovelace
-    </span>.
-  </p>
+  <div data-component="DataScope" data-option-group="person" class="space-y-2">
+    <div class="flex gap-2">
+      <input
+        name="first"
+        value="Daisy"
+        data-component="DataModel"
+        data-option-immediate
+        class="w-28 border rounded px-2 py-1 bg-transparent" />
+      <input
+        name="last"
+        value="Duck"
+        data-component="DataModel"
+        data-option-immediate
+        class="w-28 border rounded px-2 py-1 bg-transparent" />
+    </div>
+    <p>
+      Hello,
+      <span
+        data-component="DataComputed"
+        data-option-compute="`${$data.first} ${$data.last}`.trim()"
+        class="font-bold">
+        Daisy Duck
+      </span>.
+    </p>
+  </div>
 </div>

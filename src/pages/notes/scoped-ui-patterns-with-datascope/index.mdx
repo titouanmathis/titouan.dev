@@ -11,10 +11,12 @@ tags: studiometa-ui, data-components, progressive-enhancement, javascript
 
 The [Data components](https://ui.studiometa.dev/components/DataBind/) from [`@studiometa/ui`](https://ui.studiometa.dev) ([`DataModel`](https://ui.studiometa.dev/components/DataModel/), [`DataBind`](https://ui.studiometa.dev/components/DataBind/) and [`DataComputed`](https://ui.studiometa.dev/components/DataComputed/)) are built on the [`withGroup`](https://js-toolkit.studiometa.dev/api/decorators/withGroup.html) decorator from [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev). `withGroup` collects every instance that shares a `data-option-group` into a set each member can reach through its `$group` getter, and the Data components use it to keep a value in sync across that group. The catch is that the group is resolved app-wide, so two UI patterns that happen to use the same group name land in the same set and share one value — a second copy of a component on the page fights the first.
 
-[`DataScope`](https://ui.studiometa.dev/components/DataScope/) fixes that by using `withGroup`'s [scoping feature](https://js-toolkit.studiometa.dev/api/decorators/withGroup.html#scoping-groups-to-a-parent-component). Wrapping a subtree in a `DataScope` marks it as a scope, so descendant Data components resolve their group against that scope instead of app-wide: two scopes can reuse the same group name and never share values, and each scope's keyed values live in a frozen `$data` snapshot. The upshot is that you can assemble a reusable interactive UI pattern out of the primitives — no bespoke component — and drop two of them side by side without a collision.
+[`DataScope`](https://ui.studiometa.dev/components/DataScope/) fixes that by using `withGroup`'s [scoping feature](https://js-toolkit.studiometa.dev/api/decorators/withGroup.html#scoping-groups-to-a-parent-component). Wrapping a subtree in a `DataScope` marks it as a scope, so descendant Data components resolve their group against that scope instead of app-wide: two scopes can reuse the same group name and never share values, and each scope's keyed values live in a frozen `$data` snapshot. The upshot is that you can assemble a reusable interactive UI pattern out of the primitives and drop two of them side by side without a collision.
 
 import demoDropdowns from './demo-dropdowns.twig?raw';
+import demoTabsUnscoped from './demo-tabs-unscoped.twig?raw';
 import demoTabs from './demo-tabs.twig?raw';
+import demoFormUnscoped from './demo-form-unscoped.twig?raw';
 import demoForm from './demo-form.twig?raw';
 import demoTs from './demo.ts?raw';
 
@@ -28,15 +30,23 @@ Delete the two `DataScope` wrappers and the menus share one global `menu` group 
 
 ## Tabs without a Tabs component
 
-The same primitives make a tab interface. A hidden `DataModel` holds the `active` tab as the single source of truth, seeded to `overview` with `data-option-immediate`. Each tab button sets it on click and reads it back to show its selected state, and every panel is a `DataBind` on the same key that hides itself unless it is the active one.
+The same primitives make a tab interface. A hidden `DataModel` holds the `active` tab as the single source of truth, seeded to `overview` with `data-option-immediate`; each tab button sets it on click and reads it back to show its selected state, and every panel is a `DataBind` that hides itself unless it is the active one. No `Tabs` class is registered — the behaviour is entirely declarative.
+
+But put two of these on a page and, without a scope, they share the app-wide `tabs` group: switch a tab in one set and the other jumps with it.
+
+<UiPlayground client:visible html={demoTabsUnscoped} script={demoTs} height="200px"></UiPlayground>
+
+Wrap each set in its own `DataScope` — same group name, same `active` key — and they run independently:
 
 <UiPlayground client:visible html={demoTabs} script={demoTs} height="200px"></UiPlayground>
 
-No `Tabs` class is registered — the behaviour is entirely declarative, and wrapping it in a `DataScope` means a second tab set on the page keeps its own `active` value.
-
 ## A scoped form and `$data`
 
-Inside a scope, every keyed value is also exposed to `DataComputed` (and `DataEffect`) as a frozen `$data` snapshot. Here two inputs hydrate `first` and `last` on mount, and a computed greeting reads both from `$data`:
+Forms have the same collision. These two share the app-wide `person` group with no scope, so typing in one field overwrites the other and both greetings track a single value:
+
+<UiPlayground client:visible html={demoFormUnscoped} script={demoTs} height="160px"></UiPlayground>
+
+Give each form its own `DataScope` and they are isolated. The scope also unlocks the `$data` snapshot: every keyed value in the group is exposed to `DataComputed` (and `DataEffect`), so a greeting can read `first` and `last` together — even though both forms use the same keys:
 
 <UiPlayground client:visible html={demoForm} script={demoTs} height="160px"></UiPlayground>
 
