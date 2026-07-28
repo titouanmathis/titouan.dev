@@ -21,6 +21,12 @@ import demoStepperUnscoped from './demo-stepper-unscoped.twig?raw';
 import demoStepper from './demo-stepper.twig?raw';
 import demoTs from './demo.ts?raw';
 
+:::warning[Availability]
+
+`DataScope` ships with [`@studiometa/ui`](https://ui.studiometa.dev) **v1.9.0** and up — make sure you are on that release or newer before reaching for it.
+
+:::
+
 ## Tabs without a Tabs component
 
 A tab interface comes together from the primitives. A hidden `DataModel` holds the `active` tab as the single source of truth, seeded to `overview` with `data-option-immediate`; each tab button sets it on click and reads it back to show its selected state, and every panel is a `DataBind` that hides itself unless it is the active one. No `Tabs` class is registered — the behaviour is entirely declarative.
