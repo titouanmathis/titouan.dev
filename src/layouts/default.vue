@@ -112,5 +112,6 @@
   @import 'tailwindcss';
   @import '~/assets/base.css';
   @import '~/assets/markdown.css';
+  @import '~/assets/callouts.css';
   @import '~/assets/syntax-highlight.css';
 </style>

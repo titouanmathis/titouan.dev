@@ -1,0 +1,119 @@
+<div
+  data-component="Action"
+  data-on:fetch-before="Transition(#cart-loader) -> target.enter()"
+  data-on:fetch-after="Transition(#cart-loader) -> target.leave()"
+  data-on:fetch-update="Dialog(#cart-dialog) -> target.open()"
+  class="space-y-6">
+  <header class="flex items-center justify-between gap-4">
+    <span class="font-bold">My shop</span>
+    <span
+      id="cart-loader"
+      data-component="Transition"
+      data-option-enter-from="opacity-0"
+      data-option-leave-to="opacity-0"
+      data-option-leave-keep
+      class="ml-auto text-sm text-current/60 opacity-0">
+      Adding…
+    </span>
+
+    <!-- Open trigger: an Action that calls the Dialog's open(). -->
+    <button
+      type="button"
+      data-component="Action"
+      data-on:click="Dialog(#cart-dialog) -> target.open()"
+      class="border-b border-current">
+      Cart (<span id="cart-count">0</span>)
+    </button>
+  </header>
+
+  <!-- The drawer is a native <dialog>. Dialog calls showModal(), so the browser
+       traps focus, makes the rest of the page inert and restores focus on close.
+       The backdrop and panel are ViewTransition children, batched into one
+       coordinated transition; the slide/fade live in the <style> below. -->
+  <dialog
+    id="cart-dialog"
+    data-component="Action Dialog"
+    data-on:cancel.prevent="Dialog.close()"
+    data-on:click="event.target === $el && Dialog.close()"
+    class="fixed inset-0 m-0 p-0 w-full h-full max-w-none max-h-none overflow-hidden bg-transparent">
+    <div
+      data-component="Action ViewTransition"
+      data-on:click="Dialog(#cart-dialog) -> target.close()"
+      data-option-view-transition-name="cart-backdrop"
+      data-option-leave-to="opacity-0"
+      class="fixed inset-0 bg-black/40 opacity-0"></div>
+
+    <div
+      data-component="ViewTransition"
+      data-option-view-transition-name="cart-panel"
+      data-option-leave-to="translate-x-full"
+      class="absolute inset-y-0 right-0 w-screen max-w-sm overflow-y-auto p-6 bg-white dark:bg-zinc-800 shadow-2xl translate-x-full">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold">Your cart</h2>
+        <button
+          type="button"
+          data-component="Action"
+          data-on:click="Dialog(#cart-dialog) -> target.close()"
+          class="border-b border-current">
+          Close
+        </button>
+      </div>
+      <div id="cart-drawer">
+        <p class="text-current/60">Your cart is empty.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <main class="grid grid-cols-3 gap-4">
+    <article class="p-4 border rounded space-y-2">
+      <p>Cap · €25</p>
+      <form action="/cart/add.js" method="post"
+        data-component="Fetch"
+        data-option-response="response.json().then((data) => Object.values(data.sections).filter(Boolean).join(''))">
+        <input type="hidden" name="id" value="101" />
+        <input type="hidden" name="quantity" value="1" />
+        <input type="hidden" name="sections" value="cart-drawer,cart-count" />
+        <button type="submit" class="border-b border-current">Add to cart</button>
+      </form>
+    </article>
+    <article class="p-4 border rounded space-y-2">
+      <p>Tote · €18</p>
+      <form action="/cart/add.js" method="post"
+        data-component="Fetch"
+        data-option-response="response.json().then((data) => Object.values(data.sections).filter(Boolean).join(''))">
+        <input type="hidden" name="id" value="102" />
+        <input type="hidden" name="quantity" value="1" />
+        <input type="hidden" name="sections" value="cart-drawer,cart-count" />
+        <button type="submit" class="border-b border-current">Add to cart</button>
+      </form>
+    </article>
+    <article class="p-4 border rounded space-y-2">
+      <p>Mug · €12</p>
+      <form action="/cart/add.js" method="post"
+        data-component="Fetch"
+        data-option-response="response.json().then((data) => Object.values(data.sections).filter(Boolean).join(''))">
+        <input type="hidden" name="id" value="103" />
+        <input type="hidden" name="quantity" value="1" />
+        <input type="hidden" name="sections" value="cart-drawer,cart-count" />
+        <button type="submit" class="border-b border-current">Add to cart</button>
+      </form>
+    </article>
+  </main>
+</div>
+
+<style>
+  /* The native ::backdrop cannot be class-transitioned; animate our own. */
+  dialog::backdrop { background: transparent; }
+
+  /* The panel slides in from / out to the right edge. */
+  @keyframes cart-slide-in  { from { transform: translateX(100%); } }
+  @keyframes cart-slide-out { to   { transform: translateX(100%); } }
+  ::view-transition-new(cart-panel) { animation: 300ms ease-out both cart-slide-in; }
+  ::view-transition-old(cart-panel) { animation: 300ms ease-in both cart-slide-out; }
+
+  /* Backdrop fades in / out. */
+  @keyframes cart-fade-in  { from { opacity: 0; } }
+  @keyframes cart-fade-out { to   { opacity: 0; } }
+  ::view-transition-new(cart-backdrop) { animation: 300ms ease-out both cart-fade-in; }
+  ::view-transition-old(cart-backdrop) { animation: 300ms ease-in both cart-fade-out; }
+</style>

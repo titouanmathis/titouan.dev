@@ -1,0 +1,28 @@
+<div
+  data-component="Action"
+  data-on:fetch-before="Transition(#loader) -> target.enter()"
+  data-on:fetch-after="Transition(#loader) -> target.leave()"
+  class="max-w-xl space-y-6">
+  <nav class="flex items-center gap-4">
+    <a href="/" data-component="Fetch" data-option-history class="border-b border-current">
+      Home
+    </a>
+    <a href="/pages/shipping" data-component="Fetch" data-option-history class="border-b border-current">
+      Shipping
+    </a>
+    <span
+      id="loader"
+      data-component="Transition"
+      data-option-enter-from="opacity-0"
+      data-option-leave-to="opacity-0"
+      data-option-leave-keep
+      class="opacity-0 text-sm text-current/60">
+      Loading…
+    </span>
+  </nav>
+
+  <main id="main-content" class="space-y-3">
+    <h1 class="text-xl font-bold">Home</h1>
+    <p>Welcome to the shop. Browse our latest products.</p>
+  </main>
+</div>

@@ -1,0 +1,31 @@
+<div class="max-w-lg space-y-6">
+  <div class="flex items-center justify-between p-4 border rounded">
+    <span>Canvas Cap · €25</span>
+    <!-- TrackShopify publishes an analytics event on click. -->
+    <button
+      data-component="TrackShopify"
+      data-track:click='{"event": "app:add_to_cart", "product": "canvas-cap"}'
+      class="border-b border-current">
+      Add to cart
+    </button>
+  </div>
+
+  <p class="text-xs text-current/60">
+    Analytics events published: <span id="analytics-log">none yet</span>
+  </p>
+
+  <section>
+    <h2 class="mb-3 font-bold">You may also like</h2>
+    <!-- InViewOnce fires once when this block scrolls into view; the Action turns
+         that into a Fetch call. Fetch swaps #shopify-section-product-recommendations
+         by matching its id, exactly as the Section Rendering demo swaps its sections. -->
+    <div
+      data-component="Action InViewOnce Fetch"
+      data-option-src="/recommendations/products?product_id=42&limit=4&section_id=product-recommendations&intent=related"
+      data-on:in-view="Fetch.fetch()">
+      <div id="shopify-section-product-recommendations" class="text-sm text-current/60">
+        Loading recommendations…
+      </div>
+    </div>
+  </section>
+</div>

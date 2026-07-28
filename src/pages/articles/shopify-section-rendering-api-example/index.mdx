@@ -1,0 +1,172 @@
+---
+date: 2026-07-29
+title: Shopify Section Rendering API example
+description: A working Shopify Section Rendering API example. Swap server-rendered theme sections with @studiometa/ui and progressive enhancement, plus the July '26 partial rendering preview.
+tags: shopify, section-rendering-api, progressive-enhancement, liquid, studiometa-ui
+---
+
+# Shopify Section Rendering API example
+
+<MetaInfo class="block">29/07/2026 in #shopify #section-rendering-api #progressive-enhancement</MetaInfo>
+
+:::info[The series]
+
+**Part 2 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/building-a-shopify-storefront-with-studiometa-ui).
+
+:::
+
+Shopify's [Section Rendering API](https://shopify.dev/docs/api/ajax/section-rendering) lets you ask the server for the rendered HTML of specific theme sections and drop them into the current page, without a full reload. It covers AJAX navigation, filtering and cart updates, because the HTML still comes from your Liquid sections. This post is a concrete example of consuming it with [`@studiometa/ui`](https://ui.studiometa.dev), a component library built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev).
+
+Here is the result. Sorting swaps two sections, the product grid and the results count, in place:
+
+import demoTwig from './demo.twig?raw';
+import demoTs from './demo.ts?raw';
+
+<UiPlayground
+  client:visible
+  html={demoTwig}
+  script={demoTs}
+  height="220px"></UiPlayground>
+
+The [`FetchShopifySection`](https://ui.studiometa.dev/components/FetchShopifySection/) component consumes the Section Rendering API from attributes on the link, with no request code.
+
+<TableOfContent open />
+
+## What the Section Rendering API returns
+
+Add a comma-separated `sections` parameter (up to five) to any storefront URL, and Shopify answers with a JSON object: one key per requested section, each value the section's rendered HTML, or `null` if it failed to render.
+
+```json
+// GET /collections/all?sort_by=price-ascending&sections=main-collection-product-grid,collection-results-count
+{
+  "main-collection-product-grid": "<div id=\"shopify-section-main-collection-product-grid\" class=\"shopify-section\">…</div>",
+  "collection-results-count": "<div id=\"shopify-section-collection-results-count\" class=\"shopify-section\">…</div>"
+}
+```
+
+Every section is wrapped in a `<div id="shopify-section-{id}">` element, both on the page and inside the API response, so the ids already line up between what you have and what you get back.
+
+## Wiring it with FetchShopifySection
+
+[`FetchShopifySection`](https://ui.studiometa.dev/components/FetchShopifySection/) is a thin wrapper around [`Fetch`](https://ui.studiometa.dev/components/Fetch/) built for exactly this API. It intercepts a link click, fetches its `href`, and swaps elements from the response into the page by matching `id`. Two things are handled for you:
+
+- The section IDs go in the `sections` option, not the URL. The component appends them to the request as `?sections=…` when JavaScript runs, so the element's `href` stays a clean, fully rendered page for the no-JS fallback.
+- The Section Rendering JSON (`{ [id]: html }`) is unwrapped by its default `response` option, and each `shopify-section-*` wrapper is swapped by the inherited `[id]` selector. The JSON keys are ignored, so there is never a key/id mismatch, and there is no per-element `response` boilerplate.
+
+In a collection template it looks like this:
+
+```liquid
+<a
+  href="{{ collection.url }}?sort_by=price-ascending"
+  data-component="FetchShopifySection"
+  data-option-sections="main-collection-product-grid,collection-results-count"
+  data-option-history>
+  Price, low to high
+</a>
+
+{% comment %} Shopify renders these wrappers; FetchShopifySection swaps them by id. {% endcomment %}
+<div id="shopify-section-main-collection-product-grid">…</div>
+<div id="shopify-section-collection-results-count">…</div>
+```
+
+Register the components once:
+
+```js twoslash
+// @noErrors
+import { registerComponents } from '@studiometa/js-toolkit';
+import { Action, FetchShopifySection, Transition } from '@studiometa/ui';
+
+registerComponents(Action, FetchShopifySection, Transition);
+```
+
+Because it extends `Fetch`, it inherits every option. Two are worth knowing. View Transitions are on by default when the browser supports them; disable them with `data-option-no-view-transition`. And `data-option-history` is safe to enable here: `FetchShopifySection` strips the `sections` parameter from the URL it pushes, so the address bar keeps the shareable `?sort_by=…` page while the raw section endpoint never appears in history. That means the sort survives a refresh and a shared link, from the enhanced path as well as the no-JS one.
+
+The loader is the one bit of glue: [`Action`](https://ui.studiometa.dev/components/Action/) listens for the bubbling `fetch-before` and `fetch-after` events and drives a [`Transition`](https://ui.studiometa.dev/components/Transition/) on the `#loader` element. Because `Fetch` events bubble, the `Action` can sit on any parent.
+
+## How the demo simulates it
+
+The playground has no Shopify backend, so the demo's script mocks `window.fetch`: when it sees a `sections` parameter it sorts an in-memory product list and returns the two sections as JSON, each wrapped in its `shopify-section-*` element, exactly as Shopify would. The demo uses short section ids (`product-grid`, `results-count`) for brevity; on a real store these are your theme's section filenames (for example `main-collection-product-grid`). The names are free to differ because `FetchShopifySection` swaps by each `shopify-section-*` element's `id` and ignores the response's JSON keys entirely.
+
+```js twoslash
+// @noErrors
+window.fetch = async (input, init) => {
+  const url = new URL(
+    typeof input === 'string' ? input : input instanceof URL ? input.href : input.url,
+    'http://localhost',
+  );
+  if (url.searchParams.has('sections')) {
+    const sorted = /* … sort products by ?sort_by … */ products;
+    return new Response(
+      JSON.stringify({ 'product-grid': grid(sorted), 'results-count': count(sorted) }),
+      { headers: { 'content-type': 'application/json' } },
+    );
+  }
+  return realFetch(input, init);
+};
+```
+
+**Swap the mock for your store:** delete the `window.fetch` block. The links already declare their sections and `FetchShopifySection` parses the response, so the same markup now hits the real endpoint. Use your theme's real section ids (for example `main-collection-product-grid`). You can [open the demo in the playground](https://ui.studiometa.dev/play/#html=eNrNVMtu1DAU3fcrLmbTSvWkTHlplAwCpK5AQprukZPcJBZOHNlOZyKEhPgYVuzZ8yn9Eq4TJ3TKIIYdmzzsc67vOT52nMubE4BcOMEzXbe6wcYl7GXmpG7YNKObVYEuq3iKhTaYsGsjGis95vSh0iJHcwZ8DU6YEt2CSqA5PfudLgqa%2BBtbobjBkZ0pYW3CarHjW77cKbCtyJD3%2FDFb03RMzU%2BYQuEO%2FINvjWhBOqwtz4ZOoBRtYBCHSjQzSTeOp1rlbL3Rxq3iyM8GoBheAJXBImFRppXCwRYbCaVeWCK8T%2FukFk0nFAvg%2B0Zeed2bSrey6Dc4uzpDdeuHuA2VE9YanXeZ46WR%2BblB2ylHOnTXuIkXek%2B1IeN4CuEj64yhJYNMgCsUrjOYj2Ii8W%2BqWiPJaGHJwVw25f8n751v8ByU3oLTUMmyuifU72TAyjxhY87%2BpONXIg%2B1P6SIF0bXCdOUQOl6fnEIOESXO30U7ANiu695JoHDneO2Ht9BevT0Ylb%2FhtTQttx%2B%2FhpUT7mNIzoT6xP%2F9YBzeKVdBQZLbz4Ig%2BAPR4s54E5kTvUgLITtG6YIBGGzVmGp8ZR5C%2B0InHaTf5T5J7ZewBACsFtPdxXWkPZQCxqjDom4AM7n03qozn4MJjMOWvCMLLiEECJ7R2ynDpa%2BG7e5sv8B%2F6AVleWX%2B%2FeDkhOOBkP6wFBrOdI18Zrulh%2Ff4fbLt%2BWTOFLyKNK1dhhYj54fzXrblRNpOZHiqFPrk1H3TxeL3MY%3D&script=eNqtVc2O40QQvucpShaSbcl2hoUVKImzrFYgQLCMJsNptSJtuxL3TtttdZfHRCNf9nm4c%2BdReBKq%2FRMyMEhzwAfb3VX1VX3VVdWyarQheACDR2kJzRvNOzXWZKGHg9EV%2BF9ZagupKySx%2FGBj0lrdSfLXCzkbv85J6jqCb5DyclfqRh5OO5w2b42orXT%2FTyK2kpEWyyXEcQw7WbVKEBYwmcMN1gUaWR%2Fh9fV3TudZj8Ob4gD23qGxsH9lR0ybiijbQyephO93P71dMQNPeCvwNiVVautF4GUXS%2BgTh%2Fe1yEu4F6pFkBaoRJjwoDOiaThmWcOmkPcgi9Szo%2Fd40okfZNF72wi6UjKMtA6xKwWNOQPbicZCdmLbBL5Fg9AhZK1UBXtiLRcn6NZYVPdo11CgQkKWcSiZ0vmdwyMNpaQhNINCAaeu0bImCCwieDv2MQgr1oeDNnBiRLCkDXphssg5NQSN0UWb8%2FGn8G4BnBqSpHAF%2FhvR%2BBGLZc6rFy%2Bhjx6JbzXh3%2FJPv%2Fyn%2FMf2eCF%2B4cTv%2BeBHp0cjC3YYSMLKroBODerDOZQQ0i1j7TetejK3k17sUDzIlbA29QZI94pzrWz8GRxFE3%2FubT95GJwwHkBSiSYIGofP6ErOtqwImTZceGB0ywVYOLsmGbj08Mfv8OfH39zGQKffLJXc7sMR8gNnPPD9kHdbtd2fKeYMRM%2Fg%2BF8FZNC2imw84JxZEv5Ksa1g%2BOatMdy5yy%2BuzjQThfWRyv7sZ7NkBxdhuUIZSzDljqgL3SUHt0wyXgTjTrheXIpYU9hTnTOVumkp4rqXNOTwgRmMsK1RrFZjBz%2Ff%2FBBMXAd1SNMUfEuup314NW2upq9kY1HnTpsNZ3FSGjzMOgljR%2BCXRM1queTaF6rUlnyOEkAeIGB5YlGYvLwWRnAOSmEDf25%2BPwyHOOdILY8wdMX3LkmSOUvv14PGk2hHJEZjq1%2Bykx%2BOdIY6iIXNueUcr9kFTPCJ%2BwSBiCAbEiXGyoEYsvEvHB32w1t0gtvYJe%2Bax6W0GAR8%2Bpo7fzC2SLeyQt3SvB3By6urMFwDD4GDuENwM7TOTxc0M12cmKSbI8mYfC6uYI7Sv2whfzX0TTCGHkazzqMKZKXh%2B1irn3gYpNbUA4UbtHyhMAcXQcQDoUTBjWXd1PU5Ng6UYlcgjOjzHFUyF%2B6g%2BKrRtc9XxojpMjOhnkv2Uf2tF%2F16ukb%2Br2ex%2BPetGDzzrgvXfwHl91zt&theme=light) and edit it live.
+
+## When the parameters come from user input
+
+A single link carries its own `sections` option. When the value comes from the customer, say a sort `<select>`, facet checkboxes or a search field, put a `<form method="get">` around the inputs and let `FetchShopifySection` build the URL from the form data — the same `sections` option applies, no hidden input needed:
+
+```liquid
+<form id="collection-sort" action="{{ collection.url }}" method="get"
+  data-component="FetchShopifySection"
+  data-option-sections="main-collection-product-grid,collection-results-count"
+  data-option-history>
+  <select name="sort_by" data-component="Action" data-on:change="FetchShopifySection(#collection-sort) -> target.$el.requestSubmit()">
+    <option value="manual">Featured</option>
+    <option value="price-ascending">Price, low to high</option>
+  </select>
+</form>
+```
+
+That is the entry point to [AJAX collection filtering](/articles/shopify-ajax-collection-filtering), where the same technique carries a full set of facets and keeps the URL shareable.
+
+## The `{% partial %}` preview (Liquid July '26)
+
+:::warning[Developer preview]
+The following uses Shopify's [partial rendering](https://shopify.dev/docs/storefronts/themes/getting-started/developer-preview/partial) API, part of the **Liquid July '26 developer preview**. It relies on the optional [`@shopify/partial-rendering`](https://www.npmjs.com/package/@shopify/partial-rendering) package. Treat it as forward-looking until it ships as stable.
+:::
+
+The Section Rendering API is stable and works today. Shopify is also previewing a newer primitive: you mark a region with the `{% partial %}` tag and refresh it by name, and the update preserves focus, text selection, form values and scroll position out of the box. `@studiometa/ui` ships a [`FetchShopifyPartial`](https://ui.studiometa.dev/components/FetchShopifyPartial/) component for it, which extends `Fetch`.
+
+```liquid
+{% partial 'product-grid' %}
+  <ul id="product-grid">
+    {% for product in collection.products %}
+      {% render 'product-card', product: product %}
+    {% endfor %}
+  </ul>
+{% endpartial %}
+
+<a
+  href="{{ collection.url }}?sort_by=price-ascending"
+  data-component="FetchShopifyPartial"
+  data-option-partials="product-grid,product-count"
+  data-option-history>
+  Price, low to high
+</a>
+```
+
+```js twoslash
+// @noErrors
+import { registerComponents } from '@studiometa/js-toolkit';
+import { FetchShopifyPartial } from '@studiometa/ui';
+
+registerComponents(FetchShopifyPartial);
+```
+
+`FetchShopifyPartial` **falls back to `Fetch`** automatically, which lowers the risk of adopting the preview early. It uses the partial rendering path only when the `partials` option lists at least one name and the preview package resolves and the request is a plain `GET`. Otherwise (no package installed, no partials configured, a `POST` form, custom headers) it behaves exactly like the base `Fetch` and does the id-based swap. So the same markup degrades cleanly on a store that is not on the preview.
+
+## Which one to reach for
+
+Use the **Section Rendering API** today: it is stable, needs no extra package, and the `Fetch` recipe above is production-ready. Reach for **`{% partial %}` and `FetchShopifyPartial`** when you want the ergonomics and automatic state preservation of the newer primitive and you are on the July '26 preview. Both share the same component model, so moving between them is a matter of the component name and the option.
+
+The sort link above swaps two server-rendered sections, the grid and the count, with no request code, while leaving the `?sections=` URL out of the address bar so a refresh never lands on raw section JSON. For the setup, see the [pillar](/articles/building-a-shopify-storefront-with-studiometa-ui).
+
+:::info[Next article]
+[AJAX collection filtering](/articles/shopify-ajax-collection-filtering) turns that link into a full faceted form.
+:::

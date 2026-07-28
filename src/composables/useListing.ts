@@ -71,16 +71,8 @@ export type DocumentNames = keyof Documents;
 
 export const documentNames: Array<DocumentNames> = Object.keys(documents) as DocumentNames[];
 
-function byPath(a, b) {
-  if (a.filename < b.filename) {
-    return -1;
-  }
-
-  if (a.filename > b.filename) {
-    return 1;
-  }
-
-  return 0;
+function byDate(a, b) {
+  return new Date(a.date).getTime() - new Date(b.date).getTime();
 }
 
 export function useListing(type: DocumentNames, count?: number) {
@@ -88,7 +80,7 @@ export function useListing(type: DocumentNames, count?: number) {
   count = count ?? items.value.length;
   return {
     ...documents[type],
-    items: computed(() => items.value.sort(byPath).reverse().slice(0, count)),
+    items: computed(() => items.value.sort(byDate).reverse().slice(0, count)),
     count,
   };
 }

@@ -1,0 +1,137 @@
+---
+date: 2026-08-12
+title: Shopify variant selector
+description: Build a Shopify variant selector with @studiometa/ui. Reflect the selected variant into price, availability and the buy button with reactive Data components.
+tags: shopify, variant-selector, reactive-data, progressive-enhancement, studiometa-ui
+---
+
+# Shopify variant selector
+
+<MetaInfo class="block">12/08/2026 in #shopify #variant-selector #progressive-enhancement</MetaInfo>
+
+:::info[The series]
+
+**Part 4 of 7** of the series [Building a Shopify storefront with @studiometa/ui](/articles/building-a-shopify-storefront-with-studiometa-ui).
+
+:::
+
+A variant selector has one job: when the customer picks an option, the price, the availability and the buy button reflect the chosen variant. That is state management, but small and local, and [`@studiometa/ui`](https://ui.studiometa.dev) has a set of components for exactly that. Built on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev), they keep your server-rendered Liquid and add reactivity in place.
+
+Pick a size. The price, the label and the buy button react instantly:
+
+import demoTwig from './demo.twig?raw';
+import demoTs from './demo.ts?raw';
+
+<UiPlayground
+  client:visible
+  html={demoTwig}
+  script={demoTs}
+  height="240px"></UiPlayground>
+
+Everything reactive here is declared in markup with the `Data` family of components. The size `L` is marked sold out, so selecting it disables the button. You can [open the demo in the playground](https://ui.studiometa.dev/play/#html=eNq9VM2O0zAQvu9TDL4EpPWGLSshSlIEC7f2lL0hDm48Ta11bCt2%2F2C58Dw8FU%2FCJE66bVUuK7GHKLZnPPN9M%2F4mk2oNUgTBS1s7a9CEnH2mfVFahyyarAvKGl41duVythaNEiYwKLXwPme12PINryV4J0rkO37DJhcAbeT2Tys3uC6sCXxutWSTuyXCHWKWulOngNvAddUF6SwvOIcW0i0hXAWUUAvnIVAAjxrL9sSr7wjBggDXqBIvKZYiKtwriVfA%2BT4WYTT9Gs7yHpKwY6%2B%2BBPe4y1mb7Ly5jUWXc%2FbyBxRjSK7fwZ9fv5NLmB1uprQZjboN%2FPy6FnqF317Bw8PehU3iIktbuH19%2FlEoX0P3L1dNQyTSt6%2F3hSsI5zhSPkv1kzLyuMOP9CbFmeRZ2vW0XS0Uaukx7DurcQuVcPxNnz7TWKGRg9033Bq9o7gUPUujcfAUc9RHgVTA2vOSkGLTRb1%2BfA3KUIkh7ByVuRFSWQZG1LTpcENXzpwVPbETyjMrUR9zVnWNUomAUC6xvKfHlE6g6Gl30P4jzNkTYBK82TPBmz4N3vQUXpYO7yW%2BnkHRXxYL0i8Jt6o0RknPVzv6QrAGNks0xzLvRw8oD56mCNhVGNSdxUtd5kgrHkShnmMRkx%2FYz2v80ITdFVKeaCoMV1J5MdeEK48FgzzPIZkm76F3aJV5SzOPcp76wAdIip5DAjQRPkrZTrBSNCGJmfteui2%2FAbfjI6D5aySlm1eD3KP2N0tqNQxoxpbmsAo0h4dRcBC6a0aszOSi1%2FNfq3Lofw%3D%3D&script=eNptkctOAzEMRff9CotNO1Ife7rhuWCBQJQfSGc8rWkmHiVOqwHx7zhJW4TKYiSPH8fXudT17AW%2BwOOGgqC%2FZ804dBLgG1rPHYxvgsSGuEMxi48wE2a7IxkvR%2BfhByPmjlwzzVFCRMHj32PbYi0lfuYGbQlXNff474pIih4tFvC%2BxdwKrenIDkAB%2BugRakuqbxaoQZVtaqE9yXANjsGhHNjvYIse5xngjXJDwhkdFc0Ejr5GmJwFVcuc7z2d0qcLqmmuWLNGWyrpyirTXJNr6zjoJ8KuNJRzKzDWFnEgXNai1QI2EOhTtb04MKnBJlgQVnEDR2hRO7Q9YHmZ3nMTa5nvjSeTTGGfaStlke58Q9egJ7eB29enhJoERLjKlyscDpSKV0AujxkvVFus5qNLv7P8bMuFWX8d%2FXX6eOxy9ANRUcnd&theme=light) to edit it.
+
+<TableOfContent open />
+
+## The Data family
+
+`@studiometa/ui` ships a small set of components that bind form state to the DOM reactively, grouped by a shared key. The [documentation](https://ui.studiometa.dev/components/DataBind/) calls them the `Data` family. Five of them cover a variant selector:
+
+- [`DataScope`](https://ui.studiometa.dev/components/DataScope/) defines a boundary and a shared group, so the components inside talk to each other without wiring.
+- [`DataModel`](https://ui.studiometa.dev/components/DataModel/) is the source. Put it on the option inputs; the selected value is published to the group under the input's `name`. Radios sharing a `name` behave as one value.
+- [`DataComputed`](https://ui.studiometa.dev/components/DataComputed/) derives a value from the group with a JavaScript expression, here the price.
+- [`DataBind`](https://ui.studiometa.dev/components/DataBind/) reflects a group value into an element, here the selected-size label.
+- [`DataEffect`](https://ui.studiometa.dev/components/DataEffect/) runs a side effect when a value changes, here toggling the buy button.
+
+The markup reads top to bottom as the data flow:
+
+```html
+<div data-component="DataScope" data-option-group="variant">
+  <!-- source: the checked radio publishes its value under the key "size" -->
+  <input type="radio" name="size" value="S" data-component="DataModel" data-option-immediate checked> S
+  <input type="radio" name="size" value="M" data-component="DataModel" data-option-immediate> M
+
+  <!-- derived: compute a price from the selected size -->
+  <span data-component="DataComputed" data-option-key="size"
+    data-option-compute="({ S: '19 €', M: '19 €', L: '22 €' }[value]) || '19 €'">19 €</span>
+
+  <!-- reflected: show the raw selected value -->
+  <span data-component="DataBind" data-option-key="size">S</span>
+
+  <!-- effect: disable the button for a sold-out size -->
+  <button type="button" data-component="DataEffect" data-option-key="size"
+    data-option-effect="target.disabled = value === 'L'; target.textContent = value === 'L' ? 'Sold out' : 'Add to cart'">
+    Add to cart
+  </button>
+</div>
+```
+
+Register the components once and they wire themselves up from the attributes:
+
+```js twoslash
+// @noErrors
+import { registerComponents } from '@studiometa/js-toolkit';
+import { DataBind, DataComputed, DataEffect, DataModel, DataScope } from '@studiometa/ui';
+
+registerComponents(DataScope, DataModel, DataComputed, DataBind, DataEffect);
+```
+
+`data-option-immediate` makes the checked radio publish its value on mount, so the derived UI is correct before the first interaction. The `compute` and `effect` expressions receive the current `value` for their key (plus the element as `target` and the whole group as `$data`), so they stay small and declarative.
+
+## Demo data vs. store data
+
+The price map in the demo (`{ S: '19 €', … }`) is a stand-in for your product's variant data. Client-side, hardcoding it keeps the example self-contained, but on a real store the price and availability are authoritative: they depend on inventory and pricing rules the browser should not guess. So the reactive layer above is the right tool for instant UI (labels, composing a variant id from several options, optimistic enable/disable), while the server computes price and availability. Here is how to wire that.
+
+## The real wiring: options and the Section Rendering API
+
+Shopify recommends rendering one selector per option from [`product.options_with_values`](https://shopify.dev/docs/api/liquid/objects/product), and using the [Section Rendering API](/articles/shopify-section-rendering-api-example) to load the price and availability for the newly selected variant. Each option value already tells you whether it is `selected` and `available`, so the initial state is server-rendered and correct.
+
+```liquid
+{% assign current_variant = product.selected_or_first_available_variant %}
+
+<form data-component="DataScope" data-option-group="variant">
+  {% for option in product.options_with_values %}
+    <fieldset>
+      <legend>{{ option.name }}</legend>
+      {% for value in option.values %}
+        <label>
+          <input type="radio"
+            name="{{ option.name }}"
+            value="{{ value | escape }}"
+            data-component="DataModel"
+            data-option-immediate
+            {% if value.selected %}checked{% endif %}
+            {% unless value.available %}disabled{% endunless %}>
+          {{ value }}
+        </label>
+      {% endfor %}
+    </fieldset>
+  {% endfor %}
+
+  {% comment %} price must be a real section (sections/price.liquid), not a
+     snippet: only sections can be re-rendered with ?sections=price. The
+     {% section %} tag wraps it in <div id="shopify-section-price"> for you,
+     and the section itself reads current_variant's price and availability. {% endcomment %}
+  {% section 'price' %}
+</form>
+```
+
+When a variant is deep-linked with the `?variant={id}` URL parameter, `product.selected_variant` reflects it, and `product.selected_or_first_available_variant` gives you a sensible default otherwise. `price` here is a genuine theme section (`sections/price.liquid`), because the Section Rendering API only re-renders real section files, not a snippet you wrap in a hand-written `<div id="shopify-section-price">`. To refresh that authoritative section on selection, fetch the product URL for the chosen variant and swap the section by `id`, the exact `FetchShopifySection` recipe from the [Section Rendering article](/articles/shopify-section-rendering-api-example):
+
+```html
+<a
+  href="{{ product.url }}?variant={{ current_variant.id }}"
+  data-component="FetchShopifySection"
+  data-option-sections="price">
+  …
+</a>
+```
+
+In practice you derive the selected variant id from the option inputs with a `DataComputed`, and trigger the fetch on change, as with the sort control in [collection filtering](/articles/shopify-ajax-collection-filtering). The `Data` components handle the instant feedback; the Section Rendering call handles the price and the availability. Note that `product.variants` is capped at 250, so for high-variant products lean on `options_with_values` and Section Rendering rather than dumping the full variant list as JSON.
+
+## Where this goes next
+
+The selector above derives price, label and button state from the option inputs, declared entirely in markup, with Shopify rendering the authoritative price. For the section-swapping mechanics, see the [Section Rendering API example](/articles/shopify-section-rendering-api-example).
+
+:::info[Next article]
+The [AJAX cart drawer](/articles/shopify-ajax-cart-drawer) adds the selected variant to the cart and opens a drawer without a reload.
+:::

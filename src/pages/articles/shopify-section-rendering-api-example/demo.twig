@@ -1,0 +1,42 @@
+<div
+  data-component="Action"
+  data-on:fetch-before="Transition(#loader) -> target.enter()"
+  data-on:fetch-after="Transition(#loader) -> target.leave()"
+  class="max-w-2xl space-y-4">
+  <div class="flex flex-wrap items-center gap-4">
+    <span class="font-bold">Sort:</span>
+    <a
+      href="/collections/all?sort_by=manual"
+      data-component="FetchShopifySection"
+      data-option-sections="product-grid,results-count"
+      class="border-b border-current">
+      Featured
+    </a>
+    <a
+      href="/collections/all?sort_by=price-ascending"
+      data-component="FetchShopifySection"
+      data-option-sections="product-grid,results-count"
+      class="border-b border-current">
+      Price, low to high
+    </a>
+    <span
+      id="loader"
+      data-component="Transition"
+      data-option-enter-from="opacity-0"
+      data-option-leave-to="opacity-0"
+      data-option-leave-keep
+      class="opacity-0 text-sm text-current/60">
+      Loading…
+    </span>
+  </div>
+
+  <!-- Both regions are wrapped exactly as Shopify wraps a section:
+       <div id="shopify-section-{id}">. Fetch swaps them by matching id. -->
+  <div id="shopify-section-results-count" class="text-sm text-current/70">3 products</div>
+
+  <ul id="shopify-section-product-grid" class="grid grid-cols-3 gap-4">
+    <li class="p-4 border rounded">Cap · €25</li>
+    <li class="p-4 border rounded">Tote · €18</li>
+    <li class="p-4 border rounded">Mug · €12</li>
+  </ul>
+</div>

@@ -1,0 +1,38 @@
+<div data-component="DataScope" data-option-group="variant" class="max-w-md space-y-4">
+  <div>
+    <p class="font-bold">The Tee</p>
+    <p class="text-lg">
+      <!-- DataComputed maps the selected size to a price, client-side. -->
+      <span
+        data-component="DataComputed"
+        data-option-key="size"
+        data-option-compute="({ S: '19 €', M: '19 €', L: '22 €' }[value]) || '19 €'">19 €</span>
+    </p>
+    <p class="text-sm text-current/70">
+      Size: <span data-component="DataBind" data-option-key="size">S</span>
+    </p>
+  </div>
+
+  <fieldset class="flex gap-3">
+    <legend class="sr-only">Size</legend>
+    <label class="flex items-center gap-1">
+      <input type="radio" name="size" value="S" data-component="DataModel" data-option-immediate checked /> S
+    </label>
+    <label class="flex items-center gap-1">
+      <input type="radio" name="size" value="M" data-component="DataModel" data-option-immediate /> M
+    </label>
+    <label class="flex items-center gap-1">
+      <input type="radio" name="size" value="L" data-component="DataModel" data-option-immediate /> L
+    </label>
+  </fieldset>
+
+  <!-- DataEffect toggles the buy button when the selected variant is sold out. -->
+  <button
+    type="button"
+    data-component="DataEffect"
+    data-option-key="size"
+    data-option-effect="target.disabled = value === 'L'; target.textContent = value === 'L' ? 'Sold out' : 'Add to cart'"
+    class="px-4 py-2 rounded bg-current text-white disabled:opacity-40">
+    Add to cart
+  </button>
+</div>
