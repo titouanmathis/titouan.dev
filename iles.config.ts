@@ -168,10 +168,10 @@ const ogImages = {
           decode(page.rendered.match(/<title>([^<]*)<\/title>/i)?.[1] ?? '').trim();
         if (!title) continue;
 
-        let description =
+        // Full description; satori clamps it to two lines with an ellipsis.
+        const description =
           meta(page.rendered, 'property', 'description') ||
           meta(page.rendered, 'name', 'description');
-        if (description.length > 140) description = `${description.slice(0, 139).trimEnd()}…`;
 
         const slug = page.path === '/' ? 'index' : page.path.replace(/^\/|\/$/g, '');
         const file = join('dist', 'og', `${slug}.jpg`);

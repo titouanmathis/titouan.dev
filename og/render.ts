@@ -59,7 +59,7 @@ function iconDataUri(sharp: typeof import('sharp')): Promise<string> {
   if (!iconPromise) {
     iconPromise = (async () => {
       const svg = readFileSync(join(process.cwd(), 'public', 'icon.svg'));
-      const png = await sharp(svg).resize(128).png().toBuffer();
+      const png = await sharp(svg).resize(192).png().toBuffer();
       return `data:image/png;base64,${png.toString('base64')}`;
     })();
   }
@@ -89,15 +89,29 @@ export async function renderOgImage(title: string, description: string): Promise
         type: 'img',
         props: {
           src: await iconDataUri(sharp),
-          width: 64,
-          height: 64,
-          style: { width: 64, height: 64 },
+          width: 96,
+          height: 96,
+          style: { width: 96, height: 96 },
         },
       },
       el({ flexDirection: 'column', gap: 24 }, [
         el({ fontSize: 64, fontWeight: 700, lineHeight: 1.1 }, title),
         ...(description
-          ? [el({ fontSize: 30, color: '#555555', lineHeight: 1.35 }, description)]
+          ? [
+              el(
+                {
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 2,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  fontSize: 30,
+                  color: '#555555',
+                  lineHeight: 1.35,
+                },
+                description,
+              ),
+            ]
           : []),
       ]),
     ],
