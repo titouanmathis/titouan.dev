@@ -29,7 +29,7 @@
   <!-- The drawer is a native <dialog>. Dialog calls showModal(), so the browser
        traps focus, makes the rest of the page inert and restores focus on close.
        The backdrop and panel are ViewTransition children, batched into one
-       coordinated transition; the slide/fade live in the <style> below. -->
+       coordinated transition; the slide/fade live in the CSS panel. -->
   <dialog
     id="cart-dialog"
     data-component="Action Dialog"
@@ -43,11 +43,14 @@
       data-option-leave-to="opacity-0"
       class="fixed inset-0 bg-black/40 opacity-0"></div>
 
+    <!-- Right-anchored panel; translate-x-full opacity-0 is the hidden state.
+         The opacity-0 keeps WebKit from snapshotting the offscreen panel and
+         dragging a ghost copy across on open. -->
     <div
       data-component="ViewTransition"
       data-option-view-transition-name="cart-panel"
-      data-option-leave-to="translate-x-full"
-      class="absolute inset-y-0 right-0 w-screen max-w-sm overflow-y-auto p-6 bg-white dark:bg-zinc-800 shadow-2xl translate-x-full">
+      data-option-leave-to="translate-x-full opacity-0"
+      class="absolute inset-y-0 right-0 w-screen max-w-sm overflow-y-auto p-6 bg-white dark:bg-zinc-800 shadow-2xl translate-x-full opacity-0">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-bold">Your cart</h2>
         <button
@@ -100,20 +103,3 @@
     </article>
   </main>
 </div>
-
-<style>
-  /* The native ::backdrop cannot be class-transitioned; animate our own. */
-  dialog::backdrop { background: transparent; }
-
-  /* The panel slides in from / out to the right edge. */
-  @keyframes cart-slide-in  { from { transform: translateX(100%); } }
-  @keyframes cart-slide-out { to   { transform: translateX(100%); } }
-  ::view-transition-new(cart-panel) { animation: 300ms ease-out both cart-slide-in; }
-  ::view-transition-old(cart-panel) { animation: 300ms ease-in both cart-slide-out; }
-
-  /* Backdrop fades in / out. */
-  @keyframes cart-fade-in  { from { opacity: 0; } }
-  @keyframes cart-fade-out { to   { opacity: 0; } }
-  ::view-transition-new(cart-backdrop) { animation: 300ms ease-out both cart-fade-in; }
-  ::view-transition-old(cart-backdrop) { animation: 300ms ease-in both cart-fade-out; }
-</style>
