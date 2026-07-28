@@ -14,6 +14,7 @@ import type { Root } from 'mdast';
 import type { ShikiTransformer } from 'shiki';
 import tailwindcss from '@tailwindcss/vite';
 import { withTrailingSlash } from '@studiometa/js-toolkit/utils';
+import { renderOgImage } from './og/render';
 
 /**
  * Expose the code block language as a `data-lang` attribute on the `<pre>`
@@ -129,8 +130,62 @@ function addTrailingSlash(path: string): string {
   return url.toString().replace('http://localhost', '');
 }
 
+// îles module that generates one Open Graph card (dist/og/<slug>.png) per page
+// from the title and description already rendered into its <head>. Registered
+// as a module rather than a bare `ssg` config key: `chainModuleCallbacks`
+// overwrites a config-level `ssg.onSiteRendered` as soon as any module (e.g.
+// @islands/feed) defines one, so the hook has to live on a module to run. See
+// og/render.ts.
+const ogImages = {
+  name: 'og-images',
+  ssg: {
+    async onSiteRendered({
+      pages,
+    }: {
+      pages: Array<{ path: string; rendered: string; outputFilename: string }>;
+    }) {
+      const { mkdir, writeFile } = await import('node:fs/promises');
+      const { dirname, join } = await import('node:path');
+
+      const decode = (s: string) =>
+        s
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .replace(/&#(?:39|x27);/g, "'");
+
+      const meta = (html: string, key: string, value: string) => {
+        const tag = html.match(new RegExp(`<meta[^>]*\\b${key}="${value}"[^>]*>`, 'i'))?.[0];
+        return decode(tag?.match(/\bcontent="([^"]*)"/i)?.[1] ?? '').trim();
+      };
+
+      let made = 0;
+      for (const page of pages) {
+        if (!page.outputFilename.endsWith('.html')) continue;
+        const title =
+          meta(page.rendered, 'property', 'og:title') ||
+          decode(page.rendered.match(/<title>([^<]*)<\/title>/i)?.[1] ?? '').trim();
+        if (!title) continue;
+
+        let description =
+          meta(page.rendered, 'property', 'description') ||
+          meta(page.rendered, 'name', 'description');
+        if (description.length > 140) description = `${description.slice(0, 139).trimEnd()}…`;
+
+        const slug = page.path === '/' ? 'index' : page.path.replace(/^\/|\/$/g, '');
+        const file = join('dist', 'og', `${slug}.jpg`);
+        await mkdir(dirname(file), { recursive: true });
+        await writeFile(file, await renderOgImage(title, description));
+        made += 1;
+      }
+      console.log(`[og] generated ${made} card(s)`);
+    },
+  },
+};
+
 export default defineConfig({
-  modules: [headings(), icons(), '@islands/feed'],
+  modules: [headings(), icons(), '@islands/feed', ogImages],
   prettyUrls: true,
   turbo: true,
   siteUrl: process?.env?.URL ?? process?.env?.CF_PAGES_URL ?? 'http://localhost:3000',

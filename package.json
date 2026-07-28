@@ -17,11 +17,14 @@
     "fix:prettier": "npm run lint:prettier -- --write"
   },
   "devDependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
     "@iconify-json/bx": "^1.2.2",
     "@iconify-json/carbon": "^1.2.13",
     "@islands/feed": "^0.10.0",
     "@islands/headings": "^0.10.0",
     "@islands/icons": "^0.10.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@shikijs/rehype": "4.3.1",
     "@shikijs/twoslash": "4.3.1",
     "@studiometa/prettier-config": "^4.4.0",
@@ -36,6 +39,8 @@
     "oxlint": "1.19.0",
     "remark-directive": "4.0.0",
     "remark-gfm": "^4.0.1",
+    "satori": "^0.28.1",
+    "sharp": "^0.35.3",
     "shiki": "4.3.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"

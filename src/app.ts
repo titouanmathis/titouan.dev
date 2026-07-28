@@ -10,6 +10,10 @@ export default defineApp({
     a: Anchor,
   },
   head({ frontmatter, site, route, config }) {
+    const ogImage = computed(() => {
+      const slug = route.path === '/' ? 'index' : route.path.replace(/^\/|\/$/g, '');
+      return new URL(`/og/${slug}.jpg`, config.siteUrl).toString();
+    });
     return {
       meta: [
         { property: 'author', content: site.author },
@@ -23,19 +27,41 @@ export default defineApp({
         },
         {
           name: 'twitter:card',
-          content: 'summary',
+          content: 'summary_large_image',
         },
         {
           name: 'twitter:image',
+          content: ogImage,
+        },
+        {
+          property: 'og:title',
+          content: computed(() => frontmatter.title ?? site.title),
+        },
+        {
+          property: 'og:type',
           content: computed(() =>
-            new URL('/android-chrome-512x512.png', config.siteUrl).toString(),
+            /^\/(articles|notes)\//.test(route.path) ? 'article' : 'website',
           ),
         },
         {
-          name: 'og:image',
-          content: computed(() =>
-            new URL('/android-chrome-512x512.png', config.siteUrl).toString(),
-          ),
+          property: 'og:url',
+          content: computed(() => new URL(route.path, config.siteUrl).toString()),
+        },
+        {
+          property: 'og:image',
+          content: ogImage,
+        },
+        {
+          property: 'og:image:type',
+          content: 'image/jpeg',
+        },
+        {
+          property: 'og:image:width',
+          content: '1800',
+        },
+        {
+          property: 'og:image:height',
+          content: '945',
         },
       ],
       link: [
