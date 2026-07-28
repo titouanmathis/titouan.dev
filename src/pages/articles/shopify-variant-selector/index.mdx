@@ -51,14 +51,19 @@ The markup reads top to bottom as the data flow:
   <input type="radio" name="size" value="M" data-component="DataModel" data-option-immediate> M
 
   <!-- derived: compute a price from the selected size -->
-  <span data-component="DataComputed" data-option-key="size"
+  <span
+    data-component="DataComputed"
+    data-option-key="size"
     data-option-compute="({ S: '19 €', M: '19 €', L: '22 €' }[value]) || '19 €'">19 €</span>
 
   <!-- reflected: show the raw selected value -->
   <span data-component="DataBind" data-option-key="size">S</span>
 
   <!-- effect: disable the button for a sold-out size -->
-  <button type="button" data-component="DataEffect" data-option-key="size"
+  <button
+    type="button"
+    data-component="DataEffect"
+    data-option-key="size"
     data-option-effect="target.disabled = value === 'L'; target.textContent = value === 'L' ? 'Sold out' : 'Add to cart'">
     Add to cart
   </button>
@@ -94,7 +99,8 @@ Shopify recommends rendering one selector per option from [`product.options_with
       <legend>{{ option.name }}</legend>
       {% for value in option.values %}
         <label>
-          <input type="radio"
+          <input
+            type="radio"
             name="{{ option.name }}"
             value="{{ value | escape }}"
             data-component="DataModel"

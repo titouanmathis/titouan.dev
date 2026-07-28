@@ -39,7 +39,9 @@ Shopify already filters and sorts collections from URL parameters. Storefront fi
 A `<form method="get">` is exactly that. Put [`FetchShopifySection`](https://ui.studiometa.dev/components/FetchShopifySection/) on the form and it intercepts the submit, builds the URL from the form data (this is what a GET form does natively), adds the sections to refresh, fetches it, and swaps them back in:
 
 ```html
-<form action="/collections/all" method="get"
+<form
+  action="/collections/all"
+  method="get"
   data-component="FetchShopifySection"
   data-option-sections="product-grid,results-count"
   data-option-history>
@@ -103,7 +105,10 @@ The demo uses a simple `tag` parameter to keep the mock readable. [Open it in th
 On a real store you do not invent facet inputs. Merchants configure filters in the admin, and your theme renders them from the [`collection.filters`](https://shopify.dev/docs/api/liquid/objects/filter) object. Each filter value carries the exact URL parameter name Shopify expects, so you output them as-is. The [filter URL parameter](https://shopify.dev/docs/storefronts/themes/navigation-search/filtering/storefront-filtering) format is `filter.{p|v}.{attribute}=value` (`p` for product scope, `v` for variant scope), for example `filter.p.product_type=shoes` or `filter.v.availability=1`.
 
 ```liquid
-<form id="collection-filters" action="{{ collection.url }}" method="get"
+<form
+  id="collection-filters"
+  action="{{ collection.url }}"
+  method="get"
   data-component="FetchShopifySection Action"
   data-option-sections="main-collection-product-grid,collection-results-count"
   data-option-history
@@ -126,7 +131,10 @@ On a real store you do not invent facet inputs. Merchants configure filters in t
       <legend>{{ filter.label }}</legend>
       {% for value in filter.values %}
         <label>
-          <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"
+          <input
+            type="checkbox"
+            name="{{ value.param_name }}"
+            value="{{ value.value }}"
             {% if value.active %}checked{% endif %}>
           {{ value.label }} ({{ value.count }})
         </label>

@@ -112,7 +112,10 @@ window.fetch = async (input, init) => {
 A single link carries its own `sections` option. When the value comes from the customer, say a sort `<select>`, facet checkboxes or a search field, put a `<form method="get">` around the inputs and let `FetchShopifySection` build the URL from the form data — the same `sections` option applies, no hidden input needed:
 
 ```liquid
-<form id="collection-sort" action="{{ collection.url }}" method="get"
+<form
+  id="collection-sort"
+  action="{{ collection.url }}"
+  method="get"
   data-component="FetchShopifySection"
   data-option-sections="main-collection-product-grid,collection-results-count"
   data-option-history>

@@ -41,24 +41,30 @@ The drawer traps focus, closes on <kbd>Escape</kbd> and locks the background scr
 There are no refs to wire. The component's element *is* the `<dialog>`; inside it you put whatever you want, here a fading backdrop and a right-anchored panel, each a [`ViewTransition`](https://ui.studiometa.dev/components/ViewTransition/) child so `Dialog` animates them together. The panel's edge and slide are yours to style (`absolute inset-y-0 right-0` plus a transform and keyframes); the library ships no drawer opinion.
 
 ```html
-<button type="button" data-component="Action"
+<button
+  type="button"
+  data-component="Action"
   data-on:click="Dialog(#cart-dialog) -> target.open()">
   Cart (<span id="cart-count">0</span>)
 </button>
 
-<dialog id="cart-dialog" data-component="Action Dialog"
+<dialog
+  id="cart-dialog"
+  data-component="Action Dialog"
   data-on:cancel.prevent="Dialog.close()"
   data-on:click="event.target === $el && Dialog.close()"
   class="fixed inset-0 m-0 p-0 w-full h-full max-w-none max-h-none overflow-hidden bg-transparent">
   <!-- fading backdrop -->
-  <div data-component="Action ViewTransition"
+  <div
+    data-component="Action ViewTransition"
     data-on:click="Dialog(#cart-dialog) -> target.close()"
     data-option-view-transition-name="cart-backdrop"
     data-option-leave-to="opacity-0"
     class="fixed inset-0 bg-black/40 opacity-0"></div>
 
   <!-- right-anchored panel; translate-x-full opacity-0 is the hidden state -->
-  <div data-component="ViewTransition"
+  <div
+    data-component="ViewTransition"
     data-option-view-transition-name="cart-panel"
     data-option-leave-to="translate-x-full opacity-0"
     class="absolute inset-y-0 right-0 w-screen max-w-sm overflow-y-auto p-6 bg-white translate-x-full opacity-0">
@@ -77,7 +83,9 @@ Shopify's [Cart AJAX API](https://shopify.dev/docs/api/ajax/reference/cart) adds
 The add-to-cart form is a `Fetch` component. It posts the variant `id` and `quantity`, plus the sections to refresh, and its `response` option pulls the section HTML out of the JSON:
 
 ```liquid
-<form action="{{ routes.cart_add_url }}" method="post"
+<form
+  action="{{ routes.cart_add_url }}"
+  method="post"
   data-component="Fetch"
   data-option-response="response.json().then((data) => Object.values(data.sections).filter(Boolean).join(''))">
   <input type="hidden" name="id" value="{{ variant.id }}">
