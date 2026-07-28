@@ -150,10 +150,6 @@ On a real store you do not invent facet inputs. Merchants configure filters in t
 
 One thing to keep: the form state survives a refresh either way. The `<noscript>` path navigates to a clean `filter.*`/`sort_by` URL, and because the checkboxes are rendered `checked` from `value.active` and the sort `<option>` from `collection.sort_by`, Shopify rebuilds the exact same state server-side on a reload. The enhanced path pushes that same clean URL through `data-option-history` — `FetchShopifySection` keeps the `?sections=` parameter out of it — so a shared or reloaded link lands on the filtered page, never on raw section JSON.
 
-## Where this goes next
-
-Changing a facet now submits a GET form and swaps the grid and the count in place, keeps the filter URL shareable through `data-option-history`, and falls back to a plain GET navigation without JavaScript. For the mechanics, see the [Section Rendering API example](/articles/shopify-section-rendering-api-example).
-
 :::info[Next article]
 The [variant selector](/articles/shopify-variant-selector) reuses the same shape: a control whose state drives a server-rendered section.
 :::

@@ -152,10 +152,6 @@ window.fetch = async (input, init) => {
 
 **Swap the mock for your store:** delete the `window.fetch` block. The form already posts to `/cart/add.js` with the `sections` parameter, which Shopify answers with real bundled sections, so the same markup drives the real cart. Use locale-aware URLs on a live theme: `{{ routes.cart_add_url }}` in Liquid, or `window.Shopify.routes.root + 'cart/add.js'` in JavaScript. You can point the section rendering at a specific page with a `sections_url` parameter (for example `/cart`) if the drawer markup only exists there.
 
-## Where this goes next
-
-Submitting the add-to-cart form now adds the selected variant, refreshes the drawer and count from one bundled request, and opens an accessible panel. The section-swapping underneath it all is the [Section Rendering API example](/articles/shopify-section-rendering-api-example).
-
 :::info[Next article]
 Next, [Shopify predictive search](/articles/shopify-predictive-search) adds a debounced, keyboard-navigable suggestions dropdown over the search endpoint.
 :::

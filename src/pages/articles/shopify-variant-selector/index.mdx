@@ -134,10 +134,6 @@ When a variant is deep-linked with the `?variant={id}` URL parameter, `product.s
 
 In practice you derive the selected variant id from the option inputs with a `DataComputed`, and trigger the fetch on change, as with the sort control in [collection filtering](/articles/shopify-ajax-collection-filtering). The `Data` components handle the instant feedback; the Section Rendering call handles the price and the availability. Note that `product.variants` is capped at 250, so for high-variant products lean on `options_with_values` and Section Rendering rather than dumping the full variant list as JSON.
 
-## Where this goes next
-
-The selector above derives price, label and button state from the option inputs, declared entirely in markup, with Shopify rendering the authoritative price. For the section-swapping mechanics, see the [Section Rendering API example](/articles/shopify-section-rendering-api-example).
-
 :::info[Next article]
 The [AJAX cart drawer](/articles/shopify-ajax-cart-drawer) adds the selected variant to the cart and opens a drawer without a reload.
 :::
