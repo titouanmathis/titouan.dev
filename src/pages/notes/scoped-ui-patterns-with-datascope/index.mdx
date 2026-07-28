@@ -1,0 +1,227 @@
+---
+date: 2026-07-27
+title: Scoped, reusable UI patterns with DataScope
+description: The new DataScope component from @studiometa/ui gives Data groups a local boundary, so you can build interactive patterns like tabs and scoped forms from primitives and drop two of them on a page without them colliding.
+tags: studiometa-ui, data-components, progressive-enhancement, javascript
+---
+
+# Scoped, reusable UI patterns with DataScope
+
+<MetaInfo class="block">27/07/2026 in #studiometa-ui #data-components</MetaInfo>
+
+The [Data components](https://ui.studiometa.dev/components/DataBind/) from [`@studiometa/ui`](https://ui.studiometa.dev) ([`DataModel`](https://ui.studiometa.dev/components/DataModel/), [`DataBind`](https://ui.studiometa.dev/components/DataBind/), [`DataComputed`](https://ui.studiometa.dev/components/DataComputed/) and [`DataEffect`](https://ui.studiometa.dev/components/DataEffect/)) are built on the [`withGroup`](https://js-toolkit.studiometa.dev/api/decorators/withGroup.html) decorator from [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev). `withGroup` collects every instance that shares a `data-option-group` into a set each member can reach through its `$group` getter, and the Data components use it to keep a value in sync across that group. The catch is that the group is resolved app-wide, so two UI patterns that happen to use the same group name land in the same set and share one value, so a second copy of a component on the page fights the first.
+
+[`DataScope`](https://ui.studiometa.dev/components/DataScope/) fixes that by using `withGroup`'s [scoping feature](https://js-toolkit.studiometa.dev/api/decorators/withGroup.html#scoping-groups-to-a-parent-component). Wrapping a subtree in a `DataScope` marks it as a scope, so descendant Data components resolve their group against that scope instead of app-wide: two scopes can reuse the same group name and never share values, and each scope's keyed values live in a frozen `$data` snapshot. The upshot is that you can assemble a reusable interactive UI pattern out of the primitives and drop two of them side by side without a collision.
+
+import demoTabsUnscoped from './demo-tabs-unscoped.twig?raw';
+import demoTabs from './demo-tabs.twig?raw';
+import demoFormUnscoped from './demo-form-unscoped.twig?raw';
+import demoForm from './demo-form.twig?raw';
+import demoStepperUnscoped from './demo-stepper-unscoped.twig?raw';
+import demoStepper from './demo-stepper.twig?raw';
+import demoTs from './demo.ts?raw';
+
+:::warning[Availability]
+
+`DataScope` ships with [`@studiometa/ui`](https://ui.studiometa.dev) **v1.9.0** and up, make sure you are on that release or newer before reaching for it.
+
+:::
+
+## Tabs without a Tabs component
+
+A tab interface comes together from the primitives. A hidden `DataModel` holds the `active` tab as the single source of truth, seeded to `overview` with `data-option-immediate`; each tab button sets it on click and reads it back to show its selected state, and every panel is a `DataBind` that hides itself unless it is the active one. No `Tabs` class is registered, the behaviour is entirely declarative.
+
+But put two of these on a page and, without a scope, they share the app-wide `tabs` group: switch a tab in one set and the other jumps with it.
+
+<UiPlayground client:visible html={demoTabsUnscoped} script={demoTs} height="200px"></UiPlayground>
+
+Wrap each set in its own `DataScope`, reusing the same group name and `active` key, and they run independently:
+
+<UiPlayground client:visible html={demoTabs} script={demoTs} height="200px"></UiPlayground>
+
+Here is one set, condensed to the parts that matter:
+
+```html
+<div data-component="DataScope" data-option-group="tabs">
+  <div role="tablist" aria-label="Product details">
+    <button
+      type="button"
+      role="tab"
+      id="tab-overview"
+      aria-controls="panel-overview"
+      data-component="Action DataBind"
+      data-option-key="active"
+      data-on:click="DataModel(#tabs) -> target.set('overview')"
+      data-bind:attr.aria-selected="String(value === 'overview')">
+      Overview
+    </button>
+    <!-- …Specs, Reviews… -->
+  </div>
+
+  <input
+    id="tabs"
+    type="hidden"
+    name="active"
+    value="overview"
+    data-component="DataModel"
+    data-option-immediate />
+
+  <div
+    role="tabpanel"
+    id="panel-overview"
+    aria-labelledby="tab-overview"
+    tabindex="0"
+    data-component="DataBind"
+    data-option-key="active"
+    data-bind:attr.hidden="value !== 'overview'">
+    A quick overview of the product.
+  </div>
+  <!-- …one panel per tab… -->
+</div>
+```
+
+Going from the colliding version to this one is two edits: wrap the set in a `DataScope`, and swap the app-wide `group` for a scoped `key`.
+
+```diff
+-<div>
++<div data-component="DataScope" data-option-group="tabs">
+   <button
+     data-component="Action DataBind"
+-    data-option-group="tabs"
++    data-option-key="active"
+     data-on:click="DataModel(#tabs) -> target.set('overview')">
+     Overview
+   </button>
+   <!-- …the hidden model and one DataBind panel per tab… -->
+ </div>
+```
+
+:::info[Keyboard navigation]
+
+These tabs carry the full ARIA tab and tabpanel semantics, but they keep every tab in the `Tab` sequence instead of the [WAI-ARIA Tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/)'s roving `tabindex` and `Arrow`-key navigation, which needs imperative focus management. For a production widget, add that or reach for [`@studiometa/ui`'s `Tabs`](https://ui.studiometa.dev/components/Tabs/).
+
+:::
+
+## A scoped form and `$data`
+
+Forms have the same collision. These two share the app-wide `person` group with no scope, so typing in one field overwrites the other and both greetings track a single value:
+
+<UiPlayground client:visible html={demoFormUnscoped} script={demoTs} height="160px"></UiPlayground>
+
+Give each form its own `DataScope` and they are isolated. The scope also unlocks the `$data` snapshot: every keyed value in the group is exposed to `DataComputed` (and `DataEffect`), so a greeting can read `first` and `last` together, even though both forms use the same keys:
+
+<UiPlayground client:visible html={demoForm} script={demoTs} height="160px"></UiPlayground>
+
+Here is the scoped markup for one form. The two inputs take their `first` and `last` keys from their `name`, and the computed greeting reads both off `$data`:
+
+```html
+<div data-component="DataScope" data-option-group="person">
+  <input
+    name="first"
+    value="Grace"
+    aria-label="First name"
+    data-component="DataModel"
+    data-option-immediate />
+  <input
+    name="last"
+    value="Hopper"
+    aria-label="Last name"
+    data-component="DataModel"
+    data-option-immediate />
+
+  Hello,
+  <span data-component="DataComputed" data-option-compute="`${$data.first} ${$data.last}`.trim()">
+    Grace Hopper
+  </span>
+  .
+</div>
+```
+
+`$data` is read-only: its object and any array or `Date` values are frozen and cloned, so a snapshot can be passed around without a subscriber mutating shared state.
+
+## A quantity stepper and a line total
+
+A cart line reads one number, the quantity, from several places. The [`Action`](https://ui.studiometa.dev/components/Action/) stepper buttons call [`increment()`](https://ui.studiometa.dev/components/DataBind/) on the `qty` model, and a [`DataComputed`](https://ui.studiometa.dev/components/DataComputed/) line total multiplies that value by the unit price. Without a scope, two lines share the app-wide `line` group, so stepping one changes the other's quantity and both line totals with it:
+
+<UiPlayground
+  client:visible
+  html={demoStepperUnscoped}
+  script={demoTs}
+  height="200px"></UiPlayground>
+
+Give each line its own `DataScope` and they add up independently:
+
+<UiPlayground client:visible html={demoStepper} script={demoTs} height="200px"></UiPlayground>
+
+The scoped markup, one line:
+
+```html
+<div data-component="DataScope" data-option-group="line">
+  <button
+    type="button"
+    aria-label="Decrease quantity"
+    data-component="Action"
+    data-on:click="DataModel(#qty) -> target.increment(-1)">
+    −
+  </button>
+  <input
+    id="qty"
+    type="number"
+    name="qty"
+    value="1"
+    aria-label="Quantity"
+    data-component="DataModel"
+    data-option-immediate />
+  <button
+    type="button"
+    aria-label="Increase quantity"
+    data-component="Action"
+    data-on:click="DataModel(#qty) -> target.increment()">
+    +
+  </button>
+
+  Line total:
+  <span
+    data-component="DataComputed"
+    data-option-key="qty"
+    data-option-compute="`€${(value * 25).toFixed(2)}`">
+    €25.00
+  </span>
+</div>
+```
+
+Same story as the tabs: the scope is the whole difference. Wrap the line and swap the app-wide `group` for a scoped `key` (the `<input>` takes its key from its `name`):
+
+```diff
+-<div>
++<div data-component="DataScope" data-option-group="line">
+   <!-- − / + buttons and the qty <input name="qty"> -->
+   <span
+     data-component="DataComputed"
+-    data-option-group="line"
++    data-option-key="qty"
+     data-option-compute="`€${(value * 25).toFixed(2)}`">…</span>
+ </div>
+```
+
+## When to skip DataScope
+
+Not every pattern needs shared state. A dropdown or popover menu is better left to the native [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), which handles opening, top-layer stacking and click-outside dismissal on its own. Reach for `DataScope` when several elements must stay in sync on one value and you want two of them to coexist on a page.
+
+## Register once, use everywhere
+
+Every demo above shares the same registration; `DataScope` only needs to wrap the markup.
+
+```js twoslash
+// @noErrors
+import { registerComponents } from '@studiometa/js-toolkit';
+import { Action, DataBind, DataComputed, DataModel, DataScope } from '@studiometa/ui';
+
+registerComponents(DataScope, DataModel, DataBind, DataComputed, Action);
+```
+
+## Links
+
+- [`DataScope` documentation](https://ui.studiometa.dev/components/DataScope/)
+- [`Action`](https://ui.studiometa.dev/components/Action/), [`DataModel`](https://ui.studiometa.dev/components/DataModel/), [`DataBind`](https://ui.studiometa.dev/components/DataBind/) and [`DataComputed`](https://ui.studiometa.dev/components/DataComputed/)
+- [`@studiometa/ui`](https://ui.studiometa.dev) and [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev)

@@ -1,0 +1,58 @@
+<div class="flex flex-wrap gap-8">
+  <!-- Two forms in their own DataScope: same group, independent, each with its own $data. -->
+  <div data-component="DataScope" data-option-group="person" class="space-y-2">
+    <div class="flex gap-2">
+      <input
+        name="first"
+        value="Grace"
+        aria-label="First name"
+        data-component="DataModel"
+        data-option-immediate
+        class="w-28 border rounded px-2 py-1 bg-transparent" />
+      <input
+        name="last"
+        value="Hopper"
+        aria-label="Last name"
+        data-component="DataModel"
+        data-option-immediate
+        class="w-28 border rounded px-2 py-1 bg-transparent" />
+    </div>
+    <p>
+      Hello,
+      <span
+        data-component="DataComputed"
+        data-option-compute="`${$data.first} ${$data.last}`.trim()"
+        class="font-bold">
+        Grace Hopper
+      </span>.
+    </p>
+  </div>
+
+  <div data-component="DataScope" data-option-group="person" class="space-y-2">
+    <div class="flex gap-2">
+      <input
+        name="first"
+        value="Alan"
+        aria-label="First name"
+        data-component="DataModel"
+        data-option-immediate
+        class="w-28 border rounded px-2 py-1 bg-transparent" />
+      <input
+        name="last"
+        value="Turing"
+        aria-label="Last name"
+        data-component="DataModel"
+        data-option-immediate
+        class="w-28 border rounded px-2 py-1 bg-transparent" />
+    </div>
+    <p>
+      Hello,
+      <span
+        data-component="DataComputed"
+        data-option-compute="`${$data.first} ${$data.last}`.trim()"
+        class="font-bold">
+        Alan Turing
+      </span>.
+    </p>
+  </div>
+</div>

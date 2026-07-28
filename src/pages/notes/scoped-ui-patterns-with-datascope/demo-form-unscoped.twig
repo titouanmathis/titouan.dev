@@ -1,0 +1,32 @@
+<div class="flex flex-wrap gap-8">
+  <!-- No DataScope: both forms share the global "person" group and one value. -->
+  <div class="space-y-2">
+    <input
+      value="Grace Hopper"
+      aria-label="Name"
+      data-component="DataModel"
+      data-option-group="person"
+      class="w-56 border rounded px-2 py-1 bg-transparent" />
+    <p>
+      Hello,
+      <span data-component="DataBind" data-option-group="person" class="font-bold">
+        Grace Hopper
+      </span>.
+    </p>
+  </div>
+
+  <div class="space-y-2">
+    <input
+      value="Alan Turing"
+      aria-label="Name"
+      data-component="DataModel"
+      data-option-group="person"
+      class="w-56 border rounded px-2 py-1 bg-transparent" />
+    <p>
+      Hello,
+      <span data-component="DataBind" data-option-group="person" class="font-bold">
+        Alan Turing
+      </span>.
+    </p>
+  </div>
+</div>
