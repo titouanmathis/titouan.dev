@@ -1,16 +1,17 @@
 <div class="max-w-md space-y-3">
   <form
     id="predictive-search-form"
-    action="/search/suggest"
+    action="/search"
     method="get"
     role="search"
     data-component="Fetch Action"
+    data-option-src="/search/suggest?section_id=predictive-search"
     data-on:input.debounce300="Fetch(#predictive-search-form) -> target.$el.requestSubmit()"
     data-on:fetch-before="Transition(#search-loader) -> target.enter()"
     data-on:fetch-after="Transition(#search-loader) -> target.leave()">
-    <!-- These match the Predictive Search API's query parameters. -->
+    <!-- action is the no-JS search page; data-option-src repoints the enhanced
+         request to the suggestions endpoint, keeping section_id out of the no-JS URL. -->
     <input type="hidden" name="resources[type]" value="product" />
-    <input type="hidden" name="section_id" value="predictive-search" />
 
     <div class="flex items-center gap-2">
       <input
