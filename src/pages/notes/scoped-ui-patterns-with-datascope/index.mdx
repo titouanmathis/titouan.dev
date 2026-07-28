@@ -43,8 +43,12 @@ Here is one set, condensed to the parts that matter:
 
 ```html
 <div data-component="DataScope" data-option-group="tabs">
-  <div role="tablist">
+  <div role="tablist" aria-label="Product details">
     <button
+      type="button"
+      role="tab"
+      id="tab-overview"
+      aria-controls="panel-overview"
       data-component="Action DataBind"
       data-option-key="active"
       data-on:click="DataModel(#tabs) -> target.set('overview')"
@@ -63,6 +67,10 @@ Here is one set, condensed to the parts that matter:
     data-option-immediate />
 
   <div
+    role="tabpanel"
+    id="panel-overview"
+    aria-labelledby="tab-overview"
+    tabindex="0"
     data-component="DataBind"
     data-option-key="active"
     data-bind:attr.hidden="value !== 'overview'">
@@ -88,6 +96,12 @@ Going from the colliding version to this one is two edits: wrap the set in a `Da
  </div>
 ```
 
+:::info[Keyboard navigation]
+
+These tabs carry the full ARIA tab and tabpanel semantics, but they keep every tab in the `Tab` sequence instead of the [WAI-ARIA Tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/)'s roving `tabindex` and `Arrow`-key navigation, which needs imperative focus management. For a production widget, add that or reach for [`@studiometa/ui`'s `Tabs`](https://ui.studiometa.dev/components/Tabs/).
+
+:::
+
 ## A scoped form and `$data`
 
 Forms have the same collision. These two share the app-wide `person` group with no scope, so typing in one field overwrites the other and both greetings track a single value:
@@ -102,8 +116,18 @@ Here is the scoped markup for one form. The two inputs take their `first` and `l
 
 ```html
 <div data-component="DataScope" data-option-group="person">
-  <input name="first" value="Grace" data-component="DataModel" data-option-immediate />
-  <input name="last" value="Hopper" data-component="DataModel" data-option-immediate />
+  <input
+    name="first"
+    value="Grace"
+    aria-label="First name"
+    data-component="DataModel"
+    data-option-immediate />
+  <input
+    name="last"
+    value="Hopper"
+    aria-label="Last name"
+    data-component="DataModel"
+    data-option-immediate />
 
   Hello,
   <span data-component="DataComputed" data-option-compute="`${$data.first} ${$data.last}`.trim()">
@@ -133,15 +157,28 @@ The scoped markup, one line:
 
 ```html
 <div data-component="DataScope" data-option-group="line">
-  <button data-component="Action" data-on:click="DataModel(#qty) -> target.increment(-1)">−</button>
+  <button
+    type="button"
+    aria-label="Decrease quantity"
+    data-component="Action"
+    data-on:click="DataModel(#qty) -> target.increment(-1)">
+    −
+  </button>
   <input
     id="qty"
     type="number"
     name="qty"
     value="1"
+    aria-label="Quantity"
     data-component="DataModel"
     data-option-immediate />
-  <button data-component="Action" data-on:click="DataModel(#qty) -> target.increment()">+</button>
+  <button
+    type="button"
+    aria-label="Increase quantity"
+    data-component="Action"
+    data-on:click="DataModel(#qty) -> target.increment()">
+    +
+  </button>
 
   Line total:
   <span

@@ -1,10 +1,12 @@
 <div class="flex flex-wrap gap-10">
   <!-- Two tab sets in their own DataScope: same group and key, but each keeps its own tab. -->
   <div data-component="DataScope" data-option-group="tabs" class="min-w-[16rem]">
-    <div role="tablist" class="flex gap-1 border-b border-current/20">
+    <div role="tablist" aria-label="Product details" class="flex gap-1 border-b border-current/20">
       <button
         type="button"
         role="tab"
+        id="tab-a-overview"
+        aria-controls="panel-a-overview"
         data-component="Action DataBind"
         data-option-key="active"
         data-on:click="DataModel(#tabs-a) -> target.set('overview')"
@@ -16,6 +18,8 @@
       <button
         type="button"
         role="tab"
+        id="tab-a-specs"
+        aria-controls="panel-a-specs"
         data-component="Action DataBind"
         data-option-key="active"
         data-on:click="DataModel(#tabs-a) -> target.set('specs')"
@@ -27,6 +31,8 @@
       <button
         type="button"
         role="tab"
+        id="tab-a-reviews"
+        aria-controls="panel-a-reviews"
         data-component="Action DataBind"
         data-option-key="active"
         data-on:click="DataModel(#tabs-a) -> target.set('reviews')"
@@ -44,6 +50,10 @@
       data-component="DataModel"
       data-option-immediate />
     <div
+      role="tabpanel"
+      id="panel-a-overview"
+      aria-labelledby="tab-a-overview"
+      tabindex="0"
       data-component="DataBind"
       data-option-key="active"
       data-bind:attr.hidden="value !== 'overview'"
@@ -51,6 +61,10 @@
       A quick overview of the product.
     </div>
     <div
+      role="tabpanel"
+      id="panel-a-specs"
+      aria-labelledby="tab-a-specs"
+      tabindex="0"
       data-component="DataBind"
       data-option-key="active"
       data-bind:attr.hidden="value !== 'specs'"
@@ -59,6 +73,10 @@
       The technical specifications.
     </div>
     <div
+      role="tabpanel"
+      id="panel-a-reviews"
+      aria-labelledby="tab-a-reviews"
+      tabindex="0"
       data-component="DataBind"
       data-option-key="active"
       data-bind:attr.hidden="value !== 'reviews'"
@@ -69,10 +87,12 @@
   </div>
 
   <div data-component="DataScope" data-option-group="tabs" class="min-w-[16rem]">
-    <div role="tablist" class="flex gap-1 border-b border-current/20">
+    <div role="tablist" aria-label="Product details" class="flex gap-1 border-b border-current/20">
       <button
         type="button"
         role="tab"
+        id="tab-b-overview"
+        aria-controls="panel-b-overview"
         data-component="Action DataBind"
         data-option-key="active"
         data-on:click="DataModel(#tabs-b) -> target.set('overview')"
@@ -84,6 +104,8 @@
       <button
         type="button"
         role="tab"
+        id="tab-b-specs"
+        aria-controls="panel-b-specs"
         data-component="Action DataBind"
         data-option-key="active"
         data-on:click="DataModel(#tabs-b) -> target.set('specs')"
@@ -95,6 +117,8 @@
       <button
         type="button"
         role="tab"
+        id="tab-b-reviews"
+        aria-controls="panel-b-reviews"
         data-component="Action DataBind"
         data-option-key="active"
         data-on:click="DataModel(#tabs-b) -> target.set('reviews')"
@@ -112,6 +136,10 @@
       data-component="DataModel"
       data-option-immediate />
     <div
+      role="tabpanel"
+      id="panel-b-overview"
+      aria-labelledby="tab-b-overview"
+      tabindex="0"
       data-component="DataBind"
       data-option-key="active"
       data-bind:attr.hidden="value !== 'overview'"
@@ -119,6 +147,10 @@
       A quick overview of the product.
     </div>
     <div
+      role="tabpanel"
+      id="panel-b-specs"
+      aria-labelledby="tab-b-specs"
+      tabindex="0"
       data-component="DataBind"
       data-option-key="active"
       data-bind:attr.hidden="value !== 'specs'"
@@ -127,6 +159,10 @@
       The technical specifications.
     </div>
     <div
+      role="tabpanel"
+      id="panel-b-reviews"
+      aria-labelledby="tab-b-reviews"
+      tabindex="0"
       data-component="DataBind"
       data-option-key="active"
       data-bind:attr.hidden="value !== 'reviews'"

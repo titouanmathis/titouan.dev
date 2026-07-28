@@ -7,6 +7,7 @@
     <div class="flex items-center gap-2">
       <button
         type="button"
+        aria-label="Decrease quantity"
         data-component="Action"
         data-on:click="DataModel(#uqty-a) -> target.increment(-1)"
         class="w-8 h-8 border rounded">
@@ -17,12 +18,14 @@
         type="number"
         value="1"
         min="0"
+        aria-label="Quantity"
         data-component="DataModel"
         data-option-group="line"
         data-option-immediate
         class="w-14 text-center border rounded px-2 py-1 bg-transparent" />
       <button
         type="button"
+        aria-label="Increase quantity"
         data-component="Action"
         data-on:click="DataModel(#uqty-a) -> target.increment()"
         class="w-8 h-8 border rounded">
@@ -48,6 +51,7 @@
     <div class="flex items-center gap-2">
       <button
         type="button"
+        aria-label="Decrease quantity"
         data-component="Action"
         data-on:click="DataModel(#uqty-b) -> target.increment(-1)"
         class="w-8 h-8 border rounded">
@@ -58,12 +62,14 @@
         type="number"
         value="1"
         min="0"
+        aria-label="Quantity"
         data-component="DataModel"
         data-option-group="line"
         data-option-immediate
         class="w-14 text-center border rounded px-2 py-1 bg-transparent" />
       <button
         type="button"
+        aria-label="Increase quantity"
         data-component="Action"
         data-on:click="DataModel(#uqty-b) -> target.increment()"
         class="w-8 h-8 border rounded">

@@ -1,34 +1,43 @@
 <div class="flex flex-wrap gap-10">
   <!-- No DataScope: both sets share the global "tabs" group, so they switch together. -->
   <div class="min-w-[16rem]">
-    <div role="tablist" class="flex gap-1 border-b border-current/20">
+    <div role="tablist" aria-label="Product details" class="flex gap-1 border-b border-current/20">
       <button
         type="button"
         role="tab"
+        id="tab-ua-overview"
+        aria-controls="panel-ua-overview"
         data-component="Action DataBind"
         data-option-group="tabs"
         data-on:click="DataModel(#utabs-a) -> target.set('overview')"
         data-bind:class.font-bold="value === 'overview'"
+        data-bind:attr.aria-selected="String(value === 'overview')"
         class="px-3 py-2">
         Overview
       </button>
       <button
         type="button"
         role="tab"
+        id="tab-ua-specs"
+        aria-controls="panel-ua-specs"
         data-component="Action DataBind"
         data-option-group="tabs"
         data-on:click="DataModel(#utabs-a) -> target.set('specs')"
         data-bind:class.font-bold="value === 'specs'"
+        data-bind:attr.aria-selected="String(value === 'specs')"
         class="px-3 py-2">
         Specs
       </button>
       <button
         type="button"
         role="tab"
+        id="tab-ua-reviews"
+        aria-controls="panel-ua-reviews"
         data-component="Action DataBind"
         data-option-group="tabs"
         data-on:click="DataModel(#utabs-a) -> target.set('reviews')"
         data-bind:class.font-bold="value === 'reviews'"
+        data-bind:attr.aria-selected="String(value === 'reviews')"
         class="px-3 py-2">
         Reviews
       </button>
@@ -41,6 +50,10 @@
       data-option-group="tabs"
       data-option-immediate />
     <div
+      role="tabpanel"
+      id="panel-ua-overview"
+      aria-labelledby="tab-ua-overview"
+      tabindex="0"
       data-component="DataBind"
       data-option-group="tabs"
       data-bind:attr.hidden="value !== 'overview'"
@@ -48,6 +61,10 @@
       A quick overview of the product.
     </div>
     <div
+      role="tabpanel"
+      id="panel-ua-specs"
+      aria-labelledby="tab-ua-specs"
+      tabindex="0"
       data-component="DataBind"
       data-option-group="tabs"
       data-bind:attr.hidden="value !== 'specs'"
@@ -56,6 +73,10 @@
       The technical specifications.
     </div>
     <div
+      role="tabpanel"
+      id="panel-ua-reviews"
+      aria-labelledby="tab-ua-reviews"
+      tabindex="0"
       data-component="DataBind"
       data-option-group="tabs"
       data-bind:attr.hidden="value !== 'reviews'"
@@ -66,34 +87,43 @@
   </div>
 
   <div class="min-w-[16rem]">
-    <div role="tablist" class="flex gap-1 border-b border-current/20">
+    <div role="tablist" aria-label="Product details" class="flex gap-1 border-b border-current/20">
       <button
         type="button"
         role="tab"
+        id="tab-ub-overview"
+        aria-controls="panel-ub-overview"
         data-component="Action DataBind"
         data-option-group="tabs"
         data-on:click="DataModel(#utabs-b) -> target.set('overview')"
         data-bind:class.font-bold="value === 'overview'"
+        data-bind:attr.aria-selected="String(value === 'overview')"
         class="px-3 py-2">
         Overview
       </button>
       <button
         type="button"
         role="tab"
+        id="tab-ub-specs"
+        aria-controls="panel-ub-specs"
         data-component="Action DataBind"
         data-option-group="tabs"
         data-on:click="DataModel(#utabs-b) -> target.set('specs')"
         data-bind:class.font-bold="value === 'specs'"
+        data-bind:attr.aria-selected="String(value === 'specs')"
         class="px-3 py-2">
         Specs
       </button>
       <button
         type="button"
         role="tab"
+        id="tab-ub-reviews"
+        aria-controls="panel-ub-reviews"
         data-component="Action DataBind"
         data-option-group="tabs"
         data-on:click="DataModel(#utabs-b) -> target.set('reviews')"
         data-bind:class.font-bold="value === 'reviews'"
+        data-bind:attr.aria-selected="String(value === 'reviews')"
         class="px-3 py-2">
         Reviews
       </button>
@@ -106,6 +136,10 @@
       data-option-group="tabs"
       data-option-immediate />
     <div
+      role="tabpanel"
+      id="panel-ub-overview"
+      aria-labelledby="tab-ub-overview"
+      tabindex="0"
       data-component="DataBind"
       data-option-group="tabs"
       data-bind:attr.hidden="value !== 'overview'"
@@ -113,6 +147,10 @@
       A quick overview of the product.
     </div>
     <div
+      role="tabpanel"
+      id="panel-ub-specs"
+      aria-labelledby="tab-ub-specs"
+      tabindex="0"
       data-component="DataBind"
       data-option-group="tabs"
       data-bind:attr.hidden="value !== 'specs'"
@@ -121,6 +159,10 @@
       The technical specifications.
     </div>
     <div
+      role="tabpanel"
+      id="panel-ub-reviews"
+      aria-labelledby="tab-ub-reviews"
+      tabindex="0"
       data-component="DataBind"
       data-option-group="tabs"
       data-bind:attr.hidden="value !== 'reviews'"
