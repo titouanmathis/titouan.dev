@@ -1,17 +1,16 @@
 <div class="flex flex-wrap gap-8">
-  {# Two profile forms, each in its own DataScope with the same "person" group.
-     Editing one never touches the other, and each scope has its own $data. #}
+  <!-- Two forms in their own DataScope: same group, independent, each with its own $data. -->
   <div data-component="DataScope" data-option-group="person" class="space-y-2">
     <div class="flex gap-2">
       <input
         name="first"
-        value="Donald"
+        value="Grace"
         data-component="DataModel"
         data-option-immediate
         class="w-28 border rounded px-2 py-1 bg-transparent" />
       <input
         name="last"
-        value="Duck"
+        value="Hopper"
         data-component="DataModel"
         data-option-immediate
         class="w-28 border rounded px-2 py-1 bg-transparent" />
@@ -22,7 +21,7 @@
         data-component="DataComputed"
         data-option-compute="`${$data.first} ${$data.last}`.trim()"
         class="font-bold">
-        Donald Duck
+        Grace Hopper
       </span>.
     </p>
   </div>
@@ -31,13 +30,13 @@
     <div class="flex gap-2">
       <input
         name="first"
-        value="Daisy"
+        value="Alan"
         data-component="DataModel"
         data-option-immediate
         class="w-28 border rounded px-2 py-1 bg-transparent" />
       <input
         name="last"
-        value="Duck"
+        value="Turing"
         data-component="DataModel"
         data-option-immediate
         class="w-28 border rounded px-2 py-1 bg-transparent" />
@@ -48,7 +47,7 @@
         data-component="DataComputed"
         data-option-compute="`${$data.first} ${$data.last}`.trim()"
         class="font-bold">
-        Daisy Duck
+        Alan Turing
       </span>.
     </p>
   </div>

@@ -1,6 +1,5 @@
 <div class="flex flex-wrap gap-10">
-  {# Two tab sets, each wrapped in its own DataScope. They reuse the same group
-     and `active` key but never share a value, so each keeps its own tab. #}
+  <!-- Two tab sets in their own DataScope: same group and key, but each keeps its own tab. -->
   <div data-component="DataScope" data-option-group="tabs" class="min-w-[16rem]">
     <div role="tablist" class="flex gap-1 border-b border-current/20">
       <button
