@@ -188,7 +188,16 @@ export default defineConfig({
   modules: [headings(), icons(), '@islands/feed', ogImages],
   prettyUrls: true,
   turbo: true,
-  siteUrl: process?.env?.URL ?? process?.env?.CF_PAGES_URL ?? 'http://localhost:3000',
+  // Canonical URL used for og/twitter tags, sitemap and RSS. On Cloudflare Pages
+  // the production (main) deploy uses the custom domain; preview branches keep
+  // their per-deploy URL; everything else falls back to localhost. This avoids
+  // baking an ephemeral `<hash>.titouan-dev.pages.dev` host into shared cards.
+  siteUrl:
+    process?.env?.URL ??
+    (process?.env?.CF_PAGES_BRANCH === 'main'
+      ? 'https://titouan.dev'
+      : process?.env?.CF_PAGES_URL) ??
+    'http://localhost:3000',
   vite: {
     plugins: [tailwindcss()],
   },
