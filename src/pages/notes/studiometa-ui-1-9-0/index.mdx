@@ -72,13 +72,51 @@ The animation itself lives entirely in the `::view-transition-old()` / `::view-t
 
 ## New primitives
 
-1.9.0 leans hard into small, headless building blocks you compose yourself:
+1.9.0 leans hard into small, headless building blocks you compose yourself.
 
-- [`Indexable`](https://ui.studiometa.dev/components/Indexable/) (with the `withIndex` decorator): index navigation with `goTo()`, `goNext()`, `goPrev()`, a `boundary` option and an `index` event. It powers `Carousel`, and a `total` option (`data-option-total="3"`) lets you use it straight from HTML without subclassing.
-- [`InView`](https://ui.studiometa.dev/components/InView/) and [`InViewOnce`](https://ui.studiometa.dev/components/InViewOnce/): emit directional `in-view` / `out-of-view` events as an element crosses the viewport, the `Once` variant firing a single time.
-- [`Timer`](https://ui.studiometa.dev/components/Timer/) and `TimerProgress`: a headless countdown emitting bubbling lifecycle events, with a `requestAnimationFrame`-driven progress signal for smooth bars and dials.
-- [`ClickOutside`](https://ui.studiometa.dev/components/ClickOutside/): dispatches a `click-outside` event when a click lands outside its element, pairing with [`Action`](https://ui.studiometa.dev/components/Action/) to dismiss menus and popovers declaratively.
-- [`DataScope`](https://ui.studiometa.dev/components/DataScope/): a local boundary for the reactive [Data](https://ui.studiometa.dev/components/DataBind/) components, so you can build patterns like tabs and scoped forms from primitives and drop two of them on a page without collisions. I covered it on its own in [Scoped, reusable UI patterns with DataScope](/notes/scoped-ui-patterns-with-datascope).
+### Indexable
+
+[`Indexable`](https://ui.studiometa.dev/components/Indexable/), with the `withIndex` decorator, gives you index navigation through `goTo()`, `goNext()`, `goPrev()`, a `boundary` option and an `index` event. It powers `Carousel`, and a `total` option (`data-option-total="3"`) lets you use it straight from HTML without subclassing.
+
+### InView and InViewOnce
+
+[`InView`](https://ui.studiometa.dev/components/InView/) and [`InViewOnce`](https://ui.studiometa.dev/components/InViewOnce/) emit directional `in-view` / `out-of-view` events as an element crosses the viewport, the `Once` variant firing a single time. Mount it alongside [`Action`](https://ui.studiometa.dev/components/Action/) and a reveal-on-scroll is a one-liner, no custom class required:
+
+```html
+<div
+  data-component="Action InView"
+  data-on:in-view="$el.classList.add('is-visible')"
+  data-on:out-of-view="$el.classList.remove('is-visible')">
+  …
+</div>
+```
+
+### Timer and TimerProgress
+
+[`Timer`](https://ui.studiometa.dev/components/Timer/) and `TimerProgress` are a headless countdown emitting bubbling lifecycle events, with a `requestAnimationFrame`-driven progress signal for smooth bars and dials. Give it a delay in seconds and react to `timer-end` from an `Action` on the same element:
+
+```html
+<div
+  data-component="Action Timer"
+  data-option-delay="5"
+  data-on:timer-end="$el.classList.add('is-done')">
+  …
+</div>
+```
+
+### ClickOutside
+
+[`ClickOutside`](https://ui.studiometa.dev/components/ClickOutside/) dispatches a `click-outside` event when a click lands outside its element, pairing with [`Action`](https://ui.studiometa.dev/components/Action/) to dismiss menus and popovers declaratively. Put both on the panel and keep its trigger inside, so the click that opens it never counts as an outside click:
+
+```html
+<div data-component="ClickOutside Action" data-on:click-outside="$el.classList.remove('is-open')">
+  …
+</div>
+```
+
+### DataScope
+
+[`DataScope`](https://ui.studiometa.dev/components/DataScope/) is a local boundary for the reactive [Data](https://ui.studiometa.dev/components/DataBind/) components, so you can build patterns like tabs and scoped forms from primitives and drop two of them on a page without collisions. I covered it on its own in [Scoped, reusable UI patterns with DataScope](/notes/scoped-ui-patterns-with-datascope).
 
 ## Talking to the server: Fetch
 
