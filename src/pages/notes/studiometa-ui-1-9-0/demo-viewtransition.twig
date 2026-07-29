@@ -1,0 +1,46 @@
+<div class="flex flex-col items-start gap-6">
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      data-component="Action"
+      data-option-target="ViewTransition"
+      data-option-effect="target.enter()"
+      class="px-4 py-2 rounded bg-blue-600 text-white font-semibold">
+      Enter
+    </button>
+    <button
+      type="button"
+      data-component="Action"
+      data-option-target="ViewTransition"
+      data-option-effect="target.leave()"
+      class="px-4 py-2 rounded bg-blue-600 text-white font-semibold">
+      Leave
+    </button>
+    <button
+      type="button"
+      data-component="Action"
+      data-option-target="ViewTransition"
+      data-option-effect="target.toggle()"
+      class="px-4 py-2 rounded bg-gray-200 text-gray-900 font-semibold">
+      Toggle
+    </button>
+  </div>
+
+  <div
+    data-component="ViewTransition"
+    data-option-view-transition-name="box"
+    data-option-leave-to="hidden"
+    class="max-w-md rounded bg-blue-500 p-6 text-white">
+    A single element toggled through a native view transition. The enter and leave animations live
+    entirely in the <code>::view-transition-*</code> CSS below; without the View Transitions API it just
+    toggles instantly.
+  </div>
+</div>
+
+{# The enter/leave animation is authored with the ::view-transition-* pseudo-elements. #}
+<style>
+  @keyframes view-transition-box-enter { from { opacity: 0; transform: translateY(1rem); } }
+  @keyframes view-transition-box-leave { to { opacity: 0; transform: translateY(1rem); } }
+  ::view-transition-new(box) { animation: 300ms ease-out both view-transition-box-enter; }
+  ::view-transition-old(box) { animation: 300ms ease-in both view-transition-box-leave; }
+</style>

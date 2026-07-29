@@ -1,0 +1,108 @@
+---
+date: 2026-07-29
+title: What's new in @studiometa/ui 1.9.0
+description: A tour of everything landing in @studiometa/ui 1.9.0 as it leaves beta, a Dialog that deprecates Modal and Panel, a Carousel, a ViewTransition component, new Indexable / InView / Timer / ClickOutside primitives, DataScope, Shopify Fetch adapters, declarative Track analytics and a new ESLint plugin.
+tags: studiometa-ui, components, progressive-enhancement, javascript, release
+---
+
+# What's new in @studiometa/ui 1.9.0
+
+<MetaInfo class="block">29/07/2026 in #studiometa-ui #release</MetaInfo>
+
+[`@studiometa/ui`](https://ui.studiometa.dev) 1.9.0 is about to leave beta, and it is the largest release the library has had in a while. It adds three full components, a handful of headless primitives, two Shopify [`Fetch`](https://ui.studiometa.dev/components/Fetch/) adapters, a declarative analytics family and a brand-new ESLint plugin, all on top of [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev) `3.8.0`. This note walks through the additions worth knowing about, with a few live demos along the way.
+
+import demoDialog from './demo-dialog.twig?raw';
+import demoCarousel from './demo-carousel.twig?raw';
+import demoViewTransition from './demo-viewtransition.twig?raw';
+import demoTs from './demo.ts?raw';
+
+:::warning[Availability]
+
+Everything below ships with [`@studiometa/ui`](https://ui.studiometa.dev) **v1.9.0**. If you are on 1.8 or earlier, upgrade before reaching for any of it.
+
+:::
+
+<TableOfContent open />
+
+## New components
+
+### Dialog, and the end of Modal and Panel
+
+[`Dialog`](https://ui.studiometa.dev/components/Dialog/) is the headline addition. It wraps the native `<dialog>` element to build accessible modal and drawer patterns: opening with [`showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) hands the focus trap, background `inert`, <kbd>Esc</kbd>-to-close and top-layer stacking to the platform, and the component adds scroll-locking and orchestration of its [`Transition`](https://ui.studiometa.dev/components/Transition/) / [`ViewTransition`](https://ui.studiometa.dev/components/ViewTransition/) children on top.
+
+<UiPlayground client:visible html={demoDialog} script={demoTs} height="340px"></UiPlayground>
+
+The markup stays declarative: an [`Action`](https://ui.studiometa.dev/components/Action/) button opens the dialog, the backdrop is one `Transition` child that fades, the box is another that scales, and a single `Dialog` drives both.
+
+```html
+<button type="button" data-component="Action" data-on:click="Dialog(#modal)->target.open()">
+  Open dialog
+</button>
+
+<dialog
+  id="modal"
+  data-component="Action Dialog"
+  data-on:cancel.prevent="Dialog.close()"
+  data-on:click="event.target === $el && Dialog.close()">
+  <!-- a Transition backdrop and a Transition box -->
+</dialog>
+```
+
+A [drawer](https://ui.studiometa.dev/components/Dialog/examples#drawer) is the same component with the panel anchored to an edge and a `ViewTransition` child for the slide. Because `Dialog` covers both cases, [`Modal`](https://ui.studiometa.dev/components/Modal/) and [`Panel`](https://ui.studiometa.dev/components/Panel/) are now **deprecated**. They still work in 1.9.0, but plan on migrating to `Dialog`.
+
+### Carousel
+
+[`Carousel`](https://ui.studiometa.dev/components/Carousel/) is a component family built on the new [`Indexable`](https://ui.studiometa.dev/components/Indexable/) primitive: `CarouselWrapper`, `CarouselItem`, `CarouselBtn` and an optional `CarouselDrag`. It uses native CSS scroll-snap on touch devices and pointer drag (via `CarouselDrag`, mounted only on `pointer: fine` devices) elsewhere, so it stays light and accessible without hijacking the scroll.
+
+<UiPlayground client:visible html={demoCarousel} script={demoTs} height="360px"></UiPlayground>
+
+Boundaries are configurable through the `boundary` option it inherits from `Indexable`: `clamp` (the default) stops at the ends and disables the `prev`/`next` controls there, while `loop` and `bounce` keep going. A `--carousel-progress` custom property on the root and a `--carousel-item-active` one on each item let you drive progress bars and active-slide styling from CSS alone, which is what the progress bar and the active ring in the demo above are wired to.
+
+### ViewTransition
+
+[`ViewTransition`](https://ui.studiometa.dev/components/ViewTransition/) brings the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) to the same `enter()` / `leave()` / `toggle()` interface as [`Transition`](https://ui.studiometa.dev/components/Transition/), so [`Action`](https://ui.studiometa.dev/components/Action/) can drive it declaratively. Every `enter`/`leave` call made in the same microtask is coalesced into a single `document.startViewTransition()`, which is what lets several elements animate together as one coordinated transition. When the API is unavailable, the state change just applies instantly.
+
+<UiPlayground
+  client:visible
+  html={demoViewTransition}
+  script={demoTs}
+  height="320px"></UiPlayground>
+
+The animation itself lives entirely in the `::view-transition-old()` / `::view-transition-new()` CSS. The component only names the snapshot and toggles the state.
+
+## New primitives
+
+1.9.0 leans hard into small, headless building blocks you compose yourself:
+
+- [`Indexable`](https://ui.studiometa.dev/components/Indexable/) (with the `withIndex` decorator): index navigation with `goTo()`, `goNext()`, `goPrev()`, a `boundary` option and an `index` event. It powers `Carousel`, and a `total` option (`data-option-total="3"`) lets you use it straight from HTML without subclassing.
+- [`InView`](https://ui.studiometa.dev/components/InView/) and [`InViewOnce`](https://ui.studiometa.dev/components/InViewOnce/): emit directional `in-view` / `out-of-view` events as an element crosses the viewport, the `Once` variant firing a single time.
+- [`Timer`](https://ui.studiometa.dev/components/Timer/) and `TimerProgress`: a headless countdown emitting bubbling lifecycle events, with a `requestAnimationFrame`-driven progress signal for smooth bars and dials.
+- [`ClickOutside`](https://ui.studiometa.dev/components/ClickOutside/): dispatches a `click-outside` event when a click lands outside its element, pairing with [`Action`](https://ui.studiometa.dev/components/Action/) to dismiss menus and popovers declaratively.
+- [`DataScope`](https://ui.studiometa.dev/components/DataScope/): a local boundary for the reactive [Data](https://ui.studiometa.dev/components/DataBind/) components, so you can build patterns like tabs and scoped forms from primitives and drop two of them on a page without collisions. I covered it on its own in [Scoped, reusable UI patterns with DataScope](/notes/scoped-ui-patterns-with-datascope).
+
+## Talking to the server: Fetch
+
+[`Fetch`](https://ui.studiometa.dev/components/Fetch/) grew a `src` option and a no-argument `fetch()` call, so you can point a request at an explicit URL instead of relying on a form's `action` or a link's `href`. When both are set, the new `src` option takes precedence.
+
+On top of that, two Shopify adapters land for the [Section Rendering API](https://shopify.dev/docs/api/ajax/section-rendering):
+
+- [`FetchShopifyPartial`](https://ui.studiometa.dev/components/FetchShopifyPartial/): request one or more sections, with its `partials` option taking a comma-separated string (e.g. `data-option-partials="cart-drawer,cart-icon"`).
+- [`FetchShopifySection`](https://ui.studiometa.dev/components/FetchShopifySection/): an adapter for the stable Section Rendering endpoint.
+
+## Declarative analytics: Track
+
+The new [`Track`](https://ui.studiometa.dev/components/Track/) family covers analytics tracking without hand-written listeners: `Track` fires events, `TrackShopify` and a `dataLayer`/GTM provider ship out of the box, and `TrackContext` lets ancestors contribute context that is merged into every event fired by their descendants.
+
+## Tooling and under the hood
+
+- **`@studiometa/eslint-plugin-ui`**: a new package of ESLint / Oxlint rules that help you discover and correctly use components from the library.
+- **Reactivity**: the Data components were refactored onto signals with globally-shared channels, and `DataScope` resolves scoped groups through `withGroup`'s new `getScope` / `getGroup` options.
+- **Dependencies**: the library now builds on [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev) `3.8.0`.
+- **Fixes**: `Slider`'s `SliderBtn` / `SliderCount` / `SliderDots` / `SliderProgress` no longer crash when mounted before their parent, `Figure` / `FigureVideo` stop hanging forever when an image or poster fails to load, and `Accordion` no longer relies on the deprecated `$parent` accessor.
+
+## Links
+
+- [`@studiometa/ui` documentation](https://ui.studiometa.dev) and its [changelog](https://github.com/studiometa/ui/blob/main/CHANGELOG.md)
+- New components: [`Dialog`](https://ui.studiometa.dev/components/Dialog/), [`Carousel`](https://ui.studiometa.dev/components/Carousel/), [`ViewTransition`](https://ui.studiometa.dev/components/ViewTransition/)
+- New primitives: [`Indexable`](https://ui.studiometa.dev/components/Indexable/), [`InView`](https://ui.studiometa.dev/components/InView/), [`Timer`](https://ui.studiometa.dev/components/Timer/), [`ClickOutside`](https://ui.studiometa.dev/components/ClickOutside/), [`DataScope`](https://ui.studiometa.dev/components/DataScope/)
+- Data & Shopify: [`Fetch`](https://ui.studiometa.dev/components/Fetch/), [`FetchShopifyPartial`](https://ui.studiometa.dev/components/FetchShopifyPartial/), [`FetchShopifySection`](https://ui.studiometa.dev/components/FetchShopifySection/), [`Track`](https://ui.studiometa.dev/components/Track/)
