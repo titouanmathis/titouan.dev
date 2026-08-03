@@ -5,5 +5,5 @@ export default {
   title: defaultTitle,
   author: 'Titouan Mathis',
   description:
-    'Notes and experiments by Titouan Mathis, developer & CTO at Studio Meta between Paris, Strasbourg and Copenhagen.',
+    'Notes and experiments by Titouan Mathis, developer & CTO at Studio Meta between Strasbourg and Paris.',
 };
