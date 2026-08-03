@@ -1,0 +1,38 @@
+---
+date: 2026-08-03
+title: Reuse your Claude skills in automated code reviews
+description: How @weareikko/code-review 0.9.4 lets you declare a Claude plugin marketplace once and reference its skills, instead of a full Git path per skill.
+tags: ai, code-review
+---
+
+# Reuse your Claude skills in automated code reviews
+
+<MetaInfo class="block">03/08/2026 in #ai #code-review</MetaInfo>
+
+We run an agent code reviewer on our GitLab MRs and GitHub PRs, we even built it ourselves to explore agent-driven tooling: [@weareikko/code-review](https://github.com/weareikko/code-review).
+
+One context that the review bot was still missing when reviewing our changes was all the skills shipped with our internal Claude Code plugins: accessibility patterns, our JS/UI toolkits, internal conventions, etc.
+
+This was already possible with the ability for the agent to fetch remote skills with git:
+
+```yaml
+review:
+  variables:
+    CODE_REVIEW_SKILLS: code-review,git:https://$REVIEW_BOT:$GITLAB_BOT_API_TOKEN@$CI_GITLAB_HOST/ikko/ikko-tools.git#0.6.13/plugins/dev/skills/aria-apg
+  script:
+    - npx @weareikko/code-review
+```
+
+But adding each skill with their full Git repository path could quickly become verbose and hard to maintain.
+
+Version [0.9.4](https://github.com/weareikko/code-review/blob/0.9.4/CHANGELOG.md) of the `@weareikko/code-review` package fixes that: you can now declare a Claude plugin marketplace once and then reference it to declare the skills you want the reviewer to have.
+
+```diff
+- CODE_REVIEW_SKILLS: 'code-review,git:https://…@…/ikko-tools.git#0.6.13/plugins/dev/skills/aria-apg'
++ CODE_REVIEW_MARKETPLACES: 'ikko=https://…@…/ikko-tools.git#0.6.13'
++ CODE_REVIEW_SKILLS: 'code-review,ikko:dev/aria-apg'
+```
+
+The path is resolved from the repo's `.claude-plugin/marketplace.json`, so you don't need to know its internal structure and adding more skills from the same marketplace no longer repeats the URL.
+
+We haven't implemented support for other marketplaces yet, as we mainly use Claude internally, but do reach out if this is something you'd find useful.
