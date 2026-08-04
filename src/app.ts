@@ -14,6 +14,14 @@ export default defineApp({
       const slug = route.path === '/' ? 'index' : route.path.replace(/^\/|\/$/g, '');
       return new URL(`/og/${slug}.jpg`, config.siteUrl).toString();
     });
+
+    // Advertise the Markdown twin (built by build/markdown.ts) to agents via a
+    // `<link rel="alternate" type="text/markdown">`. Only article/note/experiment
+    // detail pages have a `.md` file — section indexes and the home page do not.
+    const path = unref(route).path;
+    const hasMarkdown = /^\/(articles|notes|experiments)\/.+/.test(path);
+    const markdownHref = new URL(`${path.replace(/\/$/, '')}.md`, config.siteUrl).toString();
+
     return {
       meta: [
         { property: 'author', content: site.author },
@@ -105,6 +113,9 @@ export default defineApp({
           rel: 'canonical',
           href: computed(() => new URL(unref(route).path, config.siteUrl).toString()),
         },
+        ...(hasMarkdown
+          ? [{ rel: 'alternate', type: 'text/markdown', title: 'Markdown', href: markdownHref }]
+          : []),
       ],
       script: [{ children: checkTheme, once: false }],
     };

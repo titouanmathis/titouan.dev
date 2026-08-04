@@ -1,1 +1,4 @@
 Sitemap: https://titouan.dev/sitemap.xml
+
+# llms.txt: https://titouan.dev/llms.txt
+Allow: /llms.txt

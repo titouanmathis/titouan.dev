@@ -15,6 +15,7 @@ import type { ShikiTransformer } from 'shiki';
 import tailwindcss from '@tailwindcss/vite';
 import { withTrailingSlash } from '@studiometa/js-toolkit/utils';
 import { renderOgImage } from './og/render';
+import { markdownExports } from './build/markdown';
 
 /**
  * Expose the code block language as a `data-lang` attribute on the `<pre>`
@@ -184,20 +185,21 @@ const ogImages = {
   },
 };
 
+// Canonical URL used for og/twitter tags, sitemap, RSS and the Markdown
+// exports. On Cloudflare Pages the production (main) deploy uses the custom
+// domain; preview branches keep their per-deploy URL; everything else falls back
+// to localhost. This avoids baking an ephemeral `<hash>.titouan-dev.pages.dev`
+// host into shared cards or llms.txt links.
+const siteUrl =
+  process?.env?.URL ??
+  (process?.env?.CF_PAGES_BRANCH === 'main' ? 'https://titouan.dev' : process?.env?.CF_PAGES_URL) ??
+  'http://localhost:3000';
+
 export default defineConfig({
-  modules: [headings(), icons(), '@islands/feed', ogImages],
+  modules: [headings(), icons(), '@islands/feed', ogImages, markdownExports(siteUrl)],
   prettyUrls: true,
   turbo: true,
-  // Canonical URL used for og/twitter tags, sitemap and RSS. On Cloudflare Pages
-  // the production (main) deploy uses the custom domain; preview branches keep
-  // their per-deploy URL; everything else falls back to localhost. This avoids
-  // baking an ephemeral `<hash>.titouan-dev.pages.dev` host into shared cards.
-  siteUrl:
-    process?.env?.URL ??
-    (process?.env?.CF_PAGES_BRANCH === 'main'
-      ? 'https://titouan.dev'
-      : process?.env?.CF_PAGES_URL) ??
-    'http://localhost:3000',
+  siteUrl,
   vite: {
     plugins: [tailwindcss()],
   },
