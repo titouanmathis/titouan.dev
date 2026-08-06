@@ -1,0 +1,57 @@
+<div class="flex flex-col items-start gap-4">
+  <div class="flex flex-wrap gap-3">
+    <button
+      type="button"
+      data-component="Action"
+      data-on:click="Toaster->target.show('Your changes have been saved.', { type: 'success' })"
+      class="px-4 py-2 rounded bg-emerald-600 text-white font-semibold">
+      Save (success)
+    </button>
+    <button
+      type="button"
+      data-component="Action"
+      data-on:click="Toaster->target.show('Something went wrong.', { type: 'error' })"
+      class="px-4 py-2 rounded bg-red-600 text-white font-semibold">
+      Fail (error)
+    </button>
+  </div>
+
+  <p class="max-w-md text-current/60">
+    Each click clones the template into the matching live region and starts a pausable auto-dismiss
+    countdown. Hover a toast to pause it, or dismiss it with the close button.
+  </p>
+
+  {# The region markup is fixed for accessibility: two permanent aria-live
+     regions, and one <template> the Toaster clones per notification. #}
+  <div
+    data-component="Toaster"
+    class="pointer-events-none fixed inset-0 z-50 flex flex-col items-end justify-end gap-2 p-4">
+    <div
+      data-ref="polite"
+      aria-live="polite"
+      aria-atomic="false"
+      aria-relevant="additions"
+      class="flex w-full flex-col items-end gap-2"></div>
+    <div
+      data-ref="assertive"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="false"
+      aria-relevant="additions"
+      class="flex w-full flex-col items-end gap-2"></div>
+
+    <template data-ref="template">
+      <div
+        class="toast pointer-events-auto flex w-80 items-start gap-3 rounded-lg border-l-4 border-blue-500 bg-white p-4 text-gray-900 shadow-lg">
+        <p data-message class="min-w-0 flex-1 text-sm"></p>
+        <button
+          type="button"
+          data-ref="close"
+          aria-label="Dismiss notification"
+          class="text-gray-400 hover:text-gray-900">
+          &times;
+        </button>
+      </div>
+    </template>
+  </div>
+</div>

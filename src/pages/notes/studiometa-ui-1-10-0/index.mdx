@@ -1,0 +1,158 @@
+---
+date: 2026-08-06
+title: What's new in @studiometa/ui 1.10.0
+description: "A tour of @studiometa/ui 1.10.0, the release that makes the library usable with zero build step: declarative autoloading through the new @studiometa/ui-autoload package, one <script> from an ESM CDN, custom manifests for your own components, a dedicated @studiometa/ui-mapbox package, and a new Toaster."
+tags: studiometa-ui, autoloading, progressive-enhancement, javascript, release
+---
+
+# What's new in @studiometa/ui 1.10.0
+
+<MetaInfo class="block">06/08/2026 in #studiometa-ui #release</MetaInfo>
+
+[`@studiometa/ui`](https://ui.studiometa.dev) 1.10.0 is less about new components and more about **how you load the library**. The headline is autoloading: drop one `<script type="module">` on a page and every component mounts itself from its `data-component` attribute, with no bundler and no manual registration. It ships a new [`@studiometa/ui-autoload`](https://ui.studiometa.dev/reference/items/autoload/) package, adds a new [`@studiometa/ui-mapbox`](https://ui.studiometa.dev/reference/items/MapboxMap/) package for building Mapbox maps, introduces a [`Toaster`](https://ui.studiometa.dev/reference/items/Toaster/) notifications component, and modernises the build under the hood.
+
+import demoToaster from './demo-toaster.twig?raw';
+import demoTs from './demo.ts?raw';
+
+:::warning[Availability]
+
+1.10.0 is currently a **prerelease**. Install it with `npm i @studiometa/ui@next`, or load it from a CDN with the `@next` tag as shown below. Pin an exact version for production.
+
+:::
+
+<TableOfContent open />
+
+## Zero-build autoloading
+
+The core of the release is [`@studiometa/ui-autoload`](https://ui.studiometa.dev/reference/items/autoload/): a small, generic runtime that scans the page for `data-component` tokens, imports each matching component on demand, and registers it with [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev). Importing one side-effect entry is the whole contract; there is nothing to call.
+
+Load it from an ESM CDN such as [esm.sh](https://esm.sh), which serves the package as native ES modules and resolves its peer dependencies for you:
+
+```html
+<script type="module">
+  import 'https://esm.sh/@studiometa/ui-autoload@next/ui';
+</script>
+
+<!-- Mounts on its own, no build step -->
+<button data-component="Action" data-on:click="alert('Hello, no build step!')">Click me</button>
+```
+
+The exact same entry works when you bundle from npm: your bundler resolves it from `node_modules` and the behaviour is identical:
+
+```js
+import '@studiometa/ui-autoload/ui'; // @studiometa/ui components
+import '@studiometa/ui-autoload/ui-mapbox'; // @studiometa/ui-mapbox components
+```
+
+Import both entries together and they coalesce into a **single** loader over the composed set, so only one runtime ever scans the DOM.
+
+### Loading strategies
+
+Each component carries a default strategy, overridable per element with `data-load`. A component loads `eager` (immediately), `visible` (near the viewport), `idle` (when the browser is idle), or on `interaction` (first hover, touch or focus):
+
+```html
+<div data-component="ScrollAnimation" data-load="visible">…</div>
+```
+
+For above-the-fold components that must be ready right away, list them in a `<meta>` element and they load eagerly regardless of their default:
+
+```html
+<meta name="studiometa-ui:eager" content="Accordion, Action, Modal" />
+```
+
+See the [Autoloading guide](https://ui.studiometa.dev/guide/autoloading/) for the full picture: discovery, diagnostics and limitations.
+
+## Bring your own components
+
+Because the autoloader is generic and works purely from a manifest, you can autoload **your own** js-toolkit components alongside the packaged ones. [`defineManifest`](https://ui.studiometa.dev/reference/items/defineManifest/) describes a package: its name, a default loading strategy, and a `modules` record that maps each `data-component` token to a dynamic import. [`registerManifests`](https://ui.studiometa.dev/reference/items/registerManifests/) registers one or more manifests with the shared runtime, and the last one wins on token collisions:
+
+```js
+import { registerManifests, defineManifest } from '@studiometa/ui-autoload';
+import { manifest as uiManifest } from '@studiometa/ui/manifest';
+
+const manifest = defineManifest({
+  packageName: '@my/app',
+  strategy: 'visible',
+  modules: {
+    MyComponent: () => import('./MyComponent.ts'),
+  },
+});
+
+registerManifests(uiManifest, manifest);
+```
+
+Each entry points at a standard js-toolkit component, and the key you use in `modules` is the token the autoloader matches against `data-component`:
+
+```js
+// MyComponent.ts
+import { Base } from '@studiometa/js-toolkit';
+
+export default class MyComponent extends Base {
+  static config = {
+    name: 'MyComponent',
+  };
+}
+```
+
+Writing the `modules` record by hand is fine for a few components. To register a whole folder at once, two adapters (`fromMetaGlob` for Vite, `fromWebpackContext` for webpack) turn a bundler glob into the same record:
+
+```js
+const app = defineManifest({
+  packageName: '@my/app',
+  strategy: 'visible',
+  modules: fromMetaGlob(import.meta.glob('./components/*/*.ts')),
+});
+```
+
+With the glob adapters, the `data-component` token is derived from each file's name, so a `MyComponent.ts` mounts wherever `data-component="MyComponent"` appears, right next to the library's own components. The full workflow, including per-token overrides and constraints, is in [Custom manifests](https://ui.studiometa.dev/reference/items/autoload/custom-manifests).
+
+## A new package for Mapbox
+
+1.10.0 introduces [`@studiometa/ui-mapbox`](https://ui.studiometa.dev/reference/items/MapboxMap/), a new package of js-toolkit components for building Mapbox maps: `MapboxMap`, markers, popups, clustering and a [`StoreLocator`](https://ui.studiometa.dev/reference/items/StoreLocator/).
+
+import mapboxDemoTwig from './mapbox-demo.twig?raw';
+import mapboxDemoTs from './mapbox-demo.ts?raw';
+
+<UiPlayground client:visible html={mapboxDemoTwig} script={mapboxDemoTs} height="416px"></UiPlayground>
+
+The `mapbox-gl` dependency is resolved lazily and not bundled by default. **You provide it**, which keeps you in control of its version and its Web Worker. In a no-build setup you point an [import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap) at the source of your choice.
+
+```html
+<script type="importmap">
+  { "imports": { "mapbox-gl": "https://esm.sh/mapbox-gl@3" } }
+</script>
+<script type="module">
+  import 'https://esm.sh/@studiometa/ui-autoload/ui-mapbox';
+</script>
+```
+
+In a bundled app, both `mapbox-gl` and `@mapbox/mapbox-gl-geocoder` are resolved from the installed NPM dependencies by default. You can also inject them through the [`provideMapboxGl` / `provideMapboxGeocoder` helpers](https://ui.studiometa.dev/reference/items/MapboxMap/js-api.html#providing-the-mapbox-gl-dependency) if you need more control.
+
+## New component: Toaster
+
+[`Toaster`](https://ui.studiometa.dev/reference/items/Toaster/) is a headless notifications region. It is built on two permanent `aria-live` regions: a polite one for info and success, an assertive one for errors, so toasts are announced to screen readers without ever moving focus. Each toast is a `Timer`-based `Toast` with a pausable auto-dismiss countdown, and the stack animates through the `viewTransition` scheduler.
+
+<UiPlayground client:visible html={demoToaster} script={demoTs} height="320px"></UiPlayground>
+
+You provide the markup (one `<template>` the `Toaster` clones per notification) and trigger toasts declaratively from anywhere with [`Action`](https://ui.studiometa.dev/reference/items/Action/):
+
+```html
+<button
+  type="button"
+  data-component="Action"
+  data-on:click="Toaster->target.show('Your changes have been saved.', { type: 'success' })">
+  Save
+</button>
+```
+
+## Under the hood
+
+We migrated every `export *` barrel re-export to explicit named `export { … }` matching the same change in [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev) 3.8.1. This helps improve static analysis of the packages and bundler performance when importing them.
+
+## Links
+
+- [`@studiometa/ui` documentation](https://ui.studiometa.dev) and its [changelog](https://github.com/studiometa/ui/blob/main/CHANGELOG.md)
+- [Autoloading guide](https://ui.studiometa.dev/guide/autoloading/) and the [`@studiometa/ui-autoload` reference](https://ui.studiometa.dev/reference/items/autoload/)
+- Custom components: [`defineManifest`](https://ui.studiometa.dev/reference/items/defineManifest/), [`registerManifests`](https://ui.studiometa.dev/reference/items/registerManifests/), [Custom manifests](https://ui.studiometa.dev/reference/items/autoload/custom-manifests)
+- New component: [`Toaster`](https://ui.studiometa.dev/reference/items/Toaster/)
+- Maps: [`@studiometa/ui-mapbox`](https://ui.studiometa.dev/reference/items/MapboxMap/)
