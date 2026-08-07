@@ -1,7 +1,7 @@
 ---
 date: 2026-08-06
 title: What's new in @studiometa/ui 1.10.0
-description: "A tour of @studiometa/ui 1.10.0, the release that makes the library usable with zero build step: declarative autoloading through the new @studiometa/ui/autoload entry, one <script> from an ESM CDN, custom manifests for your own components, a dedicated @studiometa/ui-mapbox package, and a new Toaster."
+description: 'A tour of @studiometa/ui 1.10.0, the release that makes the library usable with zero build step: declarative autoloading through the new @studiometa/ui/autoload entry, one <script> from an ESM CDN, custom manifests for your own components, a dedicated @studiometa/ui-mapbox package, and a new Toaster.'
 tags: studiometa-ui, autoloading, progressive-enhancement, javascript, release
 ---
 
@@ -113,7 +113,11 @@ With the glob adapters, the `data-component` token is derived from each file's n
 import mapboxDemoTwig from './mapbox-demo.twig?raw';
 import mapboxDemoTs from './mapbox-demo.ts?raw';
 
-<UiPlayground client:visible html={mapboxDemoTwig} script={mapboxDemoTs} height="416px"></UiPlayground>
+<UiPlayground
+  client:visible
+  html={mapboxDemoTwig}
+  script={mapboxDemoTs}
+  height="416px"></UiPlayground>
 
 The `mapbox-gl` dependency is resolved lazily and not bundled by default. **You provide it**, which keeps you in control of its version and its Web Worker. In a no-build setup you point an [import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap) at the source of your choice.
 
@@ -144,6 +148,12 @@ You provide the markup (one `<template>` the `Toaster` clones per notification) 
   Save
 </button>
 ```
+
+## Powered by @studiometa/js-toolkit 3.9.0
+
+The autoloading described above is not a `@studiometa/ui` feature — it is a new **framework-level** capability in [`@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev) 3.9.0. Any js-toolkit application can autoload its own components the same way; `@studiometa/ui` 1.10.0 simply depends on it and ships the thin `@studiometa/ui/autoload` entry. The `defineManifest` / `registerManifests` helpers and the `fromMetaGlob` / `fromWebpackContext` adapters are exported from `@studiometa/js-toolkit`, and documented in its own [autoloading guide](https://js-toolkit.studiometa.dev/guide/going-further/autoloading) and [API reference](https://js-toolkit.studiometa.dev/api/autoload).
+
+The same release also gives js-toolkit **per-symbol subpath imports**: every export is now resolvable at its own extensionless subpath — `@studiometa/js-toolkit/Base`, `@studiometa/js-toolkit/utils/damp`, `@studiometa/js-toolkit/registerManifests` — each importable as a named _or_ default export. Unbundled and CDN consumers can pull in just the one helper they need instead of the whole barrel.
 
 ## Under the hood
 
