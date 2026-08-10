@@ -9,6 +9,10 @@ tags: esm, performance, cdn
 
 <MetaInfo class="block">10/08/2026 in #esm #performance #cdn</MetaInfo>
 
+:::info[How this was researched]
+I ran this with an AI agent: it wrote the benchmark harnesses and browser probes, patched esm.sh locally, and did the measuring, while I set the direction and decided what to trust. That division is also why [part four](#part-four-the-measurements-were-the-hard-part) is as long as it is — most of the wrong answers below came from a harness that looked right, and every number here had to be re-derived before I believed it.
+:::
+
 :::info[Previously]
 [Flattening the ESM import waterfall without a build step](/articles/flattening-the-esm-import-waterfall) covers what a page author can do about this: bundling flags, `modulepreload`, import maps. This article is the other half, from the side of the package and the CDN.
 :::
@@ -39,13 +43,17 @@ Flattening both layers — the stubs, and all 82 internal barrel imports across 
 
 I measured a page loading `@studiometa/ui/autoload` plus a single component, before and after, through esm.sh:
 
-- before: 55 requests, 47.4 kB, `onLoad` at 197 ms
-- after: 49 requests, 8.3 kB, `onLoad` at 128 ms
+|        | requests | bytes   | `onLoad` |
+| ------ | -------- | ------- | -------- |
+| before | 55       | 47.4 kB | 197 ms   |
+| after  | 49       | 8.3 kB  | 128 ms   |
 
 An 11% drop in requests looks unimpressive, and I almost wrote it up that way. Splitting the same capture by what actually blocks the page tells a different story:
 
-- before: **55 requests and 47.4 kB before `onLoad`**, nothing deferred
-- after: **11 requests and 1.6 kB before `onLoad`**, the remaining 38 requests and 6.7 kB deferred
+|        | before `onLoad`          | deferred             |
+| ------ | ------------------------ | -------------------- |
+| before | 55 requests / 47.4 kB    | nothing              |
+| after  | **11 requests / 1.6 kB** | 38 requests / 6.7 kB |
 
 The critical path fell by 80% in requests and 96% in bytes. The cause is that the barrel import had been defeating lazy loading entirely: `import { registerManifest } from '@studiometa/js-toolkit'` dragged `Base`, every service and every util into the bootstrap eagerly, so there was nothing left to defer. Autoload existed to load components on demand and the barrel had quietly cancelled it.
 
@@ -88,7 +96,7 @@ Getting there surfaced two bugs in the existing analyser. A module that is also 
 
 ## Part three: an inline import is the wrong tool
 
-My first version emitted the closure as `import` statements, extending what esm.sh already does. I had three independent reviews done on the patch, and all of them said the same thing before anything else: a static import is not a hint. It fetches, instantiates and **evaluates**.
+My first version emitted the closure as `import` statements, extending what esm.sh already does. I had the patch reviewed by three independent model passes, and all of them led with the same objection: a static import is not a hint. It fetches, instantiates and **evaluates**.
 
 That has consequences I had not thought through:
 
@@ -127,24 +135,25 @@ I produced four confident, wrong numbers before producing a right one. Each mist
 // If a ghost is fetched, the engine acted on the header.
 ```
 
-- Chromium 147: 3 of 3 ghosts fetched
-- WebKit 26.5: 3 of 3
-- Firefox: **0 of 3**
+| engine       | ghosts fetched |
+| ------------ | -------------- |
+| Chromium 147 | 3 / 3          |
+| WebKit 26.5  | 3 / 3          |
+| Firefox      | **0 / 3**      |
 
 ## Part five: the data
 
 Median time to a usable module, cold context, HTTP/2 with a trusted certificate, 100 ms injected per response, three runs each:
 
-```text
-entry                          Chromium   WebKit   Firefox
-js-toolkit/registerManifest        -76%     -65%       +3%
-date-fns/formatDistance            -68%     -58%       +2%
-js-toolkit/Base                    -21%     -20%       +3%
-ui/Modal                           -10%      -5%       -2%
-rxjs/operators                      -6%      -1%       -1%
-ui/autoload                         -5%      -1%       -3%
-@mui/material/Button                +5%      +2%       +2%
-```
+| entry                         | Chromium | WebKit   | Firefox |
+| ----------------------------- | -------- | -------- | ------- |
+| `js-toolkit/registerManifest` | **−76%** | **−65%** | +3%     |
+| `date-fns/formatDistance`     | **−68%** | **−58%** | +2%     |
+| `js-toolkit/Base`             | −21%     | −20%     | +3%     |
+| `ui/Modal`                    | −10%     | −5%      | −2%     |
+| `rxjs/operators`              | −6%      | −1%      | −1%     |
+| `ui/autoload`                 | −5%      | −1%      | −3%     |
+| `@mui/material/Button`        | +5%      | +2%      | +2%     |
 
 Where it applies it is worth 58 to 76 percent, and the discovery waves drop from six to two. Where it does not apply it is noise. The gap between the top and bottom of that table is the actual finding.
 
@@ -158,9 +167,11 @@ This is a tracked four-year-old WPT failure, [Bugzilla 1777433](https://bugzilla
 
 [Bugzilla 1774414](https://bugzilla.mozilla.org/show_bug.cgi?id=1774414) is still open, and I confirmed it. Per the Import Maps specification, fetching a modulepreload graph sets _acquiring import maps_ to false, and a header-initiated preload starts before the parser reaches the map:
 
-- Chromium: import map alone works, import map with the header works
-- WebKit: works in both cases
-- Firefox: works alone, **breaks** as soon as the header is present
+| engine   | import map alone | import map + `Link: rel=modulepreload` |
+| -------- | ---------------- | -------------------------------------- |
+| Chromium | works            | works                                  |
+| WebKit   | works            | works                                  |
+| Firefox  | works            | **breaks**                             |
 
 Firefox discards the map and every bare specifier stops resolving:
 
