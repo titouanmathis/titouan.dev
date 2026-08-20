@@ -86,7 +86,7 @@
       </h2>
     </div>
     <main
-      class="mb-32 max-w-3xl"
+      class="mb-32 max-w-4xl"
       :class="{ markdown: meta.filename.endsWith('.mdx') || meta.filename.endsWith('.md') }">
       <slot />
     </main>

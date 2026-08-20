@@ -11,7 +11,7 @@
 <template>
   <div class="grid gap-10">
     <template v-for="(block, index) in blocks" :key="`block-${index}`">
-      <hr v-if="index > 0" class="border border-current opacity-10" />
+      <hr v-if="false && index > 0" class="border border-current opacity-10" />
       <Listing
         :title="block.title"
         :all-items-url="block.total > block.count ? block.url : undefined"

@@ -41,24 +41,33 @@
 </script>
 
 <template>
-  <div class="grid grid-cols-1 gap-4">
-    <component :is="tag" class="text-2xl font-bold">{{ title }}</component>
+  <div class="grid grid-cols-1">
+    <component :is="tag" class="text-2xl font-bold border-b-3 pb-4">{{ title }}</component>
     <template v-if="items.length">
       <ul class="">
         <li v-for="item in items" :key="item.href">
           <a
+            class="flex justify-between items-baseline py-4 !text-primary"
             :href="item.href"
             :target="isExternal(item.href) ? '_blank' : undefined"
             :rel="isExternal(item.href) ? 'noopener' : undefined">
             {{ item.title }}
+            <MetaInfo v-if="item.date" class="ml-3">
+              {{ formatDate(item.date) }}
+            </MetaInfo>
+            <span class="text-[0.75em] ml-auto">→</span>
           </a>
-          <MetaInfo v-if="item.date" class="ml-3">
-            {{ formatDate(item.date) }}
-          </MetaInfo>
         </li>
       </ul>
       <p v-if="allItemsUrl">
-        <a :href="allItemsUrl">{{ allItemsLabel }}</a>
+        <a
+        class="flex justify-between items-baseline py-4 !text-primary"
+
+        :href="allItemsUrl">
+          {{ allItemsLabel }}
+          <span class="text-[0.75em] ml-auto">→</span>
+
+        </a>
       </p>
     </template>
     <p v-else>{{ noItemsLabel }}</p>

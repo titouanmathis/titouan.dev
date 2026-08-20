@@ -73,9 +73,9 @@ hr {
   border-top: 2px solid oklch(from var(--color-primary) l c h / 0.5);
 }
 
-a:not([class]) {
+a:not([class]), a {
   color: var(--color-accent);
-  box-shadow: 0 2px 0 oklch(from var(--color-accent) l c h / 0.5);
+  box-shadow: 0 2px 0 oklch(from currentColor l c h / 0.5);
   transition: box-shadow 0.4s var(--ease-out-expo);
 
   &[target='_blank'],
@@ -94,7 +94,7 @@ a:not([class]) {
   }
 
   &:hover {
-    box-shadow: 0 2px 0 oklch(from var(--color-accent) l c h / 1);
+    box-shadow: 0 2px 0 oklch(from currentColor l c h / 1);
 
     &[target='_blank']::after,
     &[href^='http://']::after,
@@ -104,12 +104,12 @@ a:not([class]) {
   }
 
   &:visited {
-    color: oklch(from var(--color-accent) calc(l - 0.3) c h);
+    color: oklch(from currentColor calc(l - 0.3) c h);
   }
 
   html.dark & {
     &:visited {
-      color: oklch(from var(--color-accent) calc(l - 0.1) c h);
+      color: oklch(from currentColor calc(l - 0.1) c h);
     }
   }
 }
