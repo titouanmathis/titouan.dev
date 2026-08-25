@@ -70,19 +70,15 @@
         in Strasbourg, France.
         <br />
         <br />
-        I created
+        I build the tools our teams use every day:
         <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener">
           @studiometa/js-toolkit
         </a>
-        to standardize how we write JavaScript as a team and its accompanying UI components library
+        for JavaScript,
         <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a>
-        powered by
-        <a href="https://twig.symfony.com/" target="_blank" rel="noopener noreferrer">Twig</a>
-        and
-        <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">
-          Tailwind CSS
-        </a>
-        .
+        for interface components, and other
+        <a href="/projects/">projects</a>
+        around dev tooling.
       </h2>
     </div>
     <main
