@@ -53,7 +53,7 @@
       </div>
       <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
         <nav v-show="!isExperiment" class="transition">
-          <ul class="flex space-x-10">
+          <ul class="flex flex-wrap gap-x-4 gap-y-2 md:gap-10">
             <li v-for="doc in documents" :key="doc.url">
               <a :href="doc.url">{{ doc.title }}</a>
             </li>
