@@ -244,9 +244,9 @@ export default defineConfig({
     ],
   },
   extendRoutes(routes) {
-    // Remove links pages from the generated routes and add trailing slash to index pages
+    // Remove project pages from the generated routes and add trailing slash to index pages
     return routes
-      .filter((route) => !route.path.startsWith('/links/'))
+      .filter((route) => !route.path.startsWith('/projects/'))
       .map((route) => ({
         ...route,
         path: route.componentFilename.endsWith('/index.vue')

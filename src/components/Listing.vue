@@ -18,6 +18,11 @@
       type: String,
       default: 'p',
     },
+    // Display the description of each item below its title, used by the projects listing.
+    withDescription: {
+      type: Boolean,
+      default: false,
+    },
   });
 
   const { site } = usePage();
@@ -45,7 +50,7 @@
     <component :is="tag" class="text-2xl font-bold">{{ title }}</component>
     <template v-if="items.length">
       <ul class="">
-        <li v-for="item in items" :key="item.href">
+        <li v-for="item in items" :key="item.href" :class="{ 'mb-4 last:mb-0': withDescription }">
           <a
             :href="item.href"
             :target="isExternal(item.href) ? '_blank' : undefined"
@@ -55,6 +60,12 @@
           <MetaInfo v-if="item.date" class="ml-3">
             {{ formatDate(item.date) }}
           </MetaInfo>
+          <MetaInfo v-if="item.repository && item.repository !== item.href" class="ml-3">
+            <a :href="item.repository" target="_blank" rel="noopener">Repo</a>
+          </MetaInfo>
+          <p v-if="withDescription && item.description" class="opacity-70">
+            {{ item.description }}
+          </p>
         </li>
       </ul>
       <p v-if="allItemsUrl">
