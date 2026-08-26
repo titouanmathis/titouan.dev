@@ -63,22 +63,20 @@
     </header>
     <div v-if="isHome" class="max-w-4xl">
       <h2 class="text-2xl font-bold mb-20">
-        Hi 👋, I am the CTO at
+        Hi 👋, I am Titouan, CTO at
         <a href="https://www.studiometa.fr/en/" target="_blank" rel="noopener">Studio Meta</a>
         and
         <a href="https://www.ikko.fr/" target="_blank" rel="noopener">ikko</a>
         in Strasbourg, France.
         <br />
         <br />
-        I build the tools our teams use every day:
+        I build the tools our teams use every day,
         <a href="https://js-toolkit.studiometa.dev" target="_blank" rel="noopener">
           @studiometa/js-toolkit
         </a>
         for JavaScript,
         <a href="https://ui.studiometa.dev" target="_blank" rel="noopener">@studiometa/ui</a>
-        for interface components, and other
-        <a href="/projects/">projects</a>
-        around dev tooling.
+        for interface components, and many <a href="/projects/">others</a>.
       </h2>
     </div>
     <main
