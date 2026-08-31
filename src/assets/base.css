@@ -116,7 +116,23 @@ a:not([class]) {
 
 code:not(pre code) {
   padding: 0.25em;
-  font-size: 0.9em;
+  font-size: 0.75em;
   background-color: oklch(from var(--color-primary) l c h / 0.05);
   border-radius: 0.15em;
+}
+
+table {
+  width: 100%;
+  font-size: 0.75em;
+  border-bottom: 2px solid oklch(from var(--color-primary) l c h / .1);
+  font-variant-numeric: tabular-nums;
+}
+
+th {
+  text-align: left;
+  border-bottom: 2px solid oklch(from var(--color-primary) l c h / .1);
+}
+
+th, td {
+  padding: 0.25em;
 }
