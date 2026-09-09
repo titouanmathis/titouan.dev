@@ -4,6 +4,7 @@ import icons from '@islands/icons';
 import rehypeShiki from '@shikijs/rehype';
 import { transformerTwoslash, rendererRich } from '@shikijs/twoslash';
 import remarkDirective from 'remark-directive';
+import remarkGfm from 'remark-gfm';
 import { visit } from 'unist-util-visit';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { gfmFromMarkdown } from 'mdast-util-gfm';
@@ -204,7 +205,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   markdown: {
-    remarkPlugins: [remarkDirective, remarkCallouts],
+    remarkPlugins: [remarkGfm, remarkDirective, remarkCallouts],
     rehypePlugins: [
       [
         rehypeShiki,

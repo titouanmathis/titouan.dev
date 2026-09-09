@@ -1,0 +1,303 @@
+---
+date: 2026-08-10
+title: Flattening the ESM waterfall upstream
+description: What happened when I stopped working around the module graph waterfall in the page and tried to fix it in the package and in the CDN instead.
+tags: esm, performance, cdn
+---
+
+# Flattening the ESM waterfall upstream
+
+<MetaInfo class="block">10/08/2026 in #esm #performance #cdn</MetaInfo>
+
+:::warning[Draft]
+Outline and raw data only, not written up yet. Every number below is measured. Sections are angles to choose from, not a fixed structure.
+:::
+
+## Framing options
+
+- Companion to [Flattening the ESM import waterfall without a build step](/articles/flattening-the-esm-import-waterfall): that one is what a page author can do, this one is what the package and the CDN can do. Every technique in the first article is a workaround for something upstream.
+- Alternative angle: a story about measurement. Four setups produced confident wrong numbers before one produced a right one. Could carry the whole article on its own.
+- Alternative angle: "who can actually be helped". Package _shape_ decides everything — fine-grained exports imported directly gain 60-76%, a thin wrapper over a deep dependency gains nothing. Most of what we ship is the second kind.
+- Callback to the first article: it said multiplexing is not _sufficient_. This one found it is _necessary_ — HTTP/1.1 hid the whole effect.
+- Disclosure to place somewhere: research done with an AI agent (harnesses, probes, local esm.sh patch, measuring); I set direction and decided what to trust.
+
+## Part one: the package
+
+### Idea
+
+- Package was built for bundlers: `sideEffects: false`, per-symbol subpaths since 3.9.0 so a CDN consumer can import one symbol.
+- It didn't work. Two layers of barrels in between: the subpath stub re-exported from the first barrel it found, and the leaf modules imported barrels themselves. A bundler tree-shakes both away, which is why it went unnoticed for a release cycle.
+- Shipped in `@studiometa/js-toolkit@3.9.0-beta.2`.
+
+```js
+// before: one symbol, but routed through the math barrel
+export { damp, damp as default } from '../../utils/math/index.js';
+
+// after: straight to the module that declares it
+export { damp, damp as default } from '../../utils/math/damp.js';
+```
+
+### Data — module graph over all 203 runtime entry points
+
+| metric          | before    | after     | change |
+| --------------- | --------- | --------- | ------ |
+| total bytes     | 8582.6 kB | 1222.8 kB | −85.8% |
+| total requests  | 8430      | 1207      | −85.7% |
+| median ratio    | 19.3x     | 4.2x      |        |
+| median requests | 19        | 4         |        |
+| median depth    | 5         | 3         |        |
+
+Scope: 82 internal barrel imports rewritten across 49 modules, plus the subpath stub generator.
+
+| subpath                  | requests | bytes          |
+| ------------------------ | -------- | -------------- |
+| `getInstanceFromElement` | 128 → 2  | 161.6 → 0.6 kB |
+| `registerComponent`      | 128 → 3  | 161.6 → 2.1 kB |
+| `utils/damp`             | 19 → 2   | 9.6 → 0.4 kB   |
+
+### Data — the number that matters (browser HAR, real page: `ui/autoload` + one component)
+
+Totals:
+
+| config                       | requests | bytes   | `onLoad` |
+| ---------------------------- | -------- | ------- | -------- |
+| unmigrated consumer + beta.1 | 55       | 47.4 kB | 197 ms   |
+| migrated consumer + beta.2   | 49       | 8.3 kB  | 128 ms   |
+
+Same capture, split by what blocks the page:
+
+| config | before `onLoad`       | deferred             |
+| ------ | --------------------- | -------------------- |
+| before | 55 requests / 47.4 kB | nothing              |
+| after  | 11 requests / 1.6 kB  | 38 requests / 6.7 kB |
+
+- Critical path: −80% requests, −96.6% bytes.
+- js-toolkit portion alone: 54 → 43 requests, 47.2 → 7.7 kB (−83.6% bytes).
+- Cause: the barrel import was defeating lazy loading. `import { registerManifest } from '@studiometa/js-toolkit'` dragged `Base`, every service and every util into the bootstrap eagerly, so nothing was left to defer. Autoload existed to load on demand; the barrel had cancelled it.
+- Point to make: totals are the wrong metric (11% looks like nothing). The question is what blocks the page.
+
+### Data — the part that got worse
+
+| entry             | before                | after                 |
+| ----------------- | --------------------- | --------------------- |
+| `/utils` (barrel) | 42 requests / 22.7 kB | 88 requests / 30.9 kB |
+
+- Internal imports now point at leaves, so a barrel's graph fans out into many small modules instead of a few clustered ones.
+- Framing: the per-symbol subpath is the cheap path, the barrel is the convenience path. The two diverged. No way to have both without bundling, which reintroduces duplicate module identities.
+
+## Part two: the CDN
+
+### Idea
+
+- Flattening trades byte waste for depth. Only the CDN can fix depth.
+- esm.sh already has the mechanism, one level deep: it emits an entry's direct dependencies as eager imports.
+- The missing piece is a three-year-old TODO.
+
+```js
+/* esm.sh - @studiometa/js-toolkit@3.9.0-beta.2/registerManifest */
+import '/@studiometa/js-toolkit@3.9.0-beta.2/es2022/dist/autoload/runtime.mjs';
+export * from '/@studiometa/js-toolkit@3.9.0-beta.2/es2022/registerManifest.mjs';
+```
+
+### Data — the waterfall this leaves
+
+`/registerManifest`: 7 modules, 1.6 kB, **6 sequential round trips**.
+
+| wave | t     | module                                 | discovered from         |
+| ---- | ----- | -------------------------------------- | ----------------------- |
+| 1    | 6 ms  | `/registerManifest`                    | the page                |
+| 2    | 10 ms | `runtime.mjs` + `registerManifest.mjs` | the entry               |
+| 3    | 12 ms | `autoload.mjs` + `version.mjs`         | `runtime.mjs`           |
+| 4    | 14 ms | `loader.mjs`                           | `autoload.mjs`          |
+| 5    | 16 ms | `registerComponent.mjs`                | `loader.mjs`            |
+| 6    | 18 ms | `utils/is.mjs`                         | `registerComponent.mjs` |
+
+### References — upstream code and history
+
+- `server/router.go:1639` — the eager import loop.
+- `server/build.go:1454` — `meta.Imports` built from `ctx.esmImports`, i.e. externals of _this build only_.
+- `server/build_analyzer.go:21` — `analyzeSplitting()`, runs an analyze-mode build over every export.
+- `BuildMetaDB` is keyed by `ctx.Path()`, the same path form stored in `meta.Imports`.
+- [esm.sh#667](https://github.com/esm-dev/esm.sh/issues/667) "Feature Request: Preloading files support", Jun 2023. The reporter asked for the `Link` header specifically. Maintainer: "i am working on it!!!".
+- Commit `b884dcc` "feat: Add 'preload' imports" resolved it and contains `// TODO: lookup deps of deps`. Also shipped an `X-Esm-Deps` header, since removed. The TODO comment has been lost in refactors.
+- No `modulepreload` / `Link` / Early-Hints handling anywhere in the current Go source.
+- No upstream issue about waterfall depth. The four "too many requests" issues are all 429 rate-limiting.
+- Adjacent history on the splitting analyser: [#881](https://github.com/esm-dev/esm.sh/issues/881) (Sep 2024) is what it was built for, [#1178](https://github.com/esm-dev/esm.sh/issues/1178) (Jul 2025) a follow-up. Maintainer actively iterating as of Aug 2025.
+- One open PR in the whole repo, so no competing work.
+
+### Idea — two prototypes, one rejected
+
+- **Serve-time walk.** Expand the list per request by walking each dependency's stored build metadata. Works, unshippable: on the first request the dependencies aren't built yet so the list is incomplete, and exact-version entries are served `Cache-Control: public, max-age=31536000, immutable` (`router.go:1669`). The first, least complete response is frozen in every cache forever. Never heals.
+- **Analyze-time closure.** Compute during the analysis pass that already walks every export, persist beside `splitting.txt`. Correct on a cold cache — verified by wiping storage, all hints present on the very first request.
+- Attribution check: the analyze-time variant alone reproduces every gain, so the serve-time walk contributes nothing.
+
+### Data — bugs found in the existing analyser
+
+- `server/build.go:709` — a module that is also a public export is externalised and returns _before_ the `includes` recording, so **every export-to-export edge was invisible**. For date-fns, whose 741 exports import each other, that is the whole graph.
+- Because analyze mode stops at those boundaries, each entry only learns depth 1; per-entry results have to be composed to get the transitive set.
+- Unsynchronised appends to `includes` and `ctx.esmImports` from concurrent esbuild `OnResolve` callbacks — a pre-existing data race, flagged independently by all three reviews. Worth reporting on its own.
+- Side effect I caused and did not intend: recording the new edges changed the splitting algorithm's input. date-fns' split-module count went **32 → 242**. Needs its own justification upstream.
+
+### Data — structural wave counts, baseline vs analyze-time closure
+
+Improved:
+
+| entry                         | waves |
+| ----------------------------- | ----- |
+| `date-fns/formatDistance`     | 5 → 2 |
+| `js-toolkit/registerManifest` | 6 → 3 |
+| `date-fns/addDays`            | 3 → 2 |
+| `rxjs/operators`              | 5 → 4 |
+| `js-toolkit/Base`             | 5 → 4 |
+| `svelte/store`                | 8 → 7 |
+
+- Already at the floor, unchanged: `lodash-es/debounce` (2), `es-toolkit/debounce` (1), `three/OrbitControls` (2), `luxon` (2), `@tanstack/react-query` (3).
+- Unchanged because depth is cross-package: `d3` (5), `@mui/material/Button` (7), `firebase/auth` (6).
+- Score: 6 of 14 improved. `react` and `preact` untouched — single-export packages never enter splitting.
+
+## Part three: an inline import is the wrong tool
+
+### Idea
+
+- First version emitted the closure as `import` statements, extending what esm.sh does. Three independent model reviews of the patch all led with the same objection: a static import is not a hint, it fetches, instantiates and **evaluates**.
+- Switching to a `Link: rel=modulepreload` header dissolves nearly every objection, because a preload does not evaluate. The response body stays byte-identical to upstream.
+- It also makes cross-package hints safe. Every review called those fatal for the import form — a range resolving to a different version would evaluate two copies of a library. As a preload it is a wasted fetch.
+
+### Data — the objections, and which survive as a header
+
+| objection                                                                                       | as `import` | as `Link` header |
+| ----------------------------------------------------------------------------------------------- | ----------- | ---------------- |
+| changes sibling evaluation order (`a, x, b, entry` → `x, a, b, entry`)                          | real        | moot             |
+| over-approximation runs tree-shaken / platform-specific code                                    | real        | wasted request   |
+| defeats lazy loading if a dynamic import is promoted                                            | real        | wasted bandwidth |
+| sidecar computed once per version, reused across `?target` / `?dev` / `?bundle` → two instances | real        | wasted request   |
+| cycles, top-level await, CJS                                                                    | real        | moot             |
+| entry size / header size                                                                        | caps needed | caps needed      |
+
+- Genuine bug I had: my export-to-export edge recording had no dynamic-import guard, so `import('pkg/subpath')` would have been promoted to a static eager import — cancelling exactly the deferred loading the package work had just recovered.
+- Reviews also converged on: a separate `BuildMeta` field rather than reusing `Imports` (the `?meta` endpoint exposes it); store adjacency, not per-entry closures; one versioned atomic artifact instead of two sidecar files; a mutex for the races; an opt-in flag and hard caps.
+
+```
+Link: </date-fns@4.1.0/es2022/constructFrom.mjs>; rel=modulepreload,
+      </date-fns@4.1.0/es2022/_lib/getRoundingMethod.mjs>; rel=modulepreload
+```
+
+- Targets must be **relative**: a `Link` value resolves against the response URL, so it survives a proxy or TLS terminator the server cannot see through. Absolute URLs built from the request produced `http://` targets on an `https://` page — mixed content, every hint blocked.
+
+### Data — size ceilings
+
+- Header capped at 2 kB / 24 URLs in the prototype.
+- Uncapped, date-fns' `fp` entry would advertise **638 modules, ~36 kB** of header.
+- date-fns' `reachable.txt` sidecar: **115 kB** against `splitting.txt`'s 4.3 kB — 736 entries, 5504 edges. The argument for storing adjacency instead of closures.
+
+## Part four: the measurements were the hard part
+
+### Idea
+
+- Four confident wrong numbers before one right one. Each mistake looks like a result, which is the point.
+
+### Data — the four
+
+| mistake                                             | symptom                                                                                | fix                             |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------- |
+| HTTP/1.1 proxy, 6 connections per origin            | 27 requests ≈ 450 ms regardless of graph shape; wall clock flat, concluded "no effect" | HTTP/2                          |
+| `ignoreHTTPSErrors` with a self-signed cert         | preloads silently stopped firing, 0 of 17                                              | trusted cert via mkcert         |
+| absolute `Link` URLs behind a TLS-terminating proxy | `http://` targets on an `https://` page, all blocked as mixed content, another zero    | relative targets                |
+| reusing an origin between runs                      | preloads must be cacheable to be reusable, so run two is warm and meaningless          | one cold origin per measurement |
+
+Plus a wrong success metric: counting requests matching advertised URLs also counts modules fetched normally through the graph, which made Firefox look like it honoured the header. The reliable test is a module nothing imports:
+
+```js
+// entry.mjs imports only dep.mjs; its response advertises ghost0..2.mjs
+// A fetched ghost means the engine acted on the header.
+```
+
+| engine       | ghosts fetched |
+| ------------ | -------------- |
+| Chromium 147 | 3 / 3          |
+| WebKit 26.5  | 3 / 3          |
+| Firefox      | **0 / 3**      |
+
+### Rig, for reproducibility
+
+- HTTP/2 + TLS proxy with a fixed per-response delay, [mkcert](https://github.com/FiloSottile/mkcert) certificate, Playwright across all three engines, fresh context per run, 3 runs each, 100 ms injected per response.
+- Firefox needs the mkcert root in its own NSS store (`certutil`-seeded profile, copied per run); it does not read the system store.
+
+## Part five: results
+
+Median time to a usable module, cold context, trusted HTTP/2, 100 ms per response:
+
+| entry                         | Chromium | WebKit   | Firefox |
+| ----------------------------- | -------- | -------- | ------- |
+| `js-toolkit/registerManifest` | **−76%** | **−65%** | +3%     |
+| `date-fns/formatDistance`     | **−68%** | **−58%** | +2%     |
+| `js-toolkit/Base`             | −21%     | −20%     | +3%     |
+| `ui/Modal`                    | −10%     | −5%      | −2%     |
+| `rxjs/operators`              | −6%      | −1%      | −1%     |
+| `ui/autoload`                 | −5%      | −1%      | −3%     |
+| `@mui/material/Button`        | +5%      | +2%      | +2%     |
+
+- Discovery waves drop 6 → 2 where it applies.
+- The gap between the top and the bottom of that table is the actual finding.
+
+## Part six: limitations
+
+### Firefox ignores `Link` headers on subresources
+
+- [Bugzilla 1777433](https://bugzilla.mozilla.org/show_bug.cgi?id=1777433) — NEW, S4, opened 2022-06-30. WPT: `link-header-on-subresource.html`. Blocks [2013865](https://bugzilla.mozilla.org/show_bug.cgi?id=2013865), a meta tracking bug for performance-related WPT failures.
+- Mozilla engineer, 2023-09-28: "Chrome and Safari both pass these tests now, fwiw."
+- Most recent comment, 2026-02-02: still failing.
+- Firefox _does_ support `rel=modulepreload` in a `Link` header on a **document** response, shipped in 116 via [1798319](https://bugzilla.mozilla.org/show_bug.cgi?id=1798319). Confirmed: all three engines honour the document case. Only subresources are ignored — the only kind a CDN serves.
+- Silver lining for an upstream pitch: Firefox support arrives for free whenever 1777433 lands, with no change to esm.sh.
+
+### A `Link` header can break an import map in Firefox
+
+- [Bugzilla 1774414](https://bugzilla.mozilla.org/show_bug.cgi?id=1774414) — NEW, unchanged since Dec 2024. Confirmed with a probe.
+- Mechanism: per the Import Maps spec, fetching a modulepreload graph sets _acquiring import maps_ to false, and a header-initiated preload starts before the parser reaches the map.
+
+| engine   | import map alone | import map + `Link: rel=modulepreload` |
+| -------- | ---------------- | -------------------------------------- |
+| Chromium | works            | works                                  |
+| WebKit   | works            | works                                  |
+| Firefox  | works            | **breaks**                             |
+
+```
+The specifier "bare-specifier" was a bare specifier, but was not remapped to
+anything. Relative module specifiers must start with "./", "../" or "/".
+```
+
+- This inverts the safety argument: a preload was supposed to only ever cost a wasted request; here it costs the page.
+- Today the two bugs cancel out — Firefox ignores subresource headers, so a CDN cannot trigger this — but that safety rests on a bug staying unfixed.
+
+### The graph has to be yours
+
+```
+/@studiometa/ui/autoload — 81 modules
+   77  @studiometa/js-toolkit
+    2  @studiometa/ui
+    2  deepmerge
+```
+
+- 95% of `ui`'s depth is across a package boundary, so an intra-package closure cannot reach it. `ui` gains almost nothing while the package it depends on gains 76%.
+- Same for d3 (one module re-exporting 30 sibling packages) and firebase.
+- Cross-package hints already propagate one hop: `ui/autoload`'s js-toolkit dependency stub carries 27 of its own. Measured payoff of that chaining: 1-10%. Hoisting them one level higher would save one more round trip.
+
+### Structural exclusions
+
+| package               | why it advertises nothing                                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@mui/material@6.4.0` | no `exports` map at all (0 keys), so the analysis never runs                                                                               |
+| `@studiometa/ui`      | declares `sideEffects: [...]` → `shouldBundle()` false → analysis skipped (relaxing this is safe for preloads, since they do not evaluate) |
+| `rxjs/operators`      | 185 modules, the header cap covers a fraction, win drops to noise                                                                          |
+
+### Two things I tried that were no-ops
+
+- Resolving export keys to their target module (`"./Modal": "./Modal/Modal.js"`) — correct in principle, identical hint counts on every package tested. date-fns matches either way because its exports sit at the root; js-toolkit's coverage comes from the splitting set.
+- Raising the header cap from 24 to 120 URLs — moved js-toolkit's root from 23 to 27 hints. The cap was never the constraint.
+
+## Where this leaves it
+
+- Package-side work shipped in `@studiometa/js-toolkit@3.9.0-beta.2`. Worth doing on its own; the critical-path number is the one to quote.
+- CDN-side work is a local prototype, not proposed upstream. What to file: the transitive closure as the `// TODO: lookup deps of deps` from 2023, delivered as a `Link` header rather than imports, with the cross-browser table including Firefox's zero and both Bugzilla numbers stated as known hazards.
+- The two analyser bugs stand on their own regardless of whether the preload feature ships.
+- Practical takeaway for readers: the first article is still the actionable one. What changed is knowing _which_ packages can be helped. Fine-grained exports imported directly are the ideal shape; a thin wrapper over a deep dependency cannot be fixed from inside itself, and that is most of what we ship.
