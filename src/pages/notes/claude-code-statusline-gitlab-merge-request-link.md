@@ -1,7 +1,7 @@
 ---
 date: 2026-09-15
-title: Add GitLab merge request links to a Claude Code statusline
-description: Show a clickable link to the merge request for the current Git branch.
+title: Adding GitLab merge request links to Claude Code status line
+description: Making Claude Code a bit more integrated to GitLab
 tags: claude-code, gitlab, dotfiles
 ---
 
