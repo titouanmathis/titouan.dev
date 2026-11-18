@@ -91,7 +91,7 @@
       </main>
       <aside
         v-if="hasToc"
-        class="hidden xl:block sticky top-10 w-64 shrink-0 max-h-[calc(100vh-5rem)] overflow-y-auto text-sm">
+        class="hidden xl:block sticky top-16 w-64 shrink-0 max-h-[calc(100vh-8rem)] overflow-y-auto text-sm">
         <nav aria-label="Table of content">
           <p class="mb-4 font-bold">On this page</p>
           <TableOfContent :headings="headings" />
