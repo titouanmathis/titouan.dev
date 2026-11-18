@@ -203,7 +203,6 @@ function transform(raw: string, filePath: string): string {
     dedent(inner).trim(),
   );
   text = text.replace(/<MetaInfo\b[^>]*>([\s\S]*?)<\/MetaInfo>/g, (_, inner) => inner.trim());
-  text = text.replace(/<TableOfContent\b[^>]*?\/?>(?:\s*<\/TableOfContent>)?/g, '');
   text = text.replace(/<Experiments\w*\b[^>]*?\/?>(?:\s*<\/Experiments\w*>)?/g, '');
 
   text = convertCallouts(text);

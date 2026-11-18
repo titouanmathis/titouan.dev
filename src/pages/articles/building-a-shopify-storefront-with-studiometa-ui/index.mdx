@@ -39,8 +39,6 @@ import pillarTs from './demo.ts?raw';
 
 The links are ordinary `<a href>` elements. Without JavaScript they navigate like any link. With JavaScript, `@studiometa/ui` intercepts the click, fetches the target, and swaps the matching region in place. That is progressive enhancement: the server-rendered version is the baseline, and the enhancement is a layer on top that can fail without breaking the page.
 
-<TableOfContent open />
-
 ## Progressive enhancement on a Shopify theme
 
 With progressive enhancement, Liquid stays the source of truth for markup. The server renders a complete, indexable page. JavaScript then attaches behaviour to elements that are already there, using `data-` attributes, and talks to the endpoints Shopify already exposes: the [Section Rendering API](https://shopify.dev/docs/api/ajax/section-rendering), the [Ajax Cart API](https://shopify.dev/docs/api/ajax/reference/cart), the predictive search endpoint.

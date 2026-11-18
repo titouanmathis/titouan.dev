@@ -1,48 +1,26 @@
 <script setup lang="ts">
-  import { computed, unref } from 'vue';
-  import { usePage } from 'iles';
+  import type { TableOfContentItem } from '~/composables/useTableOfContent.js';
 
-  const { page } = usePage();
-
-  let previousLevel2;
-
-  const headings = computed(() =>
-    unref(page).headings?.reduce((acc, heading) => {
-      if (heading.level === 1 || heading.level > 3) {
-        return acc;
-      }
-
-      if (heading.level === 2) {
-        previousLevel2 = {
-          ...heading,
-          items: [],
-        };
-        acc.push(previousLevel2);
-      }
-
-      if (heading.level === 3) {
-        previousLevel2.items.push(heading);
-      }
-
-      return acc;
-    }, []),
-  );
+  defineProps<{ headings: TableOfContentItem[] }>();
 </script>
 
 <template>
-  <details class="text-sm">
-    <summary class="font-bold">Table of content</summary>
-    <div class="py-4">
-      <ol>
-        <li v-for="heading in headings" :key="heading.slug">
-          <a :href="`#${heading.slug}`">{{ heading.title }}</a>
-          <ol v-if="heading.items.length">
-            <li v-for="subheading in heading.items" :key="subheading.slug">
-              <a :href="`#${subheading.slug}`">{{ subheading.title }}</a>
-            </li>
-          </ol>
+  <ol class="space-y-1">
+    <li v-for="heading in headings" :key="heading.slug">
+      <a
+        :href="`#${heading.slug}`"
+        class="opacity-75 transition-opacity hover:opacity-100 hover:text-accent">
+        {{ heading.title }}
+      </a>
+      <ol v-if="heading.items.length" class="mt-1 pl-4 space-y-1">
+        <li v-for="subheading in heading.items" :key="subheading.slug">
+          <a
+            :href="`#${subheading.slug}`"
+            class="opacity-75 transition-opacity hover:opacity-100 hover:text-accent">
+            {{ subheading.title }}
+          </a>
         </li>
       </ol>
-    </div>
-  </details>
+    </li>
+  </ol>
 </template>
