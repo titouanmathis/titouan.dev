@@ -1,6 +1,7 @@
 import { defineApp } from 'iles';
 import { computed, unref } from 'vue';
 import checkTheme from '~/utils/check-theme?raw';
+import scrollToCurrentHash from '~/utils/scroll-to-current-hash?raw';
 import Image from '~/components/Image.vue';
 import Anchor from '~/components/Anchor.vue';
 
@@ -130,7 +131,10 @@ export default defineApp({
           ? [{ rel: 'alternate', type: 'text/markdown', title: 'Markdown', href: markdownHref }]
           : []),
       ],
-      script: [{ children: checkTheme, once: false }],
+      script: [
+        { children: checkTheme, once: false },
+        { children: scrollToCurrentHash, once: true },
+      ],
     };
   },
 });

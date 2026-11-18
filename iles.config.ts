@@ -16,6 +16,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { withTrailingSlash } from '@studiometa/js-toolkit/utils';
 import { renderOgImage } from './og/render';
 import { markdownExports } from './build/markdown';
+import { rehypeImageSize } from './build/rehype-image-size';
 
 /**
  * Expose the code block language as a `data-lang` attribute on the `<pre>`
@@ -206,6 +207,7 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [remarkDirective, remarkCallouts],
     rehypePlugins: [
+      rehypeImageSize,
       [
         rehypeShiki,
         {
