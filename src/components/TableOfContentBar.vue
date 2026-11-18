@@ -58,9 +58,9 @@
 
     /* Each link slides a bit more slowly than the one before it. */
     .toc-bar-panel a {
-      translate: 0 1rem;
+      translate: 0 2.5rem;
       transition:
-        translate calc(0.4s + var(--i) * 0.04s) var(--ease-out-expo),
+        translate calc(0.4s + var(--i) * 0.06s) var(--ease-out-quart),
         opacity 0.15s;
     }
 
@@ -68,7 +68,7 @@
       translate: 0;
 
       @starting-style {
-        translate: 0 1rem;
+        translate: 0 2.5rem;
       }
     }
   }
