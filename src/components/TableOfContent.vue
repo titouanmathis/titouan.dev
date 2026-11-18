@@ -9,14 +9,16 @@
     <li v-for="heading in headings" :key="heading.slug">
       <a
         :href="`#${heading.slug}`"
-        class="opacity-75 transition-opacity hover:opacity-100 hover:text-accent">
+        :style="{ '--i': heading.index }"
+        class="inline-block opacity-75 transition-opacity hover:opacity-100 hover:text-accent">
         {{ heading.title }}
       </a>
       <ol v-if="heading.items.length" class="mt-1 pl-4 space-y-1">
         <li v-for="subheading in heading.items" :key="subheading.slug">
           <a
             :href="`#${subheading.slug}`"
-            class="opacity-75 transition-opacity hover:opacity-100 hover:text-accent">
+            :style="{ '--i': subheading.index }"
+            class="inline-block opacity-75 transition-opacity hover:opacity-100 hover:text-accent">
             {{ subheading.title }}
           </a>
         </li>

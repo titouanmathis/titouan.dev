@@ -55,5 +55,21 @@
         translate: 0 100%;
       }
     }
+
+    /* Each link slides a bit more slowly than the one before it. */
+    .toc-bar-panel a {
+      translate: 0 1rem;
+      transition:
+        translate calc(0.4s + var(--i) * 0.04s) var(--ease-out-expo),
+        opacity 0.15s;
+    }
+
+    .toc-bar[open] .toc-bar-panel a {
+      translate: 0;
+
+      @starting-style {
+        translate: 0 1rem;
+      }
+    }
   }
 </style>

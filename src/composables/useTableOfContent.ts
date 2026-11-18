@@ -4,6 +4,8 @@ import { usePage } from 'iles';
 export interface TableOfContentItem {
   slug: string;
   title: string;
+  /** Position in the flattened list, used to stagger transitions. */
+  index: number;
   items: TableOfContentItem[];
 }
 
@@ -16,12 +18,13 @@ export function useTableOfContent() {
 
   return computed(() => {
     const tree: TableOfContentItem[] = [];
+    let index = 0;
 
     for (const { level, slug, title } of unref(page).headings ?? []) {
       if (level === 2 || (level === 3 && !tree.length)) {
-        tree.push({ slug, title, items: [] });
+        tree.push({ slug, title, index: index++, items: [] });
       } else if (level === 3) {
-        tree.at(-1).items.push({ slug, title, items: [] });
+        tree.at(-1).items.push({ slug, title, index: index++, items: [] });
       }
     }
 
