@@ -30,8 +30,6 @@ import demoTs from './demo.ts?raw';
 
 The form submits its state to the server, which does the filtering and returns the rendered sections; the browser only swaps them in. This builds directly on the [Section Rendering API](/articles/shopify-section-rendering-api-example), so read that first if the `?sections=` pattern is new to you.
 
-<TableOfContent open />
-
 ## A form drives the request
 
 Shopify already filters and sorts collections from URL parameters. Storefront filtering reflects every applied facet in the URL, and `sort_by` controls the order. So the browser's job is small: gather the customer's choices into those parameters and ask the server to re-render.

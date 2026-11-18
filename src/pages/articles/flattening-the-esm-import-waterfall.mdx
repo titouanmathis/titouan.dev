@@ -13,8 +13,6 @@ I have been shipping a few buildless front-ends lately, with no bundler and no d
 
 This is called the [module graph discovery waterfall](https://blacksheepcode.com/posts/loading_optimisations_part_4), and it comes with skipping the build step. In this article, I am sharing what it looks like on a real page and the techniques I use to avoid it.
 
-<TableOfContent open />
-
 ## What the waterfall is
 
 When the browser loads an ES module, it doesn't know that module's dependencies until it has downloaded and parsed it. Only then does it discover the next `import`, request it, parse it, discover the next one, and so on. A module doesn't execute until its entire static import graph has loaded, and a child can't start loading before its parent has been downloaded and parsed.

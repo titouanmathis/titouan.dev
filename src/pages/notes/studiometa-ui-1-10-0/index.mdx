@@ -14,8 +14,6 @@ tags: studiometa-ui, autoloading, progressive-enhancement, javascript, release
 import demoToaster from './demo-toaster.twig?raw';
 import demoTs from './demo.ts?raw';
 
-<TableOfContent open />
-
 ## Zero-build autoloading
 
 The core of the release is the [autoload runtime in `@studiometa/js-toolkit`](https://js-toolkit.studiometa.dev): a small, generic runtime that scans the page for `data-component` tokens, imports each matching component on demand, and registers it. `@studiometa/ui` exposes it through a single `@studiometa/ui/autoload` side-effect entry — importing it is the whole contract; there is nothing to call.

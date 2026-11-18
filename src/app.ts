@@ -1,6 +1,7 @@
 import { defineApp } from 'iles';
 import { computed, unref } from 'vue';
 import checkTheme from '~/utils/check-theme?raw';
+import scrollToCurrentHash from '~/utils/scroll-to-current-hash?raw';
 import Image from '~/components/Image.vue';
 import Anchor from '~/components/Anchor.vue';
 
@@ -8,6 +9,19 @@ export default defineApp({
   mdxComponents: {
     img: Image,
     a: Anchor,
+  },
+  router: {
+    // The client router (used by the dev server) scrolls to an anchor's
+    // `offsetTop`, which ignores `scroll-margin-top`. Let the browser scroll to
+    // it instead, so the margin and the smooth behavior apply.
+    scrollBehavior(to, from, savedPosition) {
+      if (savedPosition) return savedPosition;
+      if (to.hash) {
+        document.getElementById(decodeURIComponent(to.hash.slice(1)))?.scrollIntoView();
+        return false;
+      }
+      if (to.path !== from.path) return { top: 0 };
+    },
   },
   head({ frontmatter, site, route, config }) {
     const ogImage = computed(() => {
@@ -117,7 +131,10 @@ export default defineApp({
           ? [{ rel: 'alternate', type: 'text/markdown', title: 'Markdown', href: markdownHref }]
           : []),
       ],
-      script: [{ children: checkTheme, once: false }],
+      script: [
+        { children: checkTheme, once: false },
+        { children: scrollToCurrentHash, once: true },
+      ],
     };
   },
 });
