@@ -60,7 +60,7 @@
     .toc-bar-panel a {
       translate: 0 2.5rem;
       transition:
-        translate calc(0.4s + var(--i) * 0.06s) var(--ease-out-quart),
+        translate calc(0.4s + var(--i) * 0.08s) var(--ease-out-quart),
         opacity 0.15s;
     }
 
