@@ -24,7 +24,7 @@
     </summary>
     <nav
       aria-label="Table of content"
-      class="absolute inset-x-0 bottom-full max-h-[60vh] overflow-y-auto p-4 border-t border-primary/10 bg-secondary"
+      class="absolute inset-x-0 bottom-full mb-2 max-h-[60vh] overflow-y-auto p-4 rounded-lg border border-primary/10 bg-secondary shadow-lg"
       @click="onClick">
       <TableOfContent :headings="headings" />
     </nav>

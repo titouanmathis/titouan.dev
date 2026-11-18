@@ -102,7 +102,7 @@
       v-if="hasToc"
       client:load
       :headings="headings"
-      class="xl:hidden fixed inset-x-0 bottom-0 z-10 border-t border-primary/10 bg-secondary" />
+      class="xl:hidden fixed inset-x-4 bottom-4 z-10 rounded-lg border border-primary/10 bg-secondary shadow-lg" />
     <transition enter-from-class="opacity-0" leave-to-class="opacity-0">
       <footer v-show="!isExperiment" class="mt-auto text-sm transition">
         <span class="block sm:inline-block mr-4 md:mr-10">
