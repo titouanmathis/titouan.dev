@@ -9,6 +9,19 @@ export default defineApp({
     img: Image,
     a: Anchor,
   },
+  router: {
+    // The client router (used by the dev server) scrolls to an anchor's
+    // `offsetTop`, which ignores `scroll-margin-top`. Let the browser scroll to
+    // it instead, so the margin and the smooth behavior apply.
+    scrollBehavior(to, from, savedPosition) {
+      if (savedPosition) return savedPosition;
+      if (to.hash) {
+        document.getElementById(decodeURIComponent(to.hash.slice(1)))?.scrollIntoView();
+        return false;
+      }
+      if (to.path !== from.path) return { top: 0 };
+    },
+  },
   head({ frontmatter, site, route, config }) {
     const ogImage = computed(() => {
       const slug = route.path === '/' ? 'index' : route.path.replace(/^\/|\/$/g, '');
